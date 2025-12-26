@@ -1,4 +1,5 @@
-import { Instagram, Twitter, Mail } from 'lucide-react';
+import { Instagram, Twitter, Mail, ArrowUp } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Footer() {
     return (
@@ -29,12 +30,11 @@ export default function Footer() {
                     </div>
 
                     <div className="space-y-6">
-                        <h4 className="font-bold uppercase tracking-widest text-clay">Müşteri İlişkileri</h4>
+                        <h4 className="text-white font-bold text-lg tracking-widest uppercase">Kurumsal</h4>
                         <ul className="space-y-4 text-white/70">
-                            <li><a href="#" className="hover:text-white transition-colors">Teslimat Koşulları</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">İade Politikası</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">İletişim</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">S.S.S</a></li>
+                            <li><Link href="/terms" className="hover:text-white transition-colors">Kullanım Koşulları</Link></li>
+                            <li><Link href="/privacy" className="hover:text-white transition-colors">Gizlilik Politikası</Link></li>
+                            <li><Link href="/contact" className="hover:text-white transition-colors">İletişim</Link></li>
                         </ul>
                     </div>
                 </div>
