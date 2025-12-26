@@ -1,109 +1,102 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { ArrowRight, Star, ShieldCheck } from 'lucide-react';
+import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowDown } from 'lucide-react';
 
 export default function Hero() {
-    const scrollToCollection = () => {
-        document.getElementById('collection')?.scrollIntoView({ behavior: 'smooth' });
-    };
-
     return (
-        <section className="relative min-h-screen w-full flex flex-col justify-center items-center pt-20 px-6 overflow-hidden bg-alabaster">
-            {/* Background patterns */}
-            <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none">
-                <div className="absolute top-0 left-0 w-full h-full" style={{
-                    backgroundImage: 'radial-gradient(circle at 2px 2px, black 1px, transparent 0)',
-                    backgroundSize: '40px 40px'
-                }}></div>
-            </div>
+        <section className="relative min-h-[90vh] flex items-center bg-alabaster overflow-hidden pt-20">
+            {/* Background Abstract */}
+            <div className="absolute top-0 right-0 w-[60%] h-full bg-gradient-to-l from-[#E6E8E6] to-transparent -z-10" />
 
-            <div className="container mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center z-10">
-                <div className="lg:col-span-6 space-y-8">
+            <div className="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+                {/* LEFT: Copywriting & CTA */}
+                <div className="max-w-2xl z-10">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
+                        transition={{ duration: 0.6 }}
                     >
-                        <span className="inline-block px-4 py-1.5 rounded-full bg-sage/10 text-sage text-sm font-bold tracking-widest uppercase mb-4">
-                            Tsuko Design
-                        </span>
-                        <h1 className="text-6xl md:text-8xl font-black leading-[0.9] text-charcoal">
-                            Yapıya <br /> <span className="text-clay">Ruh</span> Katmak.
+                        {/* Trust Signal - Top */}
+                        <div className="flex items-center gap-2 mb-6 bg-white w-fit px-4 py-2 rounded-full shadow-sm border border-black/5">
+                            <div className="flex">
+                                {[1, 2, 3, 4, 5].map(i => <Star key={i} size={14} className="fill-orange-400 text-orange-400" />)}
+                            </div>
+                            <span className="text-xs font-bold text-charcoal/70">500+ Mutlu Müşteri</span>
+                        </div>
+
+                        <h1 className="text-5xl md:text-7xl font-black text-charcoal leading-[1.1] mb-6">
+                            Evinizin Ruhu <br />
+                            <span className="text-clay">Sıradan Olamaz.</span>
                         </h1>
-                    </motion.div>
 
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                        className="text-lg md:text-xl text-charcoal/70 max-w-lg"
-                    >
-                        Modern yaşam alanları için mimari 3D dekorasyon.
-                        Cansız materyallerin katman katman canlandığı,
-                        yaşayan objeler tasarlıyoruz.
-                    </motion.p>
+                        <p className="text-xl text-charcoal/70 mb-8 leading-relaxed">
+                            Seri üretim plastiklerden sıkıldınız mı? <br />
+                            Mekanınıza <strong>mimari doku</strong> ve <strong>sıcaklık</strong> katan, biyo-polimer sürdürülebilir tasarım objelerini keşfedin.
+                        </p>
 
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.4 }}
-                        className="flex flex-wrap gap-4"
-                    >
-                        <button
-                            onClick={scrollToCollection}
-                            className="bg-charcoal text-white px-8 py-4 rounded-full font-bold uppercase tracking-wider hover:bg-black transition-all shadow-lg hover:shadow-charcoal/20"
-                        >
-                            Koleksiyonu Keşfet
-                        </button>
-                        <a
-                            href="#philosophy"
-                            className="bg-transparent text-charcoal border-2 border-charcoal/10 px-8 py-4 rounded-full font-bold uppercase tracking-wider hover:bg-charcoal/5 transition-all"
-                        >
-                            Hikayemiz
-                        </a>
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <Link
+                                href="/#collection"
+                                className="group bg-charcoal text-white px-8 py-5 rounded-full font-bold text-lg flex items-center justify-center gap-3 hover:bg-black hover:scale-105 transition-all shadow-xl shadow-charcoal/20"
+                            >
+                                Koleksiyonu İncele
+                                <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+                            </Link>
+
+                            <Link
+                                href="/#philosophy"
+                                className="group bg-white text-charcoal border border-charcoal/10 px-8 py-5 rounded-full font-bold text-lg flex items-center justify-center gap-2 hover:bg-gray-50 transition-all"
+                            >
+                                Hikayemiz
+                            </Link>
+                        </div>
+
+                        {/* Risk Reversal */}
+                        <div className="mt-8 flex items-center gap-6 text-sm font-medium text-charcoal/60">
+                            <div className="flex items-center gap-2">
+                                <ShieldCheck size={18} className="text-green-600" />
+                                <span>%100 Kırılma Garantisi</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <ShieldCheck size={18} className="text-green-600" />
+                                <span>Ücretsiz Kargo</span>
+                            </div>
+                        </div>
                     </motion.div>
                 </div>
 
+                {/* RIGHT: Visual High Impact */}
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.9, rotate: 5 }}
-                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                    transition={{ duration: 1.2, ease: "easeOut" }}
-                    className="lg:col-span-6 relative perspective-1000"
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="relative h-[500px] lg:h-[700px] w-full"
                 >
-                    <div className="relative aspect-square w-full max-w-xl mx-auto overflow-hidden rounded-[40px] shadow-2xl">
-                        <Image
-                            src="/images/hero.png"
-                            alt="Tsuko Design Signature Vase"
-                            fill
-                            className="object-cover"
-                            priority
-                        />
-                        {/* Architectural badge */}
-                        <div className="absolute bottom-8 right-8 bg-white/80 backdrop-blur-md p-6 rounded-2xl border border-white/40 shadow-xl hidden md:block">
-                            <p className="text-xs font-bold text-charcoal/40 uppercase tracking-widest mb-1">Material</p>
-                            <p className="text-sm font-black text-charcoal uppercase">Architectural Polymer</p>
-                            <div className="mt-4 flex gap-2">
-                                <div className="w-3 h-3 rounded-full bg-sage"></div>
-                                <div className="w-3 h-3 rounded-full bg-rose"></div>
-                                <div className="w-3 h-3 rounded-full bg-clay"></div>
-                            </div>
-                        </div>
-                    </div>
-                </motion.div>
-            </div>
+                    <div className="absolute inset-0 bg-clay/10 rounded-full blur-3xl transform translate-y-20 scale-75" />
+                    <Image
+                        src="/images/hero.png"
+                        alt="Tsuko Mimari Vazo Koleksiyonu"
+                        fill
+                        className="object-contain drop-shadow-2xl"
+                        priority
+                    />
 
-            {/* Floating indicators */}
-            <motion.div
-                animate={{ y: [0, 10, 0] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-                className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer hidden md:flex"
-                onClick={scrollToCollection}
-            >
-                <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-charcoal/30">Scroll Down</span>
-                <ArrowDown size={16} className="text-charcoal/30" />
-            </motion.div>
+                    {/* Floating Product Badge */}
+                    <motion.div
+                        animate={{ y: [0, -10, 0] }}
+                        transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                        className="absolute bottom-20 left-10 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-white/20 max-w-[200px]"
+                    >
+                        <p className="font-bold text-charcoal">Aura Koleksiyonu</p>
+                        <p className="text-xs text-charcoal/60 mt-1">Stoklar tükeniyor 🔥</p>
+                    </motion.div>
+                </motion.div>
+
+            </div>
         </section>
     );
 }

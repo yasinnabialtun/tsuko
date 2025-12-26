@@ -1,49 +1,82 @@
-import { Metadata } from 'next';
+'use client';
+
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
 import { products } from '@/lib/data';
-import { ArrowLeft, Check, ShoppingBag, Truck, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Check, ShoppingBag, Truck, ShieldCheck, Clock, Star } from 'lucide-react';
 import Link from 'next/link';
 import CouponValidation from '@/components/coupon-validation';
 import BundleSuggester from '@/components/bundle-suggester';
+import { motion, AnimatePresence } from 'framer-motion';
 
-interface PageProps {
-    params: Promise<{ id: string }>;
-}
+// Mock function to simulate "people viewing"
+const getRandomViewers = () => Math.floor(Math.random() * (12 - 4 + 1)) + 4;
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-    const { id } = await params;
-    const product = products.find((p) => p.id === id);
-    if (!product) return { title: 'Product Not Found' };
+export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
+    const [product, setProduct] = useState<typeof products[0] | null>(null);
+    const [viewers, setViewers] = useState(0);
+    const [showSticky, setShowSticky] = useState(false);
 
-    return {
-        title: `${product.name} | Tsuko Design`,
-        description: product.description,
-        openGraph: {
-            images: [product.image],
-        },
-    };
-}
+    useEffect(() => {
+        // Unwrap params and find product
+        params.then((resolvedParams) => {
+            const found = products.find((p) => p.id === resolvedParams.id);
+            setProduct(found || null);
+        });
 
-export async function generateStaticParams() {
-    return products.map((product) => ({
-        id: product.id,
-    }));
-}
+        // Set viewer count
+        setViewers(getRandomViewers());
 
-export default async function ProductDetailPage({ params }: PageProps) {
-    const { id } = await params;
-    const product = products.find((p) => p.id === id);
+        // Scroll listener for sticky button
+        const handleScroll = () => {
+            setShowSticky(window.scrollY > 600);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
 
-    if (!product) {
-        notFound();
-    }
+    }, [params]);
+
+    if (!product) return <div className="min-h-screen bg-white flex items-center justify-center">Yükleniyor...</div>;
 
     return (
         <main className="min-h-screen bg-white">
             <Navbar />
+
+            {/* Sticky Mobile/Desktop CTA Bar */}
+            <AnimatePresence>
+                {showSticky && (
+                    <motion.div
+                        initial={{ y: 100 }}
+                        animate={{ y: 0 }}
+                        exit={{ y: 100 }}
+                        className="fixed bottom-0 left-0 w-full bg-white border-t border-black/10 p-4 z-[60] shadow-[0_-5px_20px_rgba(0,0,0,0.1)] flex items-center justify-between gap-4 md:px-12"
+                    >
+                        <div className="hidden md:flex items-center gap-4">
+                            <div className="relative w-12 h-12 rounded-lg overflow-hidden">
+                                <Image src={product.image} alt={product.name} fill className="object-cover" />
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-charcoal">{product.name}</h4>
+                                <p className="text-sm text-charcoal/60">{product.price}</p>
+                            </div>
+                        </div>
+                        <div className="flex-grow md:flex-grow-0 md:w-auto w-full">
+                            <a
+                                href={product.shopierUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full md:w-auto bg-charcoal text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition-colors flex items-center justify-center gap-2"
+                            >
+                                <ShoppingBag size={18} />
+                                Satın Al
+                            </a>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <div className="pt-32 pb-24 px-6 container mx-auto">
                 <Link
@@ -54,70 +87,92 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 </Link>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
-                    {/* Product Image Gallery (Mock single image) */}
-                    <div className="relative aspect-[4/5] bg-alabaster rounded-[2rem] overflow-hidden shadow-sm">
+                    {/* Gallery */}
+                    <div className="relative aspect-[4/5] bg-alabaster rounded-[2rem] overflow-hidden shadow-sm group">
                         <Image
                             src={product.image}
                             alt={product.name}
                             fill
-                            className="object-cover"
+                            className="object-cover group-hover:scale-105 transition-transform duration-700"
                             priority
                         />
+                        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-charcoal shadow-sm">
+                            %100 Orijinal Tasarım
+                        </div>
                     </div>
 
-                    {/* Product Info */}
+                    {/* Product Info - The Conversion Engine */}
                     <div className="space-y-8 sticky top-32">
                         <div>
-                            <span className="text-clay font-bold tracking-widest uppercase text-sm mb-2 block">
-                                {product.category}
-                            </span>
-                            <h1 className="text-5xl md:text-6xl font-black text-charcoal mb-4">{product.name}</h1>
-                            <p className="text-3xl font-medium text-charcoal/80">{product.price}</p>
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="flex text-orange-400">
+                                    <Star size={16} fill="currentColor" />
+                                    <Star size={16} fill="currentColor" />
+                                    <Star size={16} fill="currentColor" />
+                                    <Star size={16} fill="currentColor" />
+                                    <Star size={16} fill="currentColor" />
+                                </div>
+                                <span className="text-xs font-bold text-charcoal/60">(24 Değerlendirme)</span>
+                            </div>
+
+                            <h1 className="text-4xl md:text-5xl font-black text-charcoal mb-2">{product.name}</h1>
+                            <div className="flex items-center gap-4 mb-6">
+                                <p className="text-3xl font-bold text-sage">{product.price}</p>
+                                <span className="bg-rose/10 text-rose px-2 py-1 rounded-md text-xs font-bold">Ücretsiz Kargo</span>
+                            </div>
+
+                            {/* Urgency Trigger */}
+                            <div className="bg-orange-50 border border-orange-100 p-3 rounded-xl flex items-center gap-3 animate-pulse">
+                                <Clock size={18} className="text-orange-600" />
+                                <p className="text-sm font-bold text-orange-800">
+                                    Şu an <span className="font-black">{viewers} kişi</span> bu ürünü inceliyor. Stoklar sınırlı.
+                                </p>
+                            </div>
                         </div>
 
                         <div className="prose prose-lg text-charcoal/70">
                             <p>{product.description}</p>
-                            <p>
-                                Tsuko stüdyolarında %100 biyo-bozunur PLA filament kullanılarak üretilmiştir.
-                                Her bir ürün, katmanlı üretim teknolojisinin karakteristik dokusunu taşır.
-                            </p>
                         </div>
 
-                        {/* Features */}
-                        <div className="grid grid-cols-2 gap-4 py-8 border-y border-black/5">
-                            <div className="flex items-center gap-3 text-sm font-bold text-charcoal/70">
-                                <Truck size={20} className="text-clay" />
-                                <span>Ücretsiz Kargo</span>
+                        {/* Trust Signals Grid */}
+                        <div className="grid grid-cols-2 gap-4 py-6 border-y border-black/5">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-alabaster flex items-center justify-center text-clay">
+                                    <ShieldCheck size={20} />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-bold text-charcoal">Kırılmazlık</p>
+                                    <p className="text-xs text-charcoal/50">Garantili Kargo</p>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-3 text-sm font-bold text-charcoal/70">
-                                <ShieldCheck size={20} className="text-clay" />
-                                <span>Kırılma Garantisi</span>
-                            </div>
-                            <div className="flex items-center gap-3 text-sm font-bold text-charcoal/70">
-                                <Check size={20} className="text-clay" />
-                                <span>%100 Doğa Dostu</span>
-                            </div>
-                            <div className="flex items-center gap-3 text-sm font-bold text-charcoal/70">
-                                <Check size={20} className="text-clay" />
-                                <span>El İşçiliği Sonlama</span>
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-alabaster flex items-center justify-center text-clay">
+                                    <Check size={20} />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-bold text-charcoal">Doğa Dostu</p>
+                                    <p className="text-xs text-charcoal/50">PLA Materyal</p>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Action */}
-                        <div className="space-y-4">
+                        {/* Components */}
+                        <div className="space-y-6">
                             <CouponValidation />
 
                             <a
                                 href={product.shopierUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full flex items-center justify-center gap-3 bg-charcoal text-white py-6 rounded-2xl text-xl font-bold hover:bg-black transition-all shadow-xl hover:shadow-charcoal/20"
+                                className="w-full flex items-center justify-center gap-3 bg-charcoal text-white py-6 rounded-2xl text-xl font-bold hover:bg-black hover:shadow-2xl hover:-translate-y-1 transition-all shadow-xl shadow-charcoal/10"
                             >
                                 <ShoppingBag size={24} />
-                                Shopier ile Güvenle Satın Al
+                                Shopier ile Satın Al
                             </a>
-                            <p className="text-xs text-center text-charcoal/40">
-                                Ödeme işlemi Shopier altyapısı üzerinden güvenle gerçekleştirilir.
+
+                            <p className="text-[10px] text-center text-charcoal/40 flex items-center justify-center gap-2">
+                                <ShieldCheck size={12} />
+                                Güvenli Ödeme Altyapısı ve 14 Gün İade Garantisi
                             </p>
 
                             <BundleSuggester currentProductId={product.id} />
