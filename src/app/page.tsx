@@ -1,4 +1,5 @@
 import Navbar from '@/components/navbar';
+import Stories from '@/components/stories';
 import Hero from '@/components/hero';
 import Philosophy from '@/components/philosophy';
 import Process from '@/components/process';
@@ -78,7 +79,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-alabaster">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -94,6 +95,7 @@ export default function Home() {
 
       <Navbar />
       <Hero />
+      <Stories />
       <Philosophy />
       <Process />
       <Collection />
