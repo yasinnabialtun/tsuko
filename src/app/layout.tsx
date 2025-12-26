@@ -69,6 +69,8 @@ export const metadata: Metadata = {
 };
 
 import { WishlistProvider } from '@/context/wishlist-context';
+import ExitIntentPopup from '@/components/exit-intent-popup';
+import GiftFinder from '@/components/gift-finder';
 
 export default function RootLayout({
   children,
@@ -79,6 +81,8 @@ export default function RootLayout({
     <html lang="tr" className={`${inter.variable} ${syne.variable}`}>
       <body className="font-sans bg-alabaster text-charcoal antialiased selection:bg-clay selection:text-white">
         <WishlistProvider>
+          <ExitIntentPopup />
+          <GiftFinder />
           {children}
         </WishlistProvider>
       </body>
