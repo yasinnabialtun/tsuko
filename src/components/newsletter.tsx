@@ -33,16 +33,17 @@ export default function Newsletter() {
                     viewport={{ once: true }}
                 >
                     <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-                        Aramıza Katılın.
+                        İlham Kutunuza Gelsin 💌
                     </h2>
                     <p className="text-xl text-white/60 mb-8 max-w-xl mx-auto">
-                        Yeni koleksiyonlardan ilk sizin haberiniz olsun. Ayrıca bülten abonelerimize özel <span className="text-clay font-bold">%10 Tanışma İndirimi</span> kazanın.
+                        Yeni koleksiyonlar, dekorasyon fikirleri ve bülten dostlarımıza özel tatlı sürprizler... <br />
+                        <span className="text-clay font-bold">%10 Tanışma İndirimi</span> ile başlayalım mı?
                     </p>
 
                     <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
                         <input
                             type="email"
-                            placeholder="E-posta adresiniz..."
+                            placeholder="eposta@adresiniz.com"
                             className="flex-grow bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-6 py-4 outline-none focus:border-clay transition-colors text-white placeholder:text-white/40"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}

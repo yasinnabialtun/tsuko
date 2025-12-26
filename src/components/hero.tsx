@@ -23,19 +23,18 @@ export default function Hero() {
                         {/* Trust Signal - Top */}
                         <div className="flex items-center gap-2 mb-6 bg-white w-fit px-4 py-2 rounded-full shadow-sm border border-black/5 animate-fade-in-up">
                             <div className="flex">
-                                {[1, 2, 3, 4, 5].map(i => <Star key={i} size={14} className="fill-orange-400 text-orange-400" />)}
+                                <span className="text-lg">✨</span>
                             </div>
-                            <span className="text-xs font-bold text-charcoal/70">Tasarım Tutkunlarının Tercihi</span>
+                            <span className="text-xs font-bold text-charcoal/70">Evinize Neşe Katar</span>
                         </div>
 
                         <h1 className="text-5xl md:text-7xl font-black text-charcoal leading-[1.1] mb-6">
-                            Sıradan Olanı <br />
-                            <span className="text-clay italic">Evinizden Atın.</span>
+                            Mutluluk <br />
+                            <span className="text-clay italic">Detaylarda Saklıdır.</span>
                         </h1>
 
                         <p className="text-xl text-charcoal/70 mb-8 leading-relaxed">
-                            Herkesin evinde olan seri üretim plastiklerden sıkılmadınız mı? <br />
-                            Tsuko, antik Japon felsefesini modern <strong>biyo-tasarım</strong> ile birleştirerek, ruhu olan nesneler üretir.
+                            Eviniz sizin sığınağınız. Onu soğuk plastikle değil; doğadan ilham alan renkler, yumuşacık formlar ve sevgiyle üretilmiş parçalarla şımartın. 🌿
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4">

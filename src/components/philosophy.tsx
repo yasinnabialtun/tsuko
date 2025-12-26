@@ -20,19 +20,19 @@ export default function Philosophy() {
                                 viewport={{ once: true }}
                                 className="text-4xl md:text-5xl font-black text-charcoal mb-8"
                             >
-                                Tsukumogami <br />
-                                <span className="text-clay italic text-3xl md:text-4xl font-normal">"Nesnelerin Ruhu"</span>
+                                Her Parçanın <br />
+                                <span className="text-clay italic text-3xl md:text-4xl font-normal">"Bir Hikayesi Var"</span>
                             </motion.h2>
 
                             <div className="space-y-6 text-lg text-charcoal/70 leading-relaxed font-light">
                                 <p>
-                                    Japon folklorunda inanılır ki; bir eşya 100 yıl boyunca sevgiyle kullanılırsa, bir ruha sahip olur. Buna <strong>Tsukumogami</strong> denir.
+                                    Japonlar der ki; eşyalar sevildikçe canlanır. Biz de atölyemizde tam olarak bunu yapıyoruz.
                                 </p>
                                 <p>
-                                    Biz 100 yıl beklemiyoruz. Tasarımlarımızı üretirken her katmana tutkumuzu işliyoruz. Sadece bir vazo veya lamba değil; evinizin enerjisini değiştirecek, hikayesi olan karakterler yaratıyoruz.
+                                    Her bir Tsuko parçası, saatlerce süren bir üretim yolculuğundan geçer. Kusursuz bir makine çıktısı değil; dokunduğunuzda hissedebileceğiniz, kendine has bir karakteri olan, <strong>sıcak bir arkadaş</strong> gibidir.
                                 </p>
                                 <p>
-                                    Modern teknoloji (3D Baskı) ile geleneksel zanaat hissini birleştirerek, <strong>kusurlu güzelliği</strong> (Wabi-Sabi) kutluyoruz.
+                                    Evinizin en güzel köşesinde, size her baktığınızda güzel bir his vermesi için tasarlandı. 🧡
                                 </p>
                             </div>
                         </motion.div>
