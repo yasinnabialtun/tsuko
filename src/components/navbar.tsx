@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -31,11 +32,20 @@ export default function Navbar() {
                 isScrolled ? "bg-white/80 backdrop-blur-md py-4 shadow-sm" : "bg-transparent"
             )}>
                 <div className="container mx-auto px-6 flex justify-between items-center">
-                    <Link href="/" className="text-2xl font-black tracking-tighter text-charcoal">
-                        TSUKO<span className="text-clay">.</span>
+                    {/* Logo */}
+                    <Link href="/" className="relative z-50">
+                        <div className="relative w-32 h-10">
+                            <Image
+                                src="/logo.png"
+                                alt="Tsuko Logo"
+                                fill
+                                className="object-contain object-left md:object-center" // Mobile: left aligned, Desktop: center if needed, but usually left is safer. Let's keep object-contain.
+                                priority
+                            />
+                        </div>
                     </Link>
 
-                    {/* Desktop Nav */}
+                    {/* Desktop Navigation - Centered */}
                     <div className="hidden md:flex items-center gap-12 text-sm font-bold uppercase tracking-widest text-charcoal/60">
                         <a href="/#collection" className="hover:text-charcoal transition-colors">Koleksiyon</a>
                         <Link href="/blog" className="hover:text-charcoal transition-colors">Blog</Link>
@@ -88,8 +98,12 @@ export default function Navbar() {
                             >
                                 <X size={32} />
                             </button>
+                            <div className="relative w-40 h-12 mb-8">
+                                <Image src="/logo.png" alt="Tsuko Logo" fill className="object-contain" />
+                            </div>
                             <div className="flex flex-col items-center gap-8 text-3xl font-bold text-charcoal uppercase tracking-tighter">
                                 <a href="#collection" onClick={() => setMobileMenuOpen(false)}>Koleksiyon</a>
+                                <Link href="/blog" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
                                 <a href="#philosophy" onClick={() => setMobileMenuOpen(false)}>Felsefe</a>
                                 <a href="#lighting-demo" onClick={() => setMobileMenuOpen(false)}>Aydınlatma</a>
                             </div>
