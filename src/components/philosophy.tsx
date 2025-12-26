@@ -14,13 +14,27 @@ export default function Philosophy() {
                             whileInView={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.8 }}
                         >
-                            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-charcoal leading-tight">
-                                Tsukumogami&apos;den <br /> İlham Aldık.
-                            </h2>
-                            <div className="w-20 h-1 bg-clay mb-8"></div>
-                            <p className="text-xl text-charcoal/80 leading-relaxed italic">
-                                &ldquo;Evinizdeki her nesnenin bir ruhu olması gerektiğine inanıyoruz. Dijital olarak tasarlandı, katman katman işlendi.&rdquo;
-                            </p>
+                            <motion.h2
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                className="text-4xl md:text-5xl font-black text-charcoal mb-8"
+                            >
+                                Tsukumogami <br />
+                                <span className="text-clay italic text-3xl md:text-4xl font-normal">"Nesnelerin Ruhu"</span>
+                            </motion.h2>
+
+                            <div className="space-y-6 text-lg text-charcoal/70 leading-relaxed font-light">
+                                <p>
+                                    Japon folklorunda inanılır ki; bir eşya 100 yıl boyunca sevgiyle kullanılırsa, bir ruha sahip olur. Buna <strong>Tsukumogami</strong> denir.
+                                </p>
+                                <p>
+                                    Biz 100 yıl beklemiyoruz. Tasarımlarımızı üretirken her katmana tutkumuzu işliyoruz. Sadece bir vazo veya lamba değil; evinizin enerjisini değiştirecek, hikayesi olan karakterler yaratıyoruz.
+                                </p>
+                                <p>
+                                    Modern teknoloji (3D Baskı) ile geleneksel zanaat hissini birleştirerek, <strong>kusurlu güzelliği</strong> (Wabi-Sabi) kutluyoruz.
+                                </p>
+                            </div>
                         </motion.div>
 
                         <motion.div

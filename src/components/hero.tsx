@@ -21,21 +21,21 @@ export default function Hero() {
                         transition={{ duration: 0.6 }}
                     >
                         {/* Trust Signal - Top */}
-                        <div className="flex items-center gap-2 mb-6 bg-white w-fit px-4 py-2 rounded-full shadow-sm border border-black/5">
+                        <div className="flex items-center gap-2 mb-6 bg-white w-fit px-4 py-2 rounded-full shadow-sm border border-black/5 animate-fade-in-up">
                             <div className="flex">
                                 {[1, 2, 3, 4, 5].map(i => <Star key={i} size={14} className="fill-orange-400 text-orange-400" />)}
                             </div>
-                            <span className="text-xs font-bold text-charcoal/70">500+ Mutlu Müşteri</span>
+                            <span className="text-xs font-bold text-charcoal/70">Tasarım Tutkunlarının Tercihi</span>
                         </div>
 
                         <h1 className="text-5xl md:text-7xl font-black text-charcoal leading-[1.1] mb-6">
-                            Evinizin Ruhu <br />
-                            <span className="text-clay">Sıradan Olamaz.</span>
+                            Sıradan Olanı <br />
+                            <span className="text-clay italic">Evinizden Atın.</span>
                         </h1>
 
                         <p className="text-xl text-charcoal/70 mb-8 leading-relaxed">
-                            Seri üretim plastiklerden sıkıldınız mı? <br />
-                            Mekanınıza <strong>mimari doku</strong> ve <strong>sıcaklık</strong> katan, biyo-polimer sürdürülebilir tasarım objelerini keşfedin.
+                            Herkesin evinde olan seri üretim plastiklerden sıkılmadınız mı? <br />
+                            Tsuko, antik Japon felsefesini modern <strong>biyo-tasarım</strong> ile birleştirerek, ruhu olan nesneler üretir.
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4">
