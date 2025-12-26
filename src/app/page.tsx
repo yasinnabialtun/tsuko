@@ -4,6 +4,7 @@ import Hero from '@/components/hero';
 import Philosophy from '@/components/philosophy';
 import Process from '@/components/process';
 import Collection from '@/components/collection';
+import ShopTheLook from '@/components/shop-the-look';
 import LightingSection from '@/components/lighting-section';
 import FAQ from '@/components/faq';
 import Newsletter from '@/components/newsletter';
@@ -98,6 +99,7 @@ export default function Home() {
       <Stories />
       <Philosophy />
       <Process />
+      <ShopTheLook />
       <Collection />
       <LightingSection />
       <FAQ />
