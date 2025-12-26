@@ -1,65 +1,106 @@
-import Image from "next/image";
+import Navbar from '@/components/navbar';
+import Hero from '@/components/hero';
+import Philosophy from '@/components/philosophy';
+import Process from '@/components/process';
+import Collection from '@/components/collection';
+import LightingSection from '@/components/lighting-section';
+import FAQ from '@/components/faq';
+import Newsletter from '@/components/newsletter';
+import Footer from '@/components/footer';
+import { products } from '@/lib/data';
 
 export default function Home() {
+  // Schema.org Structured Data
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Tsuko Design',
+    url: 'https://tsukodesign.com',
+    logo: 'https://tsukodesign.com/images/hero.png', // Using hero as placeholder logo
+    sameAs: [
+      'https://www.instagram.com/tsukodesign',
+      'https://twitter.com/tsukodesign'
+    ],
+    description: 'Mimari 3D baskı ev dekorasyon ürünleri ve aydınlatma tasarımları.',
+  };
+
+  const productListSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: products.map((product, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'Product',
+        name: product.name,
+        description: product.description,
+        image: `https://tsukodesign.com${product.image}`,
+        offers: {
+          '@type': 'Offer',
+          priceCurrency: 'TRY',
+          price: product.price.replace(' ₺', '').replace('.', ''), // Convert "1.250 ₺" to "1250"
+          availability: 'https://schema.org/InStock',
+          url: product.shopierUrl
+        }
+      }
+    }))
+  };
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Modern ev dekorasyonunda hangi aksesuarlar trend?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: "2025 yılı ev dekorasyon trendlerinde, seri üretim yerine hikayesi olan tasarım ev ürünleri öne çıkıyor. Tsuko Design olarak, 'Pastel Brütalizm' akımını benimsiyoruz; yani mimari ve sert formların (beton etkisi), yumuşak pastel renklerle buluştuğu vazo ve aydınlatma modelleri, modern salon aksesuarları arasında en çok tercih edilenlerdir."
+        }
+      },
+      {
+        '@type': 'Question',
+        name: '3D baskı ev ürünleri dayanıklı mıdır?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Kesinlikle. Kullandığımız mimari sınıf biyo-polimerler, geleneksel seramik veya cam ev aksesuarlarına göre darbelere karşı daha dirençlidir. Hem hafif hem de sağlam yapılarıyla, uzun ömürlü bir ev dekor deneyimi sunar.'
+        }
+      },
+      {
+        '@type': 'Question',
+        name: 'Tsuko ürünlerini hangi odalarda kullanabilirim?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: "Koleksiyonumuz çok yönlüdür. 'Tondo' gibi vazo modellerimiz salon dekorasyonu ve konsol üzeri için idealken, 'Aura' serisi aydınlatmalarımız yatak odası veya çalışma masası aksesuarı olarak sıcak bir atmosfer yaratır."
+        }
+      }
+    ]
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main className="min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productListSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+
+      <Navbar />
+      <Hero />
+      <Philosophy />
+      <Process />
+      <Collection />
+      <LightingSection />
+      <FAQ />
+      <Newsletter />
+      <Footer />
+    </main>
   );
 }

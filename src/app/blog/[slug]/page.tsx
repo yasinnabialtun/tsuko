@@ -1,0 +1,102 @@
+import { Metadata } from 'next';
+import Image from 'next/image';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import Navbar from '@/components/navbar';
+import Footer from '@/components/footer';
+import { blogPosts } from '@/lib/blog-data';
+import { ArrowLeft, Calendar, User, Clock } from 'lucide-react';
+
+/* 
+  Correctly typed params for Next.js 15/16 App Router.
+  Props is a promise in recent Next.js versions but simple generic typing works for now,
+  or we can await it if we were rigorous. 
+  However, in many recent canary builds, params is a Promise.
+  Let's stick to standard { params: { slug: string } } for now. 
+  If user uses Next 15 specific types, they might need adjustment, 
+  but this usually works for standard App Router usage.
+*/
+
+interface PageProps {
+    params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { slug } = await params;
+    const post = blogPosts.find((p) => p.slug === slug);
+    if (!post) return { title: 'Not Found' };
+
+    return {
+        title: `${post.title} | Tsuko Journal`,
+        description: post.excerpt,
+        openGraph: {
+            images: [post.coverImage],
+        },
+    };
+}
+
+export async function generateStaticParams() {
+    return blogPosts.map((post) => ({
+        slug: post.slug,
+    }));
+}
+
+export default async function BlogPostPage({ params }: PageProps) {
+    const { slug } = await params;
+    const post = blogPosts.find((p) => p.slug === slug);
+
+    if (!post) {
+        notFound();
+    }
+
+    return (
+        <main className="min-h-screen bg-alabaster">
+            <Navbar />
+
+            <article className="pt-32 pb-24">
+                {/* Article Header */}
+                <div className="container mx-auto px-6 max-w-4xl text-center mb-16">
+                    <Link
+                        href="/blog"
+                        className="inline-flex items-center gap-2 text-charcoal/50 hover:text-charcoal font-bold uppercase tracking-widest text-xs mb-8 transition-colors"
+                    >
+                        <ArrowLeft size={16} /> Tsuko Journal
+                    </Link>
+
+                    <h1 className="text-4xl md:text-6xl font-bold text-charcoal mb-8 leading-tight">
+                        {post.title}
+                    </h1>
+
+                    <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-charcoal/60 font-medium">
+                        <span className="flex items-center gap-2"><Calendar size={16} /> {post.date}</span>
+                        <span className="flex items-center gap-2"><User size={16} /> {post.author}</span>
+                        <span className="flex items-center gap-2 px-3 py-1 bg-white rounded-full border border-black/5 text-clay">{post.category}</span>
+                    </div>
+                </div>
+
+                {/* Featured Image */}
+                <div className="container mx-auto px-6 max-w-6xl mb-16">
+                    <div className="relative aspect-[21/9] w-full rounded-[2rem] overflow-hidden shadow-xl">
+                        <Image
+                            src={post.coverImage}
+                            alt={post.title}
+                            fill
+                            className="object-cover"
+                            priority
+                        />
+                    </div>
+                </div>
+
+                {/* Content */}
+                <div className="container mx-auto px-6 max-w-3xl">
+                    <div
+                        className="prose prose-lg prose-headings:font-bold prose-headings:font-heading prose-p:text-charcoal/80 prose-a:text-clay prose-img:rounded-3xl max-w-none"
+                        dangerouslySetInnerHTML={{ __html: post.content }}
+                    />
+                </div>
+            </article>
+
+            <Footer />
+        </main>
+    );
+}
