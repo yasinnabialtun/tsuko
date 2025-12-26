@@ -22,19 +22,18 @@ export default function Hero() {
                     >
                         {/* Trust Signal - Top */}
                         <div className="flex items-center gap-2 mb-6 bg-white w-fit px-4 py-2 rounded-full shadow-sm border border-black/5 animate-fade-in-up">
-                            <div className="flex">
-                                <span className="text-lg">✨</span>
-                            </div>
-                            <span className="text-xs font-bold text-charcoal/70">Evinize Neşe Katar</span>
+                            <div className="w-2 h-2 rounded-full bg-clay" />
+                            <span className="text-xs font-bold text-charcoal/70 tracking-widest uppercase">Modern • Özgün • Doğal</span>
                         </div>
 
-                        <h1 className="text-5xl md:text-7xl font-black text-charcoal leading-[1.1] mb-6">
-                            Mutluluk <br />
-                            <span className="text-clay italic">Detaylarda Saklıdır.</span>
+                        <h1 className="text-5xl md:text-7xl font-black text-charcoal leading-[1.05] mb-6 tracking-tight">
+                            Evinizin Havasını <br />
+                            <span className="text-clay italic font-serif">Baştan Yaratın.</span>
                         </h1>
 
-                        <p className="text-xl text-charcoal/70 mb-8 leading-relaxed">
-                            Eviniz sizin sığınağınız. Onu soğuk plastikle değil; doğadan ilham alan renkler, yumuşacık formlar ve sevgiyle üretilmiş parçalarla şımartın. 🌿
+                        <p className="text-xl text-charcoal/60 mb-8 leading-relaxed font-light max-w-lg">
+                            Dekorasyon sadece süslemek değildir; yaşam alanınıza karakter katmaktır. <br />
+                            3D baskı teknolojisiyle üretilen, doğa dostu ve **eşsiz dokulara sahip** koleksiyonumuzu keşfedin.
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4">

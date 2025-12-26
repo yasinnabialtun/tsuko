@@ -20,19 +20,19 @@ export default function Philosophy() {
                                 viewport={{ once: true }}
                                 className="text-4xl md:text-5xl font-black text-charcoal mb-8"
                             >
-                                Her Parçanın <br />
-                                <span className="text-clay italic text-3xl md:text-4xl font-normal">"Bir Hikayesi Var"</span>
+                                Sadece Sizin İçin <br />
+                                <span className="text-clay italic text-3xl md:text-4xl font-normal">"Özenle Üretildi"</span>
                             </motion.h2>
 
                             <div className="space-y-6 text-lg text-charcoal/70 leading-relaxed font-light">
                                 <p>
-                                    Japonlar der ki; eşyalar sevildikçe canlanır. Biz de atölyemizde tam olarak bunu yapıyoruz.
+                                    Tsuko'da "Stokta ne varsa onu gönder" mantığı yoktur. Siparişiniz bize ulaştığında, o ürün sadece sizin için üretilmeye başlanır.
                                 </p>
                                 <p>
-                                    Her bir Tsuko parçası, saatlerce süren bir üretim yolculuğundan geçer. Kusursuz bir makine çıktısı değil; dokunduğunuzda hissedebileceğiniz, kendine has bir karakteri olan, <strong>sıcak bir arkadaş</strong> gibidir.
+                                    İleri teknoloji 3D yazıcılarımız, mısır nişastasından elde edilen doğal polimerleri (PLA) milim milim işler. Bu süreç, el yapımı seramiklerin sıcaklığını modern teknolojiyle buluşturur.
                                 </p>
                                 <p>
-                                    Evinizin en güzel köşesinde, size her baktığınızda güzel bir his vermesi için tasarlandı. 🧡
+                                    Sonuç? Seri üretim hatlarından çıkmış gibi durmayan, dokusuyla ve rengiyle kendine has, <strong>yaşayan tasarımlar.</strong>
                                 </p>
                             </div>
                         </motion.div>
