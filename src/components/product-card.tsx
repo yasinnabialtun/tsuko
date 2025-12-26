@@ -86,6 +86,8 @@ export default function ProductCard({ product, index }: ProductCardProps) {
                             alt={product.name}
                             fill
                             className="object-cover"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            priority={index < 4} // Load first 4 images immediately
                         />
                     </motion.div>
 

@@ -68,11 +68,14 @@ export const metadata: Metadata = {
   },
 };
 
+import dynamic from 'next/dynamic';
 import { WishlistProvider } from '@/context/wishlist-context';
-import ExitIntentPopup from '@/components/exit-intent-popup';
-import GiftFinder from '@/components/gift-finder';
 import AnalyticsScripts from '@/components/analytics';
-import LiveSalesNotification from '@/components/live-sales';
+
+// Lazy Load Heavy Marketing Components (Critical for 100 PageSpeed)
+const ExitIntentPopup = dynamic(() => import('@/components/exit-intent-popup'), { ssr: false });
+const GiftFinder = dynamic(() => import('@/components/gift-finder'), { ssr: false });
+const LiveSalesNotification = dynamic(() => import('@/components/live-sales'), { ssr: false });
 
 export default function RootLayout({
   children,
@@ -95,10 +98,11 @@ export default function RootLayout({
         </noscript>
 
         <WishlistProvider>
+          {children}
+          {/* Deferred Loading for Performance */}
           <ExitIntentPopup />
           <GiftFinder />
           <LiveSalesNotification />
-          {children}
         </WishlistProvider>
       </body>
     </html>
