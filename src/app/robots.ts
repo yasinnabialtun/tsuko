@@ -5,8 +5,8 @@ export default function robots(): MetadataRoute.Robots {
         rules: {
             userAgent: '*',
             allow: '/',
-            disallow: '/private/',
+            disallow: ['/admin/', '/api/'],
         },
-        sitemap: 'https://tsukodesign.com/sitemap.xml',
+        sitemap: 'https://tsuko.com.tr/sitemap.xml',
     };
 }

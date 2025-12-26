@@ -1,25 +1,31 @@
 import { MetadataRoute } from 'next';
-import { products } from '@/lib/data';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://tsukodesign.com';
+    const baseUrl = 'https://tsuko.com.tr'; // Gerçek domain buraya gelecek
 
-    // Static routes
+    // Statik Sayfalar
     const routes = [
         '',
-        '#collection',
-        '#philosophy',
-        '#lighting-demo',
+        '/blog',
+        '/products',
     ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),
-        changeFrequency: 'weekly' as const,
+        changeFrequency: 'daily' as const,
         priority: route === '' ? 1 : 0.8,
     }));
 
-    // Not strictly needed for a single page app, but good for future proofing if we add detailed product pages
-    // For now, these are external links (Shopier), so they aren't part of our sitemap's internal structure
-    // apart from being mentioned in the page content.
+    // Blog Yazıları (Dinamik) - Gerçekte veritabanından gelecek
+    const posts = [
+        'minimalist-salon-dekorasyonu-ipuclari',
+        'surdurulebilir-tasarim-nedir',
+        'wabi-sabi-felsefesi-ile-ev-duzeni',
+    ].map((slug) => ({
+        url: `${baseUrl}/blog/${slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+    }));
 
-    return routes;
+    return [...routes, ...posts];
 }

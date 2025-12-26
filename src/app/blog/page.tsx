@@ -1,86 +1,89 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
-import { blogPosts } from '@/lib/blog-data';
-import { ArrowRight, Calendar, User } from 'lucide-react';
+import { BLOG_POSTS } from '@/lib/blog-data';
+import { ArrowRight } from 'lucide-react';
+import { Metadata } from 'next';
 
-export default function BlogList() {
+export const metadata: Metadata = {
+    title: 'Blog | Tsuko - Modern Dekorasyon Rehberi',
+    description: 'Minimalist ev dekorasyonu, sürdürülebilir tasarım trendleri ve yaşam tarzı ipuçları.',
+};
+
+export default function BlogPage() {
     return (
-        <main className="min-h-screen bg-alabaster">
+        <main className="min-h-screen bg-alabaster selection:bg-clay selection:text-white">
             <Navbar />
 
-            {/* Header */}
-            <section className="pt-40 pb-20 px-6 bg-white rounded-b-[3rem] shadow-sm">
-                <div className="container mx-auto text-center">
-                    <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-5xl md:text-7xl font-bold text-charcoal mb-6"
-                    >
-                        Tsuko <span className="text-clay italic">Journal</span>
-                    </motion.h1>
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="text-xl text-charcoal/60 max-w-2xl mx-auto"
-                    >
-                        Tasarım felsefemiz, sürdürülebilir üretim teknikleri ve modern dekorasyon üzerine notlar.
-                    </motion.p>
+            {/* Blog Header */}
+            <section className="pt-32 pb-12 px-6">
+                <div className="container mx-auto max-w-6xl">
+                    <span className="text-clay font-bold tracking-widest uppercase text-sm mb-2 block">Tsuko Journal</span>
+                    <h1 className="text-5xl md:text-7xl font-black text-charcoal mb-6 leading-tight">
+                        Tasarım & <br /> <span className="text-clay italic font-serif">Yaşam Kültürü.</span>
+                    </h1>
+                    <p className="text-xl text-charcoal/60 max-w-2xl font-light">
+                        Dekorasyon ipuçları, tasarımcı röportajları ve sürdürülebilir yaşam üzerine notlar.
+                    </p>
                 </div>
             </section>
 
-            {/* Posts Grid */}
-            <section className="py-24 px-6">
-                <div className="container mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                        {blogPosts.map((post, index) => (
-                            <motion.article
-                                key={post.id}
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                                className="group flex flex-col h-full bg-white rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-500 border border-black/5"
-                            >
-                                <div className="relative aspect-[16/9] overflow-hidden">
-                                    <Image
-                                        src={post.coverImage}
-                                        alt={post.title}
-                                        fill
-                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                                    />
-                                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest text-clay">
-                                        {post.category}
-                                    </div>
-                                </div>
+            {/* Featured Post (First One) */}
+            <section className="px-6 pb-20">
+                <div className="container mx-auto max-w-6xl">
+                    <Link href={`/blog/${BLOG_POSTS[0].slug}`} className="group block relative">
+                        <div className="relative w-full aspect-[21/9] rounded-[2rem] overflow-hidden mb-6">
+                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
+                            <Image src={BLOG_POSTS[0].coverImage} alt={BLOG_POSTS[0].title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                        </div>
+                        <div className="max-w-3xl">
+                            <div className="flex items-center gap-4 text-sm font-medium text-charcoal/50 mb-3">
+                                <span className="text-clay font-bold">{BLOG_POSTS[0].category}</span>
+                                <span>•</span>
+                                <span>{BLOG_POSTS[0].date}</span>
+                            </div>
+                            <h2 className="text-3xl md:text-4xl font-bold text-charcoal group-hover:text-clay transition-colors mb-4">
+                                {BLOG_POSTS[0].title}
+                            </h2>
+                            <p className="text-lg text-charcoal/70 line-clamp-2 mb-4">
+                                {BLOG_POSTS[0].excerpt}
+                            </p>
+                            <span className="inline-flex items-center gap-2 font-bold text-charcoal border-b-2 border-charcoal pb-0.5 group-hover:text-clay group-hover:border-clay transition-all">
+                                Okumaya Devam Et <ArrowRight size={18} />
+                            </span>
+                        </div>
+                    </Link>
+                </div>
+            </section>
 
-                                <div className="p-8 flex flex-col flex-grow">
-                                    <div className="flex items-center gap-4 text-xs text-charcoal/40 font-bold uppercase tracking-widest mb-4">
-                                        <span className="flex items-center gap-1"><Calendar size={12} /> {post.date}</span>
-                                        <span className="flex items-center gap-1"><User size={12} /> {post.author}</span>
-                                    </div>
-
-                                    <h2 className="text-2xl font-bold text-charcoal mb-4 group-hover:text-clay transition-colors">
-                                        {post.title}
-                                    </h2>
-                                    <p className="text-charcoal/60 line-clamp-3 mb-6 flex-grow">
-                                        {post.excerpt}
-                                    </p>
-
-                                    <Link
-                                        href={`/blog/${post.slug}`}
-                                        className="inline-flex items-center gap-2 text-charcoal font-bold hover:gap-3 transition-all"
-                                    >
-                                        Devamını Oku <ArrowRight size={16} />
-                                    </Link>
-                                </div>
-                            </motion.article>
-                        ))}
-                    </div>
+            {/* Post Grid */}
+            <section className="px-6 pb-32">
+                <div className="container mx-auto max-w-6xl grid md:grid-cols-2 gap-12">
+                    {BLOG_POSTS.slice(1).map((post) => (
+                        <Link href={`/blog/${post.slug}`} key={post.id} className="group block">
+                            <div className="relative w-full aspect-[4/3] rounded-[2rem] overflow-hidden mb-6 bg-white">
+                                <Image src={post.coverImage} alt={post.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                            </div>
+                            <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-wider text-charcoal/40 mb-3">
+                                <span className="text-clay">{post.category}</span>
+                                <span>•</span>
+                                <span>{post.date}</span>
+                            </div>
+                            <h3 className="text-2xl font-bold text-charcoal group-hover:text-clay transition-colors mb-3 leading-tight">
+                                {post.title}
+                            </h3>
+                            <p className="text-charcoal/60 line-clamp-2 mb-4">
+                                {post.excerpt}
+                            </p>
+                            <span className="text-sm font-bold text-charcoal group-hover:translate-x-2 transition-transform inline-flex items-center gap-1">
+                                İncele <ArrowRight size={14} />
+                            </span>
+                        </Link>
+                    ))}
                 </div>
             </section>
 
