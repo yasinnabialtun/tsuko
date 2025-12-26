@@ -68,15 +68,19 @@ export const metadata: Metadata = {
   },
 };
 
+import { WishlistProvider } from '@/context/wishlist-context';
+
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="tr" className="scroll-smooth">
-      <body className={`${inter.variable} ${syne.variable} antialiased`}>
-        {children}
+    <html lang="tr" className={`${inter.variable} ${syne.variable}`}>
+      <body className="font-sans bg-alabaster text-charcoal antialiased selection:bg-clay selection:text-white">
+        <WishlistProvider>
+          {children}
+        </WishlistProvider>
       </body>
     </html>
   );

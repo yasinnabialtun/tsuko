@@ -1,11 +1,11 @@
-'use client';
-
 import { useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShoppingBag, Eye, ExternalLink } from 'lucide-react';
+import { ShoppingBag, Eye, ExternalLink, Heart } from 'lucide-react';
 import { Product } from '@/lib/data';
+import { useWishlist } from '@/context/wishlist-context';
+import { cn } from '@/lib/utils';
 
 interface ProductCardProps {
     product: Product;
@@ -14,6 +14,18 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, index }: ProductCardProps) {
     const ref = useRef<HTMLDivElement>(null);
+    const { hasItem, addItem, removeItem } = useWishlist();
+    const isLiked = hasItem(product.id);
+
+    const toggleLike = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isLiked) {
+            removeItem(product.id);
+        } else {
+            addItem(product.id);
+        }
+    };
 
     const x = useMotionValue(0);
     const y = useMotionValue(0);
@@ -78,6 +90,20 @@ export default function ProductCard({ product, index }: ProductCardProps) {
                     </motion.div>
 
                     <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+
+                    <button
+                        onClick={toggleLike}
+                        className="absolute top-4 right-4 z-50 bg-white/10 backdrop-blur-md p-3 rounded-full hover:bg-white transition-all group/heart"
+                    >
+                        <Heart
+                            size={20}
+                            className={cn(
+                                "transition-colors",
+                                isLiked ? "fill-rose text-rose" : "text-charcoal/60 group-hover/heart:text-rose"
+                            )}
+                        />
+                    </button>
 
                     {/* Overlay buttons - Floating effect */}
                     <motion.div

@@ -6,6 +6,8 @@ import Footer from '@/components/footer';
 import { products } from '@/lib/data';
 import { ArrowLeft, Check, ShoppingBag, Truck, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
+import CouponValidation from '@/components/coupon-validation';
+import BundleSuggester from '@/components/bundle-suggester';
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -103,6 +105,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
                         {/* Action */}
                         <div className="space-y-4">
+                            <CouponValidation />
+
                             <a
                                 href={product.shopierUrl}
                                 target="_blank"
@@ -115,6 +119,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
                             <p className="text-xs text-center text-charcoal/40">
                                 Ödeme işlemi Shopier altyapısı üzerinden güvenle gerçekleştirilir.
                             </p>
+
+                            <BundleSuggester currentProductId={product.id} />
                         </div>
                     </div>
                 </div>

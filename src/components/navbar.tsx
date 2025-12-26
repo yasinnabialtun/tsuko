@@ -3,14 +3,16 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ShoppingBag, Search } from 'lucide-react';
+import { Menu, X, ShoppingBag, Search, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import SearchModal from './search-modal';
+import { useWishlist } from '@/context/wishlist-context';
 
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
+    const { items } = useWishlist();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -45,6 +47,13 @@ export default function Navbar() {
                         >
                             <Search size={22} />
                         </button>
+
+                        <Link href="/wishlist" className="hover:text-charcoal transition-colors relative">
+                            <Heart size={22} className={cn("transition-colors", items.length > 0 && "fill-rose text-rose")} />
+                            {items.length > 0 && (
+                                <span className="absolute -top-1 -right-1 w-2 h-2 bg-rose rounded-full animate-pulse" />
+                            )}
+                        </Link>
                         <a href="#lighting-demo" className="hover:text-charcoal transition-colors">Aydınlatma</a>
                         <a
                             href="#"
