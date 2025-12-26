@@ -71,6 +71,7 @@ export const metadata: Metadata = {
 import { WishlistProvider } from '@/context/wishlist-context';
 import ExitIntentPopup from '@/components/exit-intent-popup';
 import GiftFinder from '@/components/gift-finder';
+import AnalyticsScripts from '@/components/analytics';
 
 export default function RootLayout({
   children,
@@ -79,7 +80,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr" className={`${inter.variable} ${syne.variable}`}>
+      <head>
+        <AnalyticsScripts />
+      </head>
       <body className="font-sans bg-alabaster text-charcoal antialiased selection:bg-clay selection:text-white">
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
+
         <WishlistProvider>
           <ExitIntentPopup />
           <GiftFinder />
