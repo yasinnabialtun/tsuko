@@ -72,6 +72,7 @@ import { WishlistProvider } from '@/context/wishlist-context';
 import ExitIntentPopup from '@/components/exit-intent-popup';
 import GiftFinder from '@/components/gift-finder';
 import AnalyticsScripts from '@/components/analytics';
+import LiveSalesNotification from '@/components/live-sales';
 
 export default function RootLayout({
   children,
@@ -96,6 +97,7 @@ export default function RootLayout({
         <WishlistProvider>
           <ExitIntentPopup />
           <GiftFinder />
+          <LiveSalesNotification />
           {children}
         </WishlistProvider>
       </body>
