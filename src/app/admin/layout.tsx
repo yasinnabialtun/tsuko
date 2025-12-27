@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LayoutDashboard, ShoppingBag, FileText, Settings, Users, Package, ExternalLink, User } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, FileText, Settings, Users, Package, ExternalLink, User, Tag } from 'lucide-react';
 import { Syne } from 'next/font/google';
 
 const syne = Syne({ subsets: ['latin'], variable: '--font-syne' });
@@ -12,6 +12,7 @@ const MENU_ITEMS = [
     { icon: LayoutDashboard, label: 'Panel', href: '/admin' },
     { icon: ShoppingBag, label: 'Ürünler', href: '/admin/products' },
     { icon: Package, label: 'Siparişler', href: '/admin/orders' },
+    { icon: Tag, label: 'Kuponlar', href: '/admin/coupons' },
     { icon: FileText, label: 'Blog', href: '/admin/blog' },
     { icon: Users, label: 'Müşteriler', href: '/admin/customers' },
     { icon: Settings, label: 'Ayarlar', href: '/admin/settings' },
