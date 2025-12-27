@@ -4,10 +4,11 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ShoppingBag, Search, Heart } from 'lucide-react';
+import { Menu, X, ShoppingBag, Search, Heart, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import SearchModal from './search-modal';
 import { useWishlist } from '@/context/wishlist-context';
+import { UserButton, useUser, SignInButton } from "@clerk/nextjs";
 
 import { useCart } from '@/context/cart-context';
 
@@ -17,6 +18,7 @@ export default function Navbar() {
     const [searchOpen, setSearchOpen] = useState(false);
     const { items: wishlistItems } = useWishlist();
     const { cartCount, toggleCart } = useCart();
+    const { user, isLoaded } = useUser();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -49,37 +51,63 @@ export default function Navbar() {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center gap-12 text-sm font-bold uppercase tracking-widest text-charcoal/60">
-                        <a href="/#collection" className="hover:text-charcoal transition-colors">Koleksiyon</a>
-                        <Link href="/blog" className="hover:text-charcoal transition-colors">Blog</Link>
-                        <a href="/#philosophy" className="hover:text-charcoal transition-colors">Felsefe</a>
+                    <div className="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-widest text-charcoal/60">
+                        <div className="flex items-center gap-8 mr-4">
+                            <a href="/#collection" className="hover:text-charcoal transition-colors">Koleksiyon</a>
+                            <Link href="/blog" className="hover:text-charcoal transition-colors">Blog</Link>
+                            <a href="/#philosophy" className="hover:text-charcoal transition-colors">Felsefe</a>
+                        </div>
 
-                        <button
-                            onClick={() => setSearchOpen(true)}
-                            className="hover:text-charcoal transition-colors"
-                        >
-                            <Search size={22} />
-                        </button>
+                        <div className="h-6 w-px bg-charcoal/10 mx-2"></div>
 
-                        <Link href="/wishlist" className="hover:text-charcoal transition-colors relative">
-                            <Heart size={22} className={cn("transition-colors", wishlistItems.length > 0 && "fill-rose text-rose")} />
-                            {wishlistItems.length > 0 && (
-                                <span className="absolute -top-1 -right-1 w-2 h-2 bg-rose rounded-full animate-pulse" />
+                        <div className="flex items-center gap-6">
+                            <button
+                                onClick={() => setSearchOpen(true)}
+                                className="hover:text-charcoal transition-colors"
+                            >
+                                <Search size={22} />
+                            </button>
+
+                            <Link href="/wishlist" className="hover:text-charcoal transition-colors relative">
+                                <Heart size={22} className={cn("transition-colors", wishlistItems.length > 0 && "fill-rose text-rose")} />
+                                {wishlistItems.length > 0 && (
+                                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-rose rounded-full animate-pulse" />
+                                )}
+                            </Link>
+
+                            {/* User Auth */}
+                            {isLoaded && (
+                                user ? (
+                                    <div className="flex items-center gap-3">
+                                        <Link href="/orders" title="Siparişlerim" className="hover:text-charcoal transition-colors">
+                                            <User size={22} />
+                                        </Link>
+                                        <div className="w-8 h-8 rounded-full overflow-hidden border border-black/10">
+                                            <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: 'w-8 h-8' } }} />
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <SignInButton mode="modal">
+                                        <button className="hover:text-charcoal transition-colors" title="Giriş Yap">
+                                            <User size={22} />
+                                        </button>
+                                    </SignInButton>
+                                )
                             )}
-                        </Link>
 
-                        <button
-                            onClick={toggleCart}
-                            className="flex items-center gap-2 bg-charcoal text-white px-6 py-3 rounded-full hover:bg-black transition-all relative"
-                        >
-                            <ShoppingBag size={18} />
-                            <span>Sepet</span>
-                            {cartCount > 0 && (
-                                <span className="absolute -top-1 -right-1 w-5 h-5 bg-clay text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white">
-                                    {cartCount}
-                                </span>
-                            )}
-                        </button>
+                            <button
+                                onClick={toggleCart}
+                                className="flex items-center gap-2 bg-charcoal text-white px-5 py-2.5 rounded-full hover:bg-black transition-all relative ml-2 shadow-lg shadow-charcoal/10"
+                            >
+                                <ShoppingBag size={18} />
+                                <span className="hidden lg:inline">Sepet</span>
+                                {cartCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-clay text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white">
+                                        {cartCount}
+                                    </span>
+                                )}
+                            </button>
+                        </div>
                     </div>
 
                     {/* Mobile Menu Button */}

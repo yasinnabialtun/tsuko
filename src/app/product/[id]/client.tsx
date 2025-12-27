@@ -21,6 +21,7 @@ interface ProductData {
     description: string;
     stock: number;
     shopierUrl: string;
+    similarProducts: any[];
 }
 
 // Mock function to simulate "people viewing"
@@ -73,8 +74,8 @@ export default function ProductPageClient({ product }: { product: ProductData })
                                 onClick={handleAddToCart}
                                 disabled={isOutOfStock}
                                 className={`w-full md:w-auto px-8 py-3 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 ${isOutOfStock
-                                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                        : 'bg-charcoal text-white hover:bg-black'
+                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    : 'bg-charcoal text-white hover:bg-black'
                                     }`}
                             >
                                 <ShoppingBag size={18} />
@@ -124,8 +125,8 @@ export default function ProductPageClient({ product }: { product: ProductData })
                                         key={index}
                                         onClick={() => setSelectedImage(index)}
                                         className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${selectedImage === index
-                                                ? 'border-charcoal'
-                                                : 'border-transparent hover:border-gray-300'
+                                            ? 'border-charcoal'
+                                            : 'border-transparent hover:border-gray-300'
                                             }`}
                                     >
                                         <Image src={img} alt={`${product.name} ${index + 1}`} fill className="object-cover" />
@@ -208,8 +209,8 @@ export default function ProductPageClient({ product }: { product: ProductData })
                                 onClick={handleAddToCart}
                                 disabled={isOutOfStock}
                                 className={`w-full flex items-center justify-center gap-3 py-6 rounded-2xl text-xl font-bold transition-all shadow-xl ${isOutOfStock
-                                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none'
-                                        : 'bg-charcoal text-white hover:bg-black hover:shadow-2xl hover:-translate-y-1 shadow-charcoal/10'
+                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none'
+                                    : 'bg-charcoal text-white hover:bg-black hover:shadow-2xl hover:-translate-y-1 shadow-charcoal/10'
                                     }`}
                             >
                                 <ShoppingBag size={24} />
@@ -221,7 +222,7 @@ export default function ProductPageClient({ product }: { product: ProductData })
                                 Güvenli Ödeme Altyapısı ve 14 Gün İade Garantisi
                             </p>
 
-                            <BundleSuggester currentProductId={product.id} />
+                            <BundleSuggester products={product.similarProducts} />
                         </div>
                     </div>
                 </div>

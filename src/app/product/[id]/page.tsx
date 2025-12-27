@@ -48,6 +48,56 @@ async function getProduct(idOrSlug: string) {
     }
 }
 
+// Fetch similar products based on category
+async function getSimilarProducts(currentProductId: string, categoryId: string) {
+    try {
+        const products = await prisma.product.findMany({
+            where: {
+                isActive: true,
+                categoryId: categoryId,
+                id: { not: currentProductId }
+            },
+            take: 3,
+            select: {
+                id: true,
+                name: true,
+                price: true,
+                images: true,
+                slug: true
+            }
+        });
+
+        // If not enough products in category, fetch random ones
+        if (products.length < 2) {
+            const randomProducts = await prisma.product.findMany({
+                where: {
+                    isActive: true,
+                    id: { not: currentProductId, notIn: products.map(p => p.id) }
+                },
+                take: 3 - products.length,
+                select: {
+                    id: true,
+                    name: true,
+                    price: true,
+                    images: true,
+                    slug: true
+                }
+            });
+            products.push(...randomProducts);
+        }
+
+        return products.map(p => ({
+            id: p.id,
+            name: p.name,
+            price: `${p.price.toString()} ₺`,
+            image: p.images[0] || '/images/hero.png',
+            slug: p.slug
+        }));
+    } catch {
+        return [];
+    }
+}
+
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const product = await getProduct(id);
@@ -55,6 +105,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     if (!product || !product.isActive) {
         notFound();
     }
+
+    const similarProducts = await getSimilarProducts(product.id, product.categoryId);
 
     // Transform to frontend format
     const productData = {
@@ -69,7 +121,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         description: product.description,
         stock: product.stock,
         // Generate Shopier URL from product data or use placeholder
-        shopierUrl: `https://www.shopier.com/tsukodesign/${product.slug}`
+        shopierUrl: `https://www.shopier.com/tsukodesign/${product.slug}`,
+        similarProducts: similarProducts
     };
 
     // Schema.org Product structured data

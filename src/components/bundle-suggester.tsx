@@ -1,20 +1,25 @@
 'use client';
 
-import { products } from '@/lib/data';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Plus } from 'lucide-react';
 
-interface BundleSuggesterProps {
-    currentProductId: string;
+interface Suggestion {
+    id: string;
+    name: string;
+    price: string;
+    image: string;
+    slug: string;
 }
 
-export default function BundleSuggester({ currentProductId }: BundleSuggesterProps) {
-    // Simple logic: suggest 2 random products that are NOT the current one
-    const suggestions = products
-        .filter(p => p.id !== currentProductId)
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 2);
+interface BundleSuggesterProps {
+    products: Suggestion[];
+}
+
+export default function BundleSuggester({ products }: BundleSuggesterProps) {
+    if (!products || products.length === 0) return null;
+
+    const suggestions = products;
 
     if (suggestions.length === 0) return null;
 
