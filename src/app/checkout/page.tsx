@@ -9,8 +9,7 @@ import Footer from '@/components/footer';
 import Image from 'next/image';
 import { Loader2, Lock, ShieldCheck } from 'lucide-react';
 
-// Force dynamic rendering to prevent SSG build errors with Auth
-export const dynamic = 'force-dynamic';
+
 
 export default function CheckoutPage() {
     const { items, cartTotal, cartSubtotal, discountAmount, activeCoupon } = useCart();
