@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import CouponValidation from '@/components/coupon-validation';
 import BundleSuggester from '@/components/bundle-suggester';
 import { useCart } from '@/context/cart-context';
+import Breadcrumb from '@/components/breadcrumb';
 
 interface ProductData {
     id: string;
@@ -87,12 +89,11 @@ export default function ProductPageClient({ product }: { product: ProductData })
             </AnimatePresence>
 
             <div className="pt-32 pb-24 px-6 container mx-auto">
-                <Link
-                    href="/#collection"
-                    className="inline-flex items-center gap-2 text-charcoal/50 hover:text-charcoal font-bold uppercase tracking-widest text-xs mb-8 transition-colors"
-                >
-                    <ArrowLeft size={16} /> Koleksiyona Dön
-                </Link>
+                <Breadcrumb items={[
+                    { label: 'Koleksiyon', href: '/#collection' },
+                    { label: product.category, href: `/#collection` },
+                    { label: product.name }
+                ]} />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
                     {/* Gallery */}

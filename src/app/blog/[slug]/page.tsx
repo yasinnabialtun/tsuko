@@ -1,3 +1,4 @@
+
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -6,6 +7,7 @@ import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
 import { prisma } from '@/lib/prisma';
 import { ArrowLeft, Calendar, User } from 'lucide-react';
+import { markdownToHtml } from '@/lib/markdown';
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -58,6 +60,9 @@ export default async function BlogPostPage({ params }: PageProps) {
         notFound();
     }
 
+    // Convert markdown to HTML
+    const contentHtml = markdownToHtml(post.content);
+
     return (
         <main className="min-h-screen bg-alabaster">
             <Navbar />
@@ -100,7 +105,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                 <div className="container mx-auto px-6 max-w-3xl">
                     <div
                         className="prose prose-lg prose-headings:font-bold prose-headings:font-heading prose-p:text-charcoal/80 prose-a:text-clay prose-img:rounded-3xl max-w-none"
-                        dangerouslySetInnerHTML={{ __html: post.content }}
+                        dangerouslySetInnerHTML={{ __html: contentHtml }}
                     />
                 </div>
             </article>
