@@ -7,7 +7,6 @@ import { sendOrderConfirmationEmail } from '@/lib/email';
 const SHOPIER_API_KEY = process.env.SHOPIER_API_KEY;
 const SHOPIER_API_SECRET = process.env.SHOPIER_API_SECRET;
 const SHOPIER_WEBSITE_INDEX = process.env.SHOPIER_WEBSITE_INDEX || '1';
-const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
 // Shopier Base URL
 const SHOPIER_BASE_URL = 'https://www.shopier.com/ShowProduct/api_pay4.php';
@@ -16,9 +15,8 @@ const SHOPIER_BASE_URL = 'https://www.shopier.com/ShowProduct/api_pay4.php';
  * Generate unique Order Number
  */
 function generateOrderNumber() {
-    // TS-XXX format 
-    // Using random + timestamp to ensure uniqueness
-    const timestamp = Date.now().toString().slice(-6);
+    // TS-TIMESTAMP-RANDOM format for scalability
+    const timestamp = Date.now().toString().slice(-8);
     const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
     return `TS-${timestamp}-${random}`;
 }
@@ -37,29 +35,52 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Customer details missing' }, { status: 400 });
         }
 
-        // 1. Calculate Total & Validate Stock
+        // 1. Calculate Total & Validate Stock (Platform Scale Logic)
         let totalAmount = 0;
         const productNames: string[] = [];
         const orderItemsData = [];
 
         for (const item of items) {
+            // Find Product Base
             const product = await prisma.product.findUnique({ where: { id: item.id } });
 
             if (!product) {
                 return NextResponse.json({ error: `Product not found: ${item.id}` }, { status: 400 });
             }
 
-            if (product.stock < item.quantity) {
-                return NextResponse.json({ error: `Insufficient stock for: ${product.name}` }, { status: 400 });
+            let finalPrice = Number(product.price);
+            let checkStock = product.stock;
+            let productName = product.name;
+
+            // Handle Variant Logic
+            if (item.variantId) {
+                const variant = await prisma.productVariant.findUnique({
+                    where: { id: item.variantId }
+                });
+
+                if (!variant) {
+                    return NextResponse.json({ error: `Variant not found: ${item.id}` }, { status: 400 });
+                }
+
+                // Override with Variant data
+                finalPrice = Number(variant.price);
+                checkStock = variant.stock;
+                productName = `${product.name} (${variant.title})`; // e.g. "Vase (Red)"
             }
 
-            totalAmount += Number(product.price) * item.quantity;
-            productNames.push(`${product.name} (${item.quantity})`);
+            // Stock Check
+            if (checkStock < item.quantity) {
+                return NextResponse.json({ error: `Insufficient stock for: ${productName}` }, { status: 400 });
+            }
+
+            totalAmount += finalPrice * item.quantity;
+            productNames.push(`${productName} x${item.quantity}`);
 
             orderItemsData.push({
                 productId: product.id,
+                variantId: item.variantId || null, // Store variant link
                 quantity: item.quantity,
-                price: product.price // Store price at time of purchase
+                price: finalPrice
             });
         }
 
@@ -115,14 +136,22 @@ export async function POST(request: Request) {
             }
         });
 
-        // 2.1 Deduct Stock Logic
-        // Ideally should be done on payment success, but for simple flows we reserve it now.
-        // If payment fails, we rely on manual restore or expiration cron (not implemented here).
+        // 2.1 Deduct Stock Logic (Multi-level)
         for (const item of orderItemsData) {
-            await prisma.product.update({
-                where: { id: item.productId },
-                data: { stock: { decrement: item.quantity } }
-            });
+            if (item.variantId) {
+                await prisma.productVariant.update({
+                    where: { id: item.variantId },
+                    data: { stock: { decrement: item.quantity } }
+                });
+
+                // Optionally deduct from base product total stock if tracking aggregate
+                // await prisma.product.update({ ... stock: { decrement: ... } }) 
+            } else {
+                await prisma.product.update({
+                    where: { id: item.productId },
+                    data: { stock: { decrement: item.quantity } }
+                });
+            }
         }
 
         // 2.2 Increment Coupon Usage
@@ -133,7 +162,7 @@ export async function POST(request: Request) {
             });
         }
 
-        // 3. Prepare Shopier Form
+        // 3. Prepare Shopier Form or Mock Response
         if (!SHOPIER_API_KEY || !SHOPIER_API_SECRET) {
             console.warn('Shopier credentials missing. Mocking success.');
 
@@ -150,23 +179,20 @@ export async function POST(request: Request) {
             // Mock response for dev
             return NextResponse.json({
                 mock: true,
-                message: 'Shopier credentials missing. Order Auto-Completed.',
+                message: 'Mock Payment Success (Dev Mode)',
                 orderId: order.orderNumber
             });
         }
 
-        // Combined Product Name
+        // Shopier Integration
         const combinedProductName = productNames.join(', ');
-
-        // Shopier expects money in format "12.50"
         const formattedAmount = finalAmount.toFixed(2);
 
-        // This formData is what the client form will POST to Shopier
         const formData = {
             API_key: SHOPIER_API_KEY,
             website_index: SHOPIER_WEBSITE_INDEX,
-            platform_order_id: order.orderNumber, // TS-XXX used as reference
-            product_name: combinedProductName,
+            platform_order_id: order.orderNumber,
+            product_name: combinedProductName, // Aggregated names
             product_type: 1, // Physical
             buyer_name: customer.firstName,
             buyer_surname: customer.lastName,
@@ -182,7 +208,6 @@ export async function POST(request: Request) {
             callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/shopier`,
             back_url: `${process.env.NEXT_PUBLIC_SITE_URL}/payment/success?orderId=${order.orderNumber}`,
             cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/payment/cancel?orderId=${order.orderNumber}`
-            // Note: Signature generation logic would go here if not using auto-submit form
         };
 
         return NextResponse.json({

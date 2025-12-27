@@ -1,14 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  --color-alabaster: #F8F7F3;
-  --color-charcoal: #222222;
-  --color-sage: #9CAF88;
+  --color-alabaster: #FDFBF7;
+  --color-charcoal: #2C2C2C;
+  --color-sage: #84A98C;
   --color-rose: #C9A9A6;
-  --color-clay: #D68C78;
-  
-  --font-heading: "Syne", sans-serif;
+  --color-clay: #CD8B62;
+  --color-stone: #E5E2DC;
+  /* New stone color for subtle borders */
+
+  --font-heading: "Playfair Display", serif;
   --font-body: "Inter", sans-serif;
+
+  --animate-fade-in-up: fadeInUp 0.8s ease-out forwards;
 }
 
 :root {
@@ -20,14 +24,41 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-body);
+  /* Smooth scrolling native behavior */
+  scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, k5, h6 {
+h1,
+h2,
+h3,
+h4,
+k5,
+h6 {
   font-family: var(--font-heading);
-  text-transform: uppercase;
-  letter-spacing: -0.02em;
+  /* Remove uppercase for more editorial look */
+  letter-spacing: -0.01em;
+  font-weight: 500;
+  /* Lighter weight for elegance */
+}
+
+/* Luxury selection color */
+::selection {
+  background-color: var(--color-clay);
+  color: white;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Custom scrollbar for premium feel */

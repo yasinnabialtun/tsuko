@@ -1,10 +1,13 @@
+
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
 export interface CartItem {
     id: string; // Product ID
+    variantId?: string; // Variant ID if applicable
     name: string;
+    variantName?: string; // Display name for variant (e.g. "Red / Large")
     slug: string;
     price: number;
     image: string;
@@ -14,9 +17,9 @@ export interface CartItem {
 
 interface CartContextType {
     items: CartItem[];
-    addToCart: (product: any, quantity?: number) => void;
-    removeFromCart: (productId: string) => void;
-    updateQuantity: (productId: string, quantity: number) => void;
+    addToCart: (product: any, quantity?: number, variant?: ProductVariantInfo) => void;
+    removeFromCart: (productId: string, variantId?: string) => void;
+    updateQuantity: (productId: string, quantity: number, variantId?: string) => void;
     clearCart: () => void;
     cartTotal: number;
     cartCount: number;
@@ -27,6 +30,14 @@ interface CartContextType {
     removeCoupon: () => void;
     cartSubtotal: number;
     discountAmount: number;
+}
+
+export interface ProductVariantInfo {
+    id: string;
+    name: string;
+    price: number;
+    stock: number;
+    image?: string;
 }
 
 export interface AppliedCoupon {
@@ -70,38 +81,45 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
     }, [items, activeCoupon, isClient]);
 
-    const addToCart = (product: any, quantity = 1) => {
+    const addToCart = (product: any, quantity = 1, variant?: ProductVariantInfo) => {
         setItems(prev => {
-            const existing = prev.find(item => item.id === product.id);
+            // Check if item exists (match product ID AND variant ID)
+            const existing = prev.find(item => item.id === product.id && item.variantId === variant?.id);
+
+            const stockLimit = variant ? variant.stock : product.stock;
+
             if (existing) {
-                // Check stock
-                const newQuantity = Math.min(existing.quantity + quantity, product.stock);
+                const newQuantity = Math.min(existing.quantity + quantity, stockLimit);
                 return prev.map(item =>
-                    item.id === product.id
+                    (item.id === product.id && item.variantId === variant?.id)
                         ? { ...item, quantity: newQuantity }
                         : item
                 );
             }
+
+            // New Item
             return [...prev, {
                 id: product.id,
+                variantId: variant?.id,
                 name: product.name,
+                variantName: variant?.name,
                 slug: product.slug,
-                price: typeof product.price === 'string' ? parseFloat(product.price) : product.priceNumber || 0,
-                image: product.images?.[0] || product.image || '',
-                quantity: Math.min(quantity, product.stock),
-                maxStock: product.stock
+                price: variant ? variant.price : (typeof product.price === 'string' ? parseFloat(product.price) : product.priceNumber || 0),
+                image: variant?.image || product.images?.[0] || product.image || '',
+                quantity: Math.min(quantity, stockLimit),
+                maxStock: stockLimit
             }];
         });
         setIsCartOpen(true);
     };
 
-    const removeFromCart = (productId: string) => {
-        setItems(prev => prev.filter(item => item.id !== productId));
+    const removeFromCart = (productId: string, variantId?: string) => {
+        setItems(prev => prev.filter(item => !(item.id === productId && item.variantId === variantId)));
     };
 
-    const updateQuantity = (productId: string, quantity: number) => {
+    const updateQuantity = (productId: string, quantity: number, variantId?: string) => {
         setItems(prev => prev.map(item => {
-            if (item.id === productId) {
+            if (item.id === productId && item.variantId === variantId) {
                 const newQuantity = Math.max(1, Math.min(quantity, item.maxStock));
                 return { ...item, quantity: newQuantity };
             }

@@ -1,82 +1,7 @@
+
 import type { Metadata } from "next";
-import { Inter, Syne } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const syne = Syne({
-  subsets: ["latin"],
-  variable: "--font-syne",
-  display: "swap",
-});
-
-export const metadata: Metadata = {
-  title: {
-    default: "Tsuko Design | 3D Baskı Vazo, Aydınlatma & Modern Ev Dekorasyonu",
-    template: "%s | Tsuko Design"
-  },
-  description: "Türkiye'nin ilk 3D baskı ev dekorasyon markası. Mimari estetik, sürdürülebilir biyo-polimer ve el yapımı hissiyatı bir arada. Modern vazo, tasarım aydınlatma ve minimalist ev aksesuarları. Ücretsiz kargo, kırılma garantisi.",
-  keywords: [
-    // Primary - High Volume
-    "ev dekorasyonu", "modern vazo", "dekoratif vazo", "salon dekorasyonu",
-    "ev aksesuarları", "tasarım aydınlatma", "masa lambası", "dekoratif lamba",
-    // Secondary - Intent Based
-    "hediyelik eşya", "özel hediye", "ev hediyesi", "minimalist dekorasyon",
-    // Long-tail - Low Competition
-    "3d baskı vazo", "mimari vazo", "biyo polimer dekorasyon", "sürdürülebilir ev ürünleri",
-    "türk tasarım markası", "el yapımı vazo", "modern saksı", "dekoratif obje",
-    // Brand
-    "Tsuko", "Tsuko Design", "tsukodesign"
-  ],
-  authors: [{ name: "Tsuko Design Studio" }],
-  creator: "Tsuko Design",
-  publisher: "Tsuko Design",
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  openGraph: {
-    type: "website",
-    locale: "tr_TR",
-    url: "https://tsukodesign.com",
-    title: "Tsuko Design | Mimari Estetik, Evinize Taşındı",
-    description: "3D baskı teknolojisi ve biyo-polimer ile üretilen, doğa dostu vazo ve aydınlatma koleksiyonu. Seri üretimden uzak, sadece sizin için.",
-    siteName: "Tsuko Design",
-    images: [
-      {
-        url: "/images/hero.png",
-        width: 1200,
-        height: 630,
-        alt: "Tsuko Design - 3D Baskı Mimari Vazo Koleksiyonu",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Tsuko Design | 3D Baskı Ev Dekorasyonu",
-    description: "Mimari estetik, sürdürülebilir üretim. Türkiye'nin ilk 3D baskı dekorasyon markası.",
-    images: ["/images/hero.png"],
-    creator: "@tsukodesign",
-  },
-  alternates: {
-    canonical: "https://tsukodesign.com",
-  },
-  verification: {
-    google: "your-google-verification-code", // TODO: Add real verification code
-  },
-};
-
 import { WishlistProvider } from '@/context/wishlist-context';
 import { CartProvider } from '@/context/cart-context';
 import CartDrawer from '@/components/cart-drawer';
@@ -84,6 +9,54 @@ import AnalyticsScripts from '@/components/analytics';
 import MarketingWrapper from '@/components/marketing-wrapper';
 import { ClerkProvider } from '@clerk/nextjs';
 import { trTR } from '@clerk/localizations';
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800", "900"],
+});
+
+export const metadata: Metadata = {
+  title: {
+    default: "Tsuko Design | Mitolojinin Modern Yüzü",
+    template: "%s | Tsuko Design"
+  },
+  description: "Evinizin ruhunu yansıtan zamansız parçalar. Mitolojik formların modern 3D baskı teknolojisiyle buluştuğu, doğa dostu ve sofistike tasarım objeleri.",
+  keywords: [
+    "sanatsal vazo", "modern dekorasyon", "mitolojik tasarım", "3d baskı sanat",
+    "sürdürülebilir lüks", "minimalist ev", "Tsuko Design", "iç mimari obje"
+  ],
+  authors: [{ name: "Tsuko Design Studio" }],
+  creator: "Tsuko Design",
+  publisher: "Tsuko Design",
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    type: "website",
+    locale: "tr_TR",
+    url: "https://tsukodesign.com",
+    title: "Tsuko Design | Mitolojinin Modern Yüzü",
+    description: "Geçmişin estetiği, geleceğin teknolojisiyle buluştu.",
+    siteName: "Tsuko Design",
+    images: [
+      {
+        url: "/images/hero.png",
+        width: 1200,
+        height: 630,
+        alt: "Tsuko Design Koleksiyonu",
+      },
+    ],
+  },
+};
 
 // Check if Clerk is configured
 const isClerkConfigured = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
@@ -94,7 +67,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   const content = (
-    <html lang="tr" className={`${inter.variable} ${syne.variable}`}>
+    <html lang="tr" className={`${inter.variable} ${playfair.variable}`}>
       <head>
         <AnalyticsScripts />
       </head>
