@@ -60,6 +60,9 @@ model Order {
   items         OrderItem[]
   totalAmount   Decimal     @db.Decimal(10, 2)
   
+  couponCode    String?
+  discountAmount Decimal    @default(0) @db.Decimal(10, 2)
+  
   status        OrderStatus @default(PENDING)
   paymentStatus PaymentStatus @default(UNPAID)
   
@@ -119,4 +122,18 @@ enum PaymentStatus {
   UNPAID
   PAID
   REFUNDED
+}
+
+model Coupon {
+  id            String   @id @default(cuid())
+  code          String   @unique
+  discountType  String   // PERCENTAGE, FIXED
+  discountValue Decimal  @db.Decimal(10, 2)
+  minAmount     Decimal? @db.Decimal(10, 2)
+  startDate     DateTime?
+  endDate       DateTime?
+  usageLimit    Int?
+  usedCount     Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
 }

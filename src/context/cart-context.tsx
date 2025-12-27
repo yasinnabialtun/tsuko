@@ -22,6 +22,17 @@ interface CartContextType {
     cartCount: number;
     isCartOpen: boolean;
     toggleCart: () => void;
+    activeCoupon: AppliedCoupon | null;
+    applyCoupon: (code: string) => Promise<{ success: boolean; message: string }>;
+    removeCoupon: () => void;
+    cartSubtotal: number;
+    discountAmount: number;
+}
+
+export interface AppliedCoupon {
+    code: string;
+    discountAmount: number;
+    message: string;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -29,12 +40,14 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [activeCoupon, setActiveCoupon] = useState<AppliedCoupon | null>(null);
     const [isClient, setIsClient] = useState(false);
 
     // Initialize from LocalStorage
     useEffect(() => {
         setIsClient(true);
         const storedItems = localStorage.getItem('tsuko_cart');
+        const storedCoupon = localStorage.getItem('tsuko_coupon');
         if (storedItems) {
             try {
                 setItems(JSON.parse(storedItems));
@@ -42,14 +55,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 console.error('Failed to parse cart items');
             }
         }
+        if (storedCoupon) {
+            try {
+                setActiveCoupon(JSON.parse(storedCoupon));
+            } catch (e) { }
+        }
     }, []);
 
     // Persist to LocalStorage
     useEffect(() => {
         if (isClient) {
             localStorage.setItem('tsuko_cart', JSON.stringify(items));
+            localStorage.setItem('tsuko_coupon', JSON.stringify(activeCoupon));
         }
-    }, [items, isClient]);
+    }, [items, activeCoupon, isClient]);
 
     const addToCart = (product: any, quantity = 1) => {
         setItems(prev => {
@@ -92,11 +111,44 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const clearCart = () => {
         setItems([]);
+        setActiveCoupon(null);
     };
 
     const toggleCart = () => setIsCartOpen(!isCartOpen);
 
-    const cartTotal = items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const cartSubtotal = items.reduce((total, item) => total + (item.price * item.quantity), 0);
+
+    // Apply Coupon Logic
+    const applyCoupon = async (code: string) => {
+        try {
+            const response = await fetch('/api/coupons/validate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code, cartTotal: cartSubtotal })
+            });
+            const data = await response.json();
+
+            if (data.valid) {
+                setActiveCoupon({
+                    code: code,
+                    discountAmount: data.discountAmount,
+                    message: data.message
+                });
+                return { success: true, message: data.message || 'Kupon uygulandı!' };
+            } else {
+                setActiveCoupon(null);
+                return { success: false, message: data.error || 'Geçersiz kupon.' };
+            }
+        } catch (error) {
+            return { success: false, message: 'Bağlantı hatası.' };
+        }
+    };
+
+    const removeCoupon = () => setActiveCoupon(null);
+
+    // Calculate total with active coupon
+    const discountAmount = activeCoupon ? activeCoupon.discountAmount : 0;
+    const cartTotal = Math.max(0, cartSubtotal - discountAmount);
     const cartCount = items.reduce((count, item) => count + item.quantity, 0);
 
     return (
@@ -107,9 +159,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
             updateQuantity,
             clearCart,
             cartTotal,
+            cartSubtotal,
+            discountAmount,
             cartCount,
             isCartOpen,
-            toggleCart
+            toggleCart,
+            activeCoupon,
+            applyCoupon,
+            removeCoupon
         }}>
             {children}
         </CartContext.Provider>

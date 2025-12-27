@@ -1,31 +1,52 @@
 'use client';
 
-import { useState } from 'react';
-import { Tag, Check, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Tag, Check, X, Loader2, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const COUPONS = {
-    'TSUKO10': { discount: 0.10, message: '%10 İndirim Uygulandı!' },
-    'MERHABA20': { discount: 0.20, message: '%20 Hoşgeldin İndirimi!' },
-    'TSUKO50': { discount: 0.50, message: 'Harika! %50 İndirim Kazandınız.' }
-};
+import { useCart } from '@/context/cart-context';
 
 export default function CouponValidation() {
+    const { applyCoupon, removeCoupon, activeCoupon } = useCart();
     const [code, setCode] = useState('');
     const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
     const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const handleCheck = (e: React.FormEvent) => {
-        e.preventDefault();
-        const normalizedCode = code.toUpperCase().trim();
-
-        if (COUPONS[normalizedCode as keyof typeof COUPONS]) {
+    // Sync local state with context
+    useEffect(() => {
+        if (activeCoupon) {
+            setCode(activeCoupon.code);
             setStatus('success');
-            setMessage(COUPONS[normalizedCode as keyof typeof COUPONS].message);
+            setMessage(activeCoupon.message);
+        } else {
+            setCode('');
+            setStatus('idle');
+            setMessage('');
+        }
+    }, [activeCoupon]);
+
+    const handleCheck = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!code.trim()) return;
+
+        setLoading(true);
+        const result = await applyCoupon(code.trim());
+        setLoading(false);
+
+        if (result.success) {
+            setStatus('success');
+            setMessage(result.message);
         } else {
             setStatus('error');
-            setMessage('Geçersiz veya süresi dolmuş kupon kodu.');
+            setMessage(result.message);
         }
+    };
+
+    const handleRemove = () => {
+        removeCoupon();
+        setCode('');
+        setStatus('idle');
+        setMessage('');
     };
 
     return (
@@ -35,36 +56,57 @@ export default function CouponValidation() {
                 <span>Kupon Kodu</span>
             </div>
 
-            <form onSubmit={handleCheck} className="flex gap-2">
-                <input
-                    type="text"
-                    value={code}
-                    onChange={(e) => {
-                        setCode(e.target.value);
-                        setStatus('idle');
-                    }}
-                    placeholder="Kupon Kodunuz"
-                    className="flex-grow bg-white border border-black/10 rounded-xl px-4 py-3 outline-none focus:border-clay transition-colors font-medium uppercase placeholder:normal-case"
-                />
-                <button
-                    type="submit"
-                    disabled={!code || status === 'success'}
-                    className="bg-charcoal text-white px-6 rounded-xl font-bold hover:bg-black transition-colors disabled:opacity-50"
-                >
-                    Uygula
-                </button>
-            </form>
+            {activeCoupon ? (
+                <div className="flex items-center justify-between bg-green-50 border border-green-200 p-4 rounded-xl">
+                    <div className="flex items-center gap-3">
+                        <div className="bg-green-100 p-2 rounded-full text-green-600">
+                            <Tag size={16} />
+                        </div>
+                        <div>
+                            <p className="font-bold text-green-800 uppercase">{activeCoupon.code}</p>
+                            <p className="text-sm text-green-600">{activeCoupon.message}</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={handleRemove}
+                        className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                        title="Kuponu Kaldır"
+                    >
+                        <Trash2 size={18} />
+                    </button>
+                </div>
+            ) : (
+                <form onSubmit={handleCheck} className="flex gap-2">
+                    <input
+                        type="text"
+                        value={code}
+                        onChange={(e) => {
+                            setCode(e.target.value);
+                            if (status === 'error') setStatus('idle');
+                        }}
+                        placeholder="Kupon Kodunuz"
+                        className={`flex-grow bg-white border rounded-xl px-4 py-3 outline-none transition-colors font-medium uppercase placeholder:normal-case ${status === 'error' ? 'border-rose-300 focus:border-rose-500' : 'border-black/10 focus:border-clay'
+                            }`}
+                    />
+                    <button
+                        type="submit"
+                        disabled={!code || loading}
+                        className="bg-charcoal text-white px-6 rounded-xl font-bold hover:bg-black transition-colors disabled:opacity-50 flex items-center gap-2"
+                    >
+                        {loading ? <Loader2 size={18} className="animate-spin" /> : 'Uygula'}
+                    </button>
+                </form>
+            )}
 
             <AnimatePresence>
-                {status !== 'idle' && (
+                {!activeCoupon && status === 'error' && (
                     <motion.div
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        className={`mt-3 flex items-center gap-2 text-sm font-bold ${status === 'success' ? 'text-green-600' : 'text-rose'
-                            }`}
+                        className="mt-3 flex items-center gap-2 text-sm font-bold text-rose-600"
                     >
-                        {status === 'success' ? <Check size={16} /> : <X size={16} />}
+                        <X size={16} />
                         {message}
                     </motion.div>
                 )}

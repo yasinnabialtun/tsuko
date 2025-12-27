@@ -22,7 +22,7 @@ function generateOrderNumber() {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { items, customer } = body;
+        const { items, customer, couponCode } = body;
 
         if (!items || items.length === 0) {
             return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
@@ -58,6 +58,35 @@ export async function POST(request: Request) {
             });
         }
 
+        // Apply Coupon if exists
+        let discountAmount = 0;
+        if (couponCode) {
+            const coupon = await prisma.coupon.findUnique({
+                where: { code: couponCode.toUpperCase() }
+            });
+
+            if (coupon && coupon.isActive) {
+                // Determine Validity
+                const now = new Date();
+                const validDate = (!coupon.startDate || coupon.startDate <= now) &&
+                    (!coupon.endDate || coupon.endDate >= now);
+                const validLimit = !coupon.usageLimit || coupon.usedCount < coupon.usageLimit;
+                const validMin = (!coupon.minAmount || totalAmount >= Number(coupon.minAmount));
+
+                if (validDate && validLimit && validMin) {
+                    const val = Number(coupon.discountValue);
+                    if (coupon.discountType === 'PERCENTAGE') {
+                        discountAmount = (totalAmount * val) / 100;
+                    } else {
+                        discountAmount = val;
+                    }
+                }
+            }
+        }
+
+        // Final Amount calculation
+        const finalAmount = Math.max(0, totalAmount - discountAmount);
+
         // 2. Create Order in DB (PENDING)
         const orderNumber = generateOrderNumber();
         const fullAddress = `${customer.address}, ${customer.district}, ${customer.city}, ${customer.zipCode}`;
@@ -71,7 +100,9 @@ export async function POST(request: Request) {
                 shippingAddress: fullAddress,
                 city: customer.city,
                 // If Order model has separate fields for district/zip, use them, otherwise they are in address
-                totalAmount: totalAmount,
+                totalAmount: finalAmount,
+                discountAmount: discountAmount,
+                couponCode: discountAmount > 0 ? couponCode.toUpperCase() : null,
                 status: 'PENDING',        // Waiting for payment
                 paymentStatus: 'UNPAID',  // Waiting for payment
                 items: {
@@ -95,7 +126,7 @@ export async function POST(request: Request) {
         const combinedProductName = productNames.join(', ');
 
         // Shopier expects money in format "12.50"
-        const formattedAmount = totalAmount.toFixed(2);
+        const formattedAmount = finalAmount.toFixed(2);
 
         // This formData is what the client form will POST to Shopier
         const formData = {

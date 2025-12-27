@@ -9,7 +9,7 @@ import Image from 'next/image';
 import { Loader2, Lock, ShieldCheck } from 'lucide-react';
 
 export default function CheckoutPage() {
-    const { items, cartTotal } = useCart();
+    const { items, cartTotal, cartSubtotal, discountAmount, activeCoupon } = useCart();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -40,7 +40,8 @@ export default function CheckoutPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     items: items.map(item => ({ id: item.id, quantity: item.quantity })),
-                    customer: formData
+                    customer: formData,
+                    couponCode: activeCoupon?.code
                 })
             });
 
@@ -190,8 +191,14 @@ export default function CheckoutPage() {
                             <div className="space-y-3 py-6 border-t border-gray-100">
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-500">Ara Toplam</span>
-                                    <span className="font-bold text-charcoal">{cartTotal.toFixed(2)} ₺</span>
+                                    <span className="font-bold text-charcoal">{cartSubtotal.toFixed(2)} ₺</span>
                                 </div>
+                                {activeCoupon && (
+                                    <div className="flex justify-between text-sm text-green-600">
+                                        <span>İndirim ({activeCoupon.code})</span>
+                                        <span className="font-bold">-{discountAmount.toFixed(2)} ₺</span>
+                                    </div>
+                                )}
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-500">Kargo</span>
                                     <span className="font-bold text-green-600">Ücretsiz</span>
