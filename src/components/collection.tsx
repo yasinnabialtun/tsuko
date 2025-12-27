@@ -17,7 +17,7 @@ interface Product {
 
 const CATEGORIES = [
     'TÜMÜ',
-    'SAATLER',
+    'DUVAR SAATLERİ',
     'AYDINLATMALAR',
     'VAZO VE SAKSILAR',
     'DÜZENLEYİCİLER'

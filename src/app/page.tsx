@@ -41,7 +41,7 @@ async function getProducts() {
       { id: '1', name: 'Aura Vazo', price: '1250', image: '/images/aura.png', slug: 'aura-vazo', category: 'VAZO VE SAKSILAR', description: 'Minimalist vazo', shopierUrl: '#' },
       { id: '2', name: 'Kora Lamba', price: '1850', image: '/images/kora.png', slug: 'kora-lamba', category: 'AYDINLATMALAR', description: 'Modern lamba', shopierUrl: '#' },
       { id: '3', name: 'Tondo Saksı', price: '450', image: '/images/tondo.png', slug: 'tondo-saksi', category: 'VAZO VE SAKSILAR', description: 'Dairesel saksı', shopierUrl: '#' },
-      { id: '4', name: 'Zaman Saati', price: '950', image: '/images/hero.png', slug: 'zaman-saati', category: 'SAATLER', description: 'Minimalist saat', shopierUrl: '#' },
+      { id: '4', name: 'Zaman Saati', price: '950', image: '/images/hero.png', slug: 'zaman-saati', category: 'DUVAR SAATLERİ', description: 'Minimalist saat', shopierUrl: '#' },
     ];
   }
 }
