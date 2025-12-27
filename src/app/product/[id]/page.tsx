@@ -31,13 +31,19 @@ async function getProduct(idOrSlug: string) {
         // Try by slug first, then by ID
         let product = await prisma.product.findUnique({
             where: { slug: idOrSlug },
-            include: { category: true }
+            include: {
+                category: true,
+                variants: true
+            }
         });
 
         if (!product) {
             product = await prisma.product.findUnique({
                 where: { id: idOrSlug },
-                include: { category: true }
+                include: {
+                    category: true,
+                    variants: true
+                }
             });
         }
 

@@ -12,6 +12,7 @@ import { useCart } from '@/context/cart-context';
 import Breadcrumb from '@/components/breadcrumb';
 import ReviewSection from '@/components/review-section';
 import StockNotifyForm from '@/components/stock-notify-form';
+import VariantSelector from '@/components/variant-selector';
 
 interface ProductData {
     id: string;
@@ -26,6 +27,7 @@ interface ProductData {
     stock: number;
     shopierUrl: string;
     similarProducts: any[];
+    variants?: any[]; // Add variants support
 }
 
 // Mock function to simulate "people viewing"
@@ -35,6 +37,7 @@ export default function ProductPageClient({ product }: { product: ProductData })
     const [viewers] = useState(getRandomViewers());
     const [showSticky, setShowSticky] = useState(false);
     const [selectedImage, setSelectedImage] = useState(0);
+    const [selectedVariant, setSelectedVariant] = useState<any>(null);
     const { addToCart } = useCart();
 
     useEffect(() => {
@@ -45,12 +48,33 @@ export default function ProductPageClient({ product }: { product: ProductData })
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const isOutOfStock = product.stock === 0;
+    // Determine current price and stock based on variant selection
+    const currentPrice = selectedVariant ? selectedVariant.price : product.priceNumber;
+    const currentStock = selectedVariant ? selectedVariant.stock : product.stock;
+    const isOutOfStock = currentStock === 0;
 
     const handleAddToCart = (e: React.MouseEvent) => {
-        e.preventDefault(); // Prevent link navigation if it was a link
+        e.preventDefault();
         if (isOutOfStock) return;
-        addToCart(product);
+
+        // If variants exist but none selected, alert user
+        if (product.variants && product.variants.length > 0 && !selectedVariant) {
+            alert('Lütfen bir seçenek belirleyin');
+            return;
+        }
+
+        // Add to cart with variant info if selected
+        if (selectedVariant) {
+            addToCart(product, 1, {
+                id: selectedVariant.id,
+                name: selectedVariant.title,
+                price: selectedVariant.price,
+                stock: selectedVariant.stock,
+                image: selectedVariant.images?.[0]
+            });
+        } else {
+            addToCart(product);
+        }
     };
 
     return (
@@ -153,7 +177,7 @@ export default function ProductPageClient({ product }: { product: ProductData })
 
                             <h1 className="text-4xl md:text-5xl font-black text-charcoal mb-2">{product.name}</h1>
                             <div className="flex items-center gap-4 mb-6">
-                                <p className="text-3xl font-bold text-sage">{product.price}</p>
+                                <p className="text-3xl font-bold text-sage">{currentPrice.toFixed(2)} ₺</p>
                                 <span className="bg-rose/10 text-rose px-2 py-1 rounded-md text-xs font-bold">Ücretsiz Kargo</span>
                             </div>
 
@@ -165,11 +189,19 @@ export default function ProductPageClient({ product }: { product: ProductData })
                                     <Clock size={18} className="text-orange-600" />
                                     <p className="text-sm font-bold text-orange-800">
                                         Şu an <span className="font-black">{viewers} kişi</span> bu ürünü inceliyor.
-                                        {product.stock < 5 && ` Sadece ${product.stock} adet kaldı!`}
+                                        {currentStock < 5 && ` Sadece ${currentStock} adet kaldı!`}
                                     </p>
                                 </div>
                             )}
                         </div>
+
+                        {/* Variant Selector */}
+                        {product.variants && product.variants.length > 0 && (
+                            <VariantSelector
+                                variants={product.variants}
+                                onSelect={setSelectedVariant}
+                            />
+                        )}
 
                         <div className="prose prose-lg text-charcoal/70">
                             <p>{product.description}</p>
