@@ -149,7 +149,6 @@ export default async function Home() {
 
       <Navbar />
       <Hero />
-      <Stories />
       <ShopTheLook />
       <Philosophy />
       {/* Pass real database products to Collection */}
