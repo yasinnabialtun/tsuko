@@ -64,6 +64,10 @@ export const metadata: Metadata = {
 // Check if Clerk is configured
 const isClerkConfigured = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
+// Force all routes to be dynamic (prevents Clerk prerender errors)
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default function RootLayout({
   children,
 }: {
