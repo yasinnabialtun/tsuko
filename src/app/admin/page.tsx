@@ -1,50 +1,66 @@
-'use client';
-
 import { TrendingUp, Users, ShoppingBag, DollarSign, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { prisma } from '@/lib/prisma';
 
-const STATS = [
-    {
-        label: 'Toplam Ciro',
-        value: '₺124,500',
-        change: '+%12.5',
-        trend: 'up',
-        icon: DollarSign,
-        desc: 'Geçen aya göre'
-    },
-    {
-        label: 'Toplam Sipariş',
-        value: '1,240',
-        change: '+%8.2',
-        trend: 'up',
-        icon: ShoppingBag,
-        desc: 'Aktif sepet oranı yüksek'
-    },
-    {
-        label: 'Aktif Müşteriler',
-        value: '845',
-        change: '+%24',
-        trend: 'up',
-        icon: Users,
-        desc: 'Yeni üye kazanımı'
-    },
-    {
-        label: 'Dönüşüm Oranı',
-        value: '%2.4',
-        change: '-%0.1',
-        trend: 'down',
-        icon: TrendingUp,
-        desc: 'Sektör ortalamasının üstünde'
+async function getStats() {
+    try {
+        const productCount = await prisma.product.count();
+        const orderCount = await prisma.order.count();
+        const totalRevenue = await prisma.order.aggregate({
+            _sum: { totalAmount: true }
+        });
+        const subscriberCount = await prisma.subscriber.count();
+
+        return [
+            {
+                label: 'Toplam Ciro',
+                value: `₺${totalRevenue._sum.totalAmount?.toString() || '0'}`,
+                change: '+%0',
+                trend: 'up',
+                icon: DollarSign,
+                desc: 'Gerçek zamanlı veri'
+            },
+            {
+                label: 'Toplam Sipariş',
+                value: orderCount.toString(),
+                change: '+%0',
+                trend: 'up',
+                icon: ShoppingBag,
+                desc: 'Sistemdeki tüm siparişler'
+            },
+            {
+                label: 'Toplam Ürün',
+                value: productCount.toString(),
+                change: '+%0',
+                trend: 'up',
+                icon: TrendingUp,
+                desc: 'Envanter büyüklüğü'
+            },
+            {
+                label: 'Aboneler',
+                value: subscriberCount.toString(),
+                change: '+%0',
+                trend: 'up',
+                icon: Users,
+                desc: 'Newsletter kitlesi'
+            }
+        ];
+    } catch (e) {
+        return [
+            { label: 'Hata', value: '-', change: '!', trend: 'down', icon: InfoIcon, desc: 'DB Bağlantısı yok' }
+        ];
     }
-];
+}
 
-const RECENT_ORDERS = [
-    { id: '#TR-8842', customer: 'Melis Yılmaz', product: 'Nami Vazo', amount: '₺1.250', status: 'Hazırlanıyor', date: 'Az önce' },
-    { id: '#TR-8841', customer: 'Can Berk', product: 'Mantar Lamba', amount: '₺850', status: 'Kargolandı', date: '2 saat önce' },
-    { id: '#TR-8840', customer: 'Selin Demir', product: 'Kaya Saksı', amount: '₺450', status: 'Teslim Edildi', date: 'Dün' },
-    { id: '#TR-8839', customer: 'Mert Yılman', product: 'Aura Vazo', amount: '₺1.450', status: 'İptal', date: 'Dün' },
-];
+function InfoIcon() { return <div /> }
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+    const STATS = await getStats();
+
+    // Recent orders fetch
+    const RECENT_ORDERS = await prisma.order.findMany({
+        take: 5,
+        orderBy: { createdAt: 'desc' }
+    }).catch(() => []);
     return (
         <div className="space-y-8">
 

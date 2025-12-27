@@ -1,17 +1,19 @@
-'use client';
-
 import Link from 'next/link';
 import Image from 'next/image';
-import { Plus, Search, Filter, MoreHorizontal, Edit2, Archive } from 'lucide-react';
+import { prisma } from '@/lib/prisma';
+import { Plus, Search, Filter, Edit2, Archive } from 'lucide-react';
 
-const PRODUCTS = [
-    { id: 1, name: 'Nami Vazo', price: '₺1.250', stock: 12, status: 'Active', category: 'Vazo', image: '/images/products/nami.png' },
-    { id: 2, name: 'Mantar Lamba', price: '₺850', stock: 5, status: 'Active', category: 'Aydınlatma', image: '/images/products/mantar.png' },
-    { id: 3, name: 'Kaya Saksı', price: '₺450', stock: 0, status: 'Out of Stock', category: 'Saksı', image: '/images/products/kaya.png' },
-    { id: 4, name: 'Aura Vazo', price: '₺1.450', stock: 8, status: 'Active', category: 'Vazo', image: '/images/hero.png' },
-];
+export const revalidate = 0; // Don't cache admin pages
 
-export default function ProductList() {
+async function getProducts() {
+    return await prisma.product.findMany({
+        orderBy: { createdAt: 'desc' },
+        include: { category: true }
+    }).catch(() => []);
+}
+
+export default async function ProductList() {
+    const PRODUCTS = await getProducts();
     return (
         <div className="space-y-8">
             {/* Header */}
@@ -72,8 +74,8 @@ export default function ProductList() {
                                 <td className="px-8 py-4 text-sm font-medium text-charcoal/60">{product.category}</td>
                                 <td className="px-8 py-4">
                                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${product.status === 'Active'
-                                            ? 'bg-green-50 text-green-700 border-green-200'
-                                            : 'bg-gray-100 text-gray-500 border-gray-200'
+                                        ? 'bg-green-50 text-green-700 border-green-200'
+                                        : 'bg-gray-100 text-gray-500 border-gray-200'
                                         }`}>
                                         <span className={`w-1.5 h-1.5 rounded-full ${product.status === 'Active' ? 'bg-green-500' : 'bg-gray-400'}`} />
                                         {product.status === 'Active' ? 'Yayında' : 'Stok Yok'}

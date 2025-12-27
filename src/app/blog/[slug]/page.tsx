@@ -4,18 +4,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
-import { blogPosts } from '@/lib/blog-data';
-import { ArrowLeft, Calendar, User, Clock } from 'lucide-react';
-
-/* 
-  Correctly typed params for Next.js 15/16 App Router.
-  Props is a promise in recent Next.js versions but simple generic typing works for now,
-  or we can await it if we were rigorous. 
-  However, in many recent canary builds, params is a Promise.
-  Let's stick to standard { params: { slug: string } } for now. 
-  If user uses Next 15 specific types, they might need adjustment, 
-  but this usually works for standard App Router usage.
-*/
+import { prisma } from '@/lib/prisma';
+import { ArrowLeft, Calendar, User } from 'lucide-react';
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -23,7 +13,10 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
-    const post = blogPosts.find((p) => p.slug === slug);
+    const post = await prisma.blogPost.findUnique({
+        where: { slug }
+    });
+
     if (!post) return { title: 'Not Found' };
 
     return {
@@ -36,14 +29,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export async function generateStaticParams() {
-    return blogPosts.map((post) => ({
+    const posts = await prisma.blogPost.findMany({
+        select: { slug: true }
+    });
+
+    return posts.map((post) => ({
         slug: post.slug,
     }));
 }
 
 export default async function BlogPostPage({ params }: PageProps) {
     const { slug } = await params;
-    const post = blogPosts.find((p) => p.slug === slug);
+
+    const post = await prisma.blogPost.findUnique({
+        where: { slug }
+    });
 
     if (!post) {
         notFound();
@@ -69,7 +69,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
                     <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-charcoal/60 font-medium">
                         <span className="flex items-center gap-2"><Calendar size={16} /> {post.date}</span>
-                        <span className="flex items-center gap-2"><User size={16} /> {post.author}</span>
+                        <span className="flex items-center gap-2"><User size={16} /> Tsuko Team</span>
                         <span className="flex items-center gap-2 px-3 py-1 bg-white rounded-full border border-black/5 text-clay">{post.category}</span>
                     </div>
                 </div>

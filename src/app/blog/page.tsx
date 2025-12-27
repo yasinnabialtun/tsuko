@@ -1,20 +1,50 @@
-'use client';
-
-import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
-import { BLOG_POSTS } from '@/lib/blog-data';
 import { ArrowRight } from 'lucide-react';
 import { Metadata } from 'next';
+import { prisma } from '@/lib/prisma';
 
 export const metadata: Metadata = {
     title: 'Blog | Tsuko - Modern Dekorasyon Rehberi',
     description: 'Minimalist ev dekorasyonu, sürdürülebilir tasarım trendleri ve yaşam tarzı ipuçları.',
 };
 
-export default function BlogPage() {
+export const revalidate = 3600; // 1 saatte bir yenile
+
+async function getPosts() {
+    try {
+        const posts = await prisma.blogPost.findMany({
+            where: { published: true },
+            orderBy: { createdAt: 'desc' }
+        });
+        return posts;
+    } catch (e) {
+        console.error("Blog DB error:", e);
+        return [];
+    }
+}
+
+export default async function BlogPage() {
+    const posts = await getPosts();
+
+    // Fallback if no posts in DB
+    if (posts.length === 0) {
+        return (
+            <main className="min-h-screen bg-alabaster selection:bg-clay selection:text-white">
+                <Navbar />
+                <section className="pt-40 pb-20 text-center">
+                    <h1 className="text-3xl font-bold">Henüz içerik bulunmuyor.</h1>
+                </section>
+                <Footer />
+            </main>
+        );
+    }
+
+    const featuredPost = posts[0];
+    const otherPosts = posts.slice(1);
+
     return (
         <main className="min-h-screen bg-alabaster selection:bg-clay selection:text-white">
             <Navbar />
@@ -32,25 +62,25 @@ export default function BlogPage() {
                 </div>
             </section>
 
-            {/* Featured Post (First One) */}
+            {/* Featured Post */}
             <section className="px-6 pb-20">
                 <div className="container mx-auto max-w-6xl">
-                    <Link href={`/blog/${BLOG_POSTS[0].slug}`} className="group block relative">
+                    <Link href={`/blog/${featuredPost.slug}`} className="group block relative">
                         <div className="relative w-full aspect-[21/9] rounded-[2rem] overflow-hidden mb-6">
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
-                            <Image src={BLOG_POSTS[0].coverImage} alt={BLOG_POSTS[0].title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                            <Image src={featuredPost.coverImage} alt={featuredPost.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
                         </div>
                         <div className="max-w-3xl">
                             <div className="flex items-center gap-4 text-sm font-medium text-charcoal/50 mb-3">
-                                <span className="text-clay font-bold">{BLOG_POSTS[0].category}</span>
+                                <span className="text-clay font-bold">{featuredPost.category}</span>
                                 <span>•</span>
-                                <span>{BLOG_POSTS[0].date}</span>
+                                <span>{featuredPost.date}</span>
                             </div>
                             <h2 className="text-3xl md:text-4xl font-bold text-charcoal group-hover:text-clay transition-colors mb-4">
-                                {BLOG_POSTS[0].title}
+                                {featuredPost.title}
                             </h2>
                             <p className="text-lg text-charcoal/70 line-clamp-2 mb-4">
-                                {BLOG_POSTS[0].excerpt}
+                                {featuredPost.excerpt}
                             </p>
                             <span className="inline-flex items-center gap-2 font-bold text-charcoal border-b-2 border-charcoal pb-0.5 group-hover:text-clay group-hover:border-clay transition-all">
                                 Okumaya Devam Et <ArrowRight size={18} />
@@ -61,31 +91,33 @@ export default function BlogPage() {
             </section>
 
             {/* Post Grid */}
-            <section className="px-6 pb-32">
-                <div className="container mx-auto max-w-6xl grid md:grid-cols-2 gap-12">
-                    {BLOG_POSTS.slice(1).map((post) => (
-                        <Link href={`/blog/${post.slug}`} key={post.id} className="group block">
-                            <div className="relative w-full aspect-[4/3] rounded-[2rem] overflow-hidden mb-6 bg-white">
-                                <Image src={post.coverImage} alt={post.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-                            </div>
-                            <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-wider text-charcoal/40 mb-3">
-                                <span className="text-clay">{post.category}</span>
-                                <span>•</span>
-                                <span>{post.date}</span>
-                            </div>
-                            <h3 className="text-2xl font-bold text-charcoal group-hover:text-clay transition-colors mb-3 leading-tight">
-                                {post.title}
-                            </h3>
-                            <p className="text-charcoal/60 line-clamp-2 mb-4">
-                                {post.excerpt}
-                            </p>
-                            <span className="text-sm font-bold text-charcoal group-hover:translate-x-2 transition-transform inline-flex items-center gap-1">
-                                İncele <ArrowRight size={14} />
-                            </span>
-                        </Link>
-                    ))}
-                </div>
-            </section>
+            {otherPosts.length > 0 && (
+                <section className="px-6 pb-32">
+                    <div className="container mx-auto max-w-6xl grid md:grid-cols-2 gap-12">
+                        {otherPosts.map((post) => (
+                            <Link href={`/blog/${post.slug}`} key={post.id} className="group block">
+                                <div className="relative w-full aspect-[4/3] rounded-[2rem] overflow-hidden mb-6 bg-white">
+                                    <Image src={post.coverImage} alt={post.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                                </div>
+                                <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-wider text-charcoal/40 mb-3">
+                                    <span className="text-clay">{post.category}</span>
+                                    <span>•</span>
+                                    <span>{post.date}</span>
+                                </div>
+                                <h3 className="text-2xl font-bold text-charcoal group-hover:text-clay transition-colors mb-3 leading-tight">
+                                    {post.title}
+                                </h3>
+                                <p className="text-charcoal/60 line-clamp-2 mb-4">
+                                    {post.excerpt}
+                                </p>
+                                <span className="text-sm font-bold text-charcoal group-hover:translate-x-2 transition-transform inline-flex items-center gap-1">
+                                    İncele <ArrowRight size={14} />
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
+                </section>
+            )}
 
             <Footer />
         </main>
