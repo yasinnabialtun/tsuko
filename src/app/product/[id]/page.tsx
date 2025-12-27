@@ -19,7 +19,7 @@ export async function generateStaticParams() {
             where: { isActive: true },
             select: { slug: true }
         });
-        return products.map((p) => ({ id: p.slug }));
+        return products.map((p: { slug: string }) => ({ id: p.slug }));
     } catch {
         return [];
     }
@@ -78,7 +78,7 @@ async function getSimilarProducts(currentProductId: string, categoryId: string) 
             const randomProducts = await prisma.product.findMany({
                 where: {
                     isActive: true,
-                    id: { not: currentProductId, notIn: products.map(p => p.id) }
+                    id: { not: currentProductId, notIn: products.map((p: { id: string }) => p.id) }
                 },
                 take: 3 - products.length,
                 select: {
@@ -92,7 +92,7 @@ async function getSimilarProducts(currentProductId: string, categoryId: string) 
             products.push(...randomProducts);
         }
 
-        return products.map(p => ({
+        return products.map((p: { id: string; name: string; price: any; images: string[]; slug: string }) => ({
             id: p.id,
             name: p.name,
             price: `${p.price.toString()} ₺`,
