@@ -20,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
     // Dynamic Products
-    let products = [];
+    let products: MetadataRoute.Sitemap = [];
     try {
         const productData = await prisma.product.findMany({
             where: { isActive: true },
@@ -37,7 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
 
     // Dynamic Blog Posts
-    let posts = [];
+    let posts: MetadataRoute.Sitemap = [];
     try {
         const postData = await prisma.blogPost.findMany({
             where: { published: true },

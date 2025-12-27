@@ -4,9 +4,9 @@ import { createContext, useContext, useEffect, useState } from 'react';
 
 interface WishlistContextType {
     items: string[];
-    addItem: (id: string) => void;
-    removeItem: (id: string) => void;
-    hasItem: (id: string) => boolean;
+    addToWishlist: (id: string) => void;
+    removeFromWishlist: (id: string) => void;
+    isInWishlist: (id: string) => boolean;
 }
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
@@ -27,20 +27,20 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('tsuko-wishlist', JSON.stringify(items));
     }, [items]);
 
-    const addItem = (id: string) => {
+    const addToWishlist = (id: string) => {
         if (!items.includes(id)) {
             setItems([...items, id]);
         }
     };
 
-    const removeItem = (id: string) => {
+    const removeFromWishlist = (id: string) => {
         setItems(items.filter((i) => i !== id));
     };
 
-    const hasItem = (id: string) => items.includes(id);
+    const isInWishlist = (id: string) => items.includes(id);
 
     return (
-        <WishlistContext.Provider value={{ items, addItem, removeItem, hasItem }}>
+        <WishlistContext.Provider value={{ items, addToWishlist, removeFromWishlist, isInWishlist }}>
             {children}
         </WishlistContext.Provider>
     );
