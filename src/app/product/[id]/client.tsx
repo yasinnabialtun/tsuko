@@ -11,6 +11,7 @@ import BundleSuggester from '@/components/bundle-suggester';
 import { useCart } from '@/context/cart-context';
 import Breadcrumb from '@/components/breadcrumb';
 import ReviewSection from '@/components/review-section';
+import StockNotifyForm from '@/components/stock-notify-form';
 
 interface ProductData {
     id: string;
@@ -73,17 +74,15 @@ export default function ProductPageClient({ product }: { product: ProductData })
                             </div>
                         </div>
                         <div className="flex-grow md:flex-grow-0 md:w-auto w-full">
-                            <button
-                                onClick={handleAddToCart}
-                                disabled={isOutOfStock}
-                                className={`w-full md:w-auto px-8 py-3 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 ${isOutOfStock
-                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                    : 'bg-charcoal text-white hover:bg-black'
-                                    }`}
-                            >
-                                <ShoppingBag size={18} />
-                                {isOutOfStock ? 'Stokta Yok' : 'Sepete Ekle'}
-                            </button>
+                            {!isOutOfStock && (
+                                <button
+                                    onClick={handleAddToCart}
+                                    className="w-full md:w-auto px-8 py-3 bg-charcoal text-white rounded-xl font-bold hover:bg-black transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <ShoppingBag size={18} />
+                                    Sepete Ekle
+                                </button>
+                            )}
                         </div>
                     </motion.div>
                 )}
@@ -160,12 +159,7 @@ export default function ProductPageClient({ product }: { product: ProductData })
 
                             {/* Stock Warning or Urgency */}
                             {isOutOfStock ? (
-                                <div className="bg-red-50 border border-red-200 p-3 rounded-xl flex items-center gap-3">
-                                    <AlertCircle size={18} className="text-red-600" />
-                                    <p className="text-sm font-bold text-red-800">
-                                        Bu ürün şu an stokta yok. Yeniden stoklandığında haberdar olmak için bültene abone olun.
-                                    </p>
-                                </div>
+                                <StockNotifyForm productId={product.id} />
                             ) : (
                                 <div className="bg-orange-50 border border-orange-100 p-3 rounded-xl flex items-center gap-3 animate-pulse">
                                     <Clock size={18} className="text-orange-600" />
@@ -207,17 +201,15 @@ export default function ProductPageClient({ product }: { product: ProductData })
                         <div className="space-y-6">
                             <CouponValidation />
 
-                            <button
-                                onClick={handleAddToCart}
-                                disabled={isOutOfStock}
-                                className={`w-full flex items-center justify-center gap-3 py-6 rounded-2xl text-xl font-bold transition-all shadow-xl ${isOutOfStock
-                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none'
-                                    : 'bg-charcoal text-white hover:bg-black hover:shadow-2xl hover:-translate-y-1 shadow-charcoal/10'
-                                    }`}
-                            >
-                                <ShoppingBag size={24} />
-                                {isOutOfStock ? 'Stokta Yok' : 'Sepete Ekle'}
-                            </button>
+                            {!isOutOfStock && (
+                                <button
+                                    onClick={handleAddToCart}
+                                    className="w-full flex items-center justify-center gap-3 py-6 rounded-2xl text-xl font-bold transition-all shadow-xl bg-charcoal text-white hover:bg-black hover:shadow-2xl hover:-translate-y-1 shadow-charcoal/10"
+                                >
+                                    <ShoppingBag size={24} />
+                                    Sepete Ekle
+                                </button>
+                            )}
 
                             <p className="text-[10px] text-center text-charcoal/40 flex items-center justify-center gap-2">
                                 <ShieldCheck size={12} />
