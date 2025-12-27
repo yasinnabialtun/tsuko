@@ -18,25 +18,43 @@ export async function POST(request: Request) {
             );
         }
 
-        // Check if already subscribed
-        const existingSubscriber = await prisma.subscriber.findUnique({
-            where: { email }
-        });
+        let subscriberId = null;
+        let alreadySubscribed = false;
 
-        if (existingSubscriber) {
+        // Try database operations with timeout
+        try {
+            // Check if already subscribed
+            const existingSubscriber = await Promise.race([
+                prisma.subscriber.findUnique({ where: { email } }),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('DB Timeout')), 5000))
+            ]) as any;
+
+            if (existingSubscriber) {
+                alreadySubscribed = true;
+            } else {
+                // Create new subscriber
+                const subscriber = await Promise.race([
+                    prisma.subscriber.create({
+                        data: {
+                            email,
+                            source: 'website_newsletter'
+                        }
+                    }),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('DB Timeout')), 5000))
+                ]) as any;
+                subscriberId = subscriber?.id;
+            }
+        } catch (dbError) {
+            console.error('Database operation failed:', dbError);
+            // Continue without database - still send welcome email
+        }
+
+        if (alreadySubscribed) {
             return NextResponse.json(
                 { message: 'Bu e-posta adresi zaten kayıtlı.', alreadySubscribed: true },
                 { status: 200 }
             );
         }
-
-        // Create new subscriber
-        const subscriber = await prisma.subscriber.create({
-            data: {
-                email,
-                source: 'website_newsletter'
-            }
-        });
 
         // Send welcome email with discount code
         try {
@@ -53,7 +71,7 @@ export async function POST(request: Request) {
         return NextResponse.json(
             {
                 message: 'Bültene başarıyla abone oldunuz!',
-                subscriberId: subscriber.id
+                subscriberId
             },
             { status: 201 }
         );
@@ -69,19 +87,24 @@ export async function POST(request: Request) {
 // GET - List subscribers (admin only - add auth later)
 export async function GET() {
     try {
-        const subscribers = await prisma.subscriber.findMany({
-            orderBy: { createdAt: 'desc' },
-            take: 100
-        });
+        const subscribers = await Promise.race([
+            prisma.subscriber.findMany({
+                orderBy: { createdAt: 'desc' },
+                take: 100
+            }),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('DB Timeout')), 5000))
+        ]) as any[];
 
         return NextResponse.json({
-            total: subscribers.length,
-            subscribers
+            total: subscribers?.length || 0,
+            subscribers: subscribers || []
         });
     } catch (error) {
-        return NextResponse.json(
-            { error: 'Error fetching subscribers' },
-            { status: 500 }
-        );
+        console.error('Subscribers fetch error:', error);
+        return NextResponse.json({
+            total: 0,
+            subscribers: [],
+            error: 'Database connection failed'
+        });
     }
 }
