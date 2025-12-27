@@ -8,49 +8,45 @@ export function getWelcomeEmailHtml(email: string): string {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tsuko Design'a Hoş Geldiniz</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #FDFBF7; color: #2C2C2C;">
+<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #FDFBF7; color: #4A4A4A;">
     <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FDFBF7; padding: 40px 20px;">
         <tr>
             <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
                     <!-- Header -->
                     <tr>
-                        <td style="padding: 40px; text-align: center; background: linear-gradient(135deg, #2C2C2C 0%, #404040 100%);">
-                            <h1 style="margin: 0; color: #FFFFFF; font-size: 28px; font-weight: 800;">TSUKO DESIGN</h1>
-                            <p style="margin: 10px 0 0; color: rgba(255,255,255,0.7); font-size: 14px;">Mimari Estetik, Evinize Taşındı</p>
+                        <td style="padding: 50px 40px; text-align: center; background-color: #FAFAFA; border-bottom: 1px solid #EAEAEA;">
+                            <h1 style="margin: 0; color: #2C2C2C; font-size: 26px; font-weight: 800; letter-spacing: -0.5px;">TSUKO DESIGN</h1>
+                            <p style="margin: 10px 0 0; color: #888888; font-size: 14px; font-weight: 500;">Mimari Estetik, Evinize Taşındı</p>
                         </td>
                     </tr>
                     
                     <!-- Content -->
                     <tr>
                         <td style="padding: 50px 40px;">
-                            <h2 style="margin: 0 0 20px; color: #2C2C2C; font-size: 24px; font-weight: 700;">Ailemize Hoş Geldiniz! 🎉</h2>
+                            <h2 style="margin: 0 0 20px; color: #2C2C2C; font-size: 22px; font-weight: 700;">Ailemize Hoş Geldiniz! 🌿</h2>
                             
-                            <p style="margin: 0 0 20px; color: #666; font-size: 16px; line-height: 1.7;">
+                            <p style="margin: 0 0 25px; color: #666; font-size: 16px; line-height: 1.7;">
                                 Merhaba,<br><br>
-                                Tsuko Design bültenine abone olduğunuz için teşekkür ederiz! Artık yeni koleksiyonlardan, özel kampanyalardan ve dekorasyon ilhamlarından ilk siz haberdar olacaksınız.
+                                Tsuko Design bültenine abone olduğunuz için teşekkür ederiz. Sürdürülebilir tasarım yolculuğumuzda bize katıldığınız için çok mutluyuz.
                             </p>
                             
                             <!-- Discount Code Box -->
-                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 35px 0;">
                                 <tr>
-                                    <td style="background: linear-gradient(135deg, #CD8B62 0%, #B67A55 100%); padding: 30px; border-radius: 12px; text-align: center;">
-                                        <p style="margin: 0 0 10px; color: rgba(255,255,255,0.9); font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">Size Özel %10 İndirim</p>
-                                        <p style="margin: 0; color: #FFFFFF; font-size: 32px; font-weight: 800; letter-spacing: 4px;">HOSGELDIN10</p>
-                                        <p style="margin: 15px 0 0; color: rgba(255,255,255,0.7); font-size: 12px;">İlk siparişinizde geçerli</p>
+                                    <td style="background-color: #F5EBE0; border: 1px solid #E6D5C3; padding: 35px; border-radius: 16px; text-align: center;">
+                                        <p style="margin: 0 0 10px; color: #8D7B68; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700;">Size Özel Tanışma Hediyesi</p>
+                                        <p style="margin: 0; color: #2C2C2C; font-size: 36px; font-weight: 800; letter-spacing: 2px;">HOSGELDIN10</p>
+                                        <p style="margin: 15px 0 0; color: #8D7B68; font-size: 13px;">Tüm siparişlerde %10 indirim sağlar</p>
                                     </td>
                                 </tr>
                             </table>
-                            
-                            <p style="margin: 0 0 30px; color: #666; font-size: 16px; line-height: 1.7;">
-                                Bu kodu ödeme sayfasında kullanarak tüm ürünlerde %10 indirim kazanabilirsiniz.
-                            </p>
                             
                             <!-- CTA Button -->
                             <table width="100%" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td style="text-align: center;">
-                                        <a href="https://tsukodesign.com" style="display: inline-block; background-color: #2C2C2C; color: #FFFFFF; padding: 16px 40px; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 14px;">Koleksiyonu Keşfet →</a>
+                                        <a href="https://tsukodesign.com" style="display: inline-block; background-color: #D4A373; color: #FFFFFF; padding: 18px 45px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 14px; box-shadow: 0 4px 15px rgba(212, 163, 115, 0.3);">Koleksiyonu Keşfet →</a>
                                     </td>
                                 </tr>
                             </table>
@@ -59,20 +55,19 @@ export function getWelcomeEmailHtml(email: string): string {
                     
                     <!-- Footer -->
                     <tr>
-                        <td style="padding: 30px 40px; background-color: #F9F9F9; border-top: 1px solid #EEE;">
+                        <td style="padding: 30px 40px; background-color: #FAFAFA; border-top: 1px solid #EAEAEA;">
                             <table width="100%" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td style="text-align: center;">
-                                        <p style="margin: 0 0 10px; color: #999; font-size: 12px;">
+                                        <p style="margin: 0; color: #999; font-size: 12px;">
+                                            Bu e-posta ${email} adresine gönderilmiştir.
+                                            <br>
                                             © 2025 Tsuko Design. Tüm hakları saklıdır.
                                         </p>
-                                        <p style="margin: 0; color: #999; font-size: 12px;">
-                                            Bu e-postayı ${email} adresine gönderdik.
-                                        </p>
-                                        <p style="margin: 10px 0 0;">
-                                            <a href="https://tsukodesign.com" style="color: #CD8B62; text-decoration: none; font-size: 12px;">Web Sitesi</a>
-                                            &nbsp;|&nbsp;
-                                            <a href="https://instagram.com/tsukodesign" style="color: #CD8B62; text-decoration: none; font-size: 12px;">Instagram</a>
+                                        <p style="margin: 15px 0 0;">
+                                            <a href="https://tsukodesign.com" style="color: #D4A373; text-decoration: none; font-size: 12px; font-weight: 600;">Web Sitesi</a>
+                                            <span style="color: #DDD; margin: 0 10px;">|</span>
+                                            <a href="https://instagram.com/tsukodesign" style="color: #D4A373; text-decoration: none; font-size: 12px; font-weight: 600;">Instagram</a>
                                         </p>
                                     </td>
                                 </tr>
@@ -97,11 +92,11 @@ export function getOrderConfirmationEmailHtml(order: {
 }): string {
     const itemsHtml = order.items.map(item => `
         <tr>
-            <td style="padding: 12px 0; border-bottom: 1px solid #EEE;">
-                <p style="margin: 0; font-weight: 600; color: #2C2C2C;">${item.name}</p>
-                <p style="margin: 4px 0 0; color: #999; font-size: 14px;">Adet: ${item.quantity}</p>
+            <td style="padding: 16px 0; border-bottom: 1px solid #F0F0F0;">
+                <p style="margin: 0; font-weight: 600; color: #4A4A4A; font-size: 15px;">${item.name}</p>
+                <p style="margin: 4px 0 0; color: #9CA3AF; font-size: 13px;">Adet: ${item.quantity}</p>
             </td>
-            <td style="padding: 12px 0; border-bottom: 1px solid #EEE; text-align: right; font-weight: 600; color: #2C2C2C;">
+            <td style="padding: 16px 0; border-bottom: 1px solid #F0F0F0; text-align: right; font-weight: 600; color: #2C2C2C; font-size: 15px;">
                 ₺${item.price}
             </td>
         </tr>
@@ -115,43 +110,45 @@ export function getOrderConfirmationEmailHtml(order: {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sipariş Onayı - Tsuko Design</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #FDFBF7; color: #2C2C2C;">
+<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #FDFBF7; color: #4A4A4A;">
     <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FDFBF7; padding: 40px 20px;">
         <tr>
             <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-                    <!-- Header -->
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+                    <!-- Header - Pastel Clay -->
                     <tr>
-                        <td style="padding: 40px; text-align: center; background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);">
-                            <p style="margin: 0 0 10px; font-size: 40px;">✓</p>
-                            <h1 style="margin: 0; color: #FFFFFF; font-size: 24px; font-weight: 800;">Siparişiniz Alındı!</h1>
-                            <p style="margin: 10px 0 0; color: rgba(255,255,255,0.9); font-size: 16px;">Sipariş No: ${order.orderNumber}</p>
+                        <td style="padding: 50px 40px; text-align: center; background-color: #E6D5C3;">
+                            <div style="width: 60px; height: 60px; line-height: 60px; background: #FFFFFF; border-radius: 50%; display: inline-block; font-size: 24px; color: #D4A373; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">✓</div>
+                            <h1 style="margin: 0; color: #5D4037; font-size: 24px; font-weight: 800;">Siparişiniz Alındı!</h1>
+                            <p style="margin: 10px 0 0; color: #8D7B68; font-size: 15px; font-weight: 500;">Sipariş No: ${order.orderNumber}</p>
                         </td>
                     </tr>
                     
                     <!-- Content -->
                     <tr>
                         <td style="padding: 40px;">
-                            <p style="margin: 0 0 20px; color: #666; font-size: 16px;">
+                            <p style="margin: 0 0 25px; color: #666; font-size: 16px; line-height: 1.6;">
                                 Sayın ${order.customerName},<br><br>
-                                Siparişiniz için teşekkür ederiz! Siparişinizi en kısa sürede hazırlayıp kargoya vereceğiz.
+                                Harika seçim! Siparişinizi özenle hazırlamaya başlıyoruz. Süreçle ilgili sizi bilgilendirmeye devam edeceğiz.
                             </p>
                             
                             <!-- Order Summary -->
-                            <h3 style="margin: 30px 0 15px; color: #2C2C2C; font-size: 18px; font-weight: 700;">Sipariş Özeti</h3>
-                            <table width="100%" cellpadding="0" cellspacing="0">
-                                ${itemsHtml}
-                                <tr>
-                                    <td style="padding: 15px 0 0; font-weight: 800; color: #2C2C2C; font-size: 18px;">Toplam</td>
-                                    <td style="padding: 15px 0 0; text-align: right; font-weight: 800; color: #CD8B62; font-size: 18px;">₺${order.totalAmount}</td>
-                                </tr>
-                            </table>
+                            <div style="background-color: #FAFAFA; border-radius: 12px; padding: 30px;">
+                                <h3 style="margin: 0 0 15px; color: #2C2C2C; font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Sipariş Özeti</h3>
+                                <table width="100%" cellpadding="0" cellspacing="0">
+                                    ${itemsHtml}
+                                    <tr>
+                                        <td style="padding: 20px 0 0; font-weight: 700; color: #2C2C2C; font-size: 16px;">Genel Toplam</td>
+                                        <td style="padding: 20px 0 0; text-align: right; font-weight: 800; color: #D4A373; font-size: 20px;">₺${order.totalAmount}</td>
+                                    </tr>
+                                </table>
+                            </div>
                             
                             <!-- Track Order -->
-                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 30px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 35px;">
                                 <tr>
                                     <td style="text-align: center;">
-                                        <a href="https://tsukodesign.com/order-tracking" style="display: inline-block; background-color: #2C2C2C; color: #FFFFFF; padding: 16px 40px; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 14px;">Siparişimi Takip Et →</a>
+                                        <a href="https://tsukodesign.com/order-tracking?id=${order.orderNumber}" style="display: inline-block; background-color: #2C2C2C; color: #FFFFFF; padding: 16px 40px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 14px;">Siparişimi Görüntüle →</a>
                                     </td>
                                 </tr>
                             </table>
@@ -160,10 +157,8 @@ export function getOrderConfirmationEmailHtml(order: {
                     
                     <!-- Footer -->
                     <tr>
-                        <td style="padding: 30px 40px; background-color: #F9F9F9; border-top: 1px solid #EEE; text-align: center;">
-                            <p style="margin: 0; color: #999; font-size: 12px;">
-                                Sorularınız için: info@tsukodesign.com
-                            </p>
+                        <td style="padding: 30px; background-color: #FAFAFA; border-top: 1px solid #EAEAEA; text-align: center;">
+                            <p style="margin: 0; color: #999; font-size: 12px;">© 2025 Tsuko Design</p>
                         </td>
                     </tr>
                 </table>
@@ -189,46 +184,46 @@ export function getOrderShippedEmailHtml(order: {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Siparişiniz Kargoya Verildi - Tsuko Design</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #FDFBF7; color: #2C2C2C;">
+<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #FDFBF7; color: #4A4A4A;">
     <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FDFBF7; padding: 40px 20px;">
         <tr>
             <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-                    <!-- Header -->
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+                    <!-- Header - Pastel Sage Green -->
                     <tr>
-                        <td style="padding: 40px; text-align: center; background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);">
-                            <p style="margin: 0 0 10px; font-size: 40px;">📦</p>
-                            <h1 style="margin: 0; color: #FFFFFF; font-size: 24px; font-weight: 800;">Siparişiniz Yola Çıktı!</h1>
+                        <td style="padding: 50px 40px; text-align: center; background-color: #CCD5AE;">
+                            <div style="width: 60px; height: 60px; line-height: 60px; background: #FFFFFF; border-radius: 50%; display: inline-block; font-size: 28px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">📦</div>
+                            <h1 style="margin: 0; color: #3A4735; font-size: 24px; font-weight: 800;">Siparişiniz Yola Çıktı!</h1>
                         </td>
                     </tr>
                     
                     <!-- Content -->
                     <tr>
                         <td style="padding: 40px;">
-                            <p style="margin: 0 0 20px; color: #666; font-size: 16px;">
+                            <p style="margin: 0 0 25px; color: #666; font-size: 16px; line-height: 1.6;">
                                 Sayın ${order.customerName},<br><br>
-                                ${order.orderNumber} numaralı siparişiniz kargoya verildi ve yola çıktı!
+                                Güzel haberi sizinle paylaşmak istedik: #${order.orderNumber} numaralı siparişiniz kuryeye teslim edildi.
                             </p>
                             
-                            <!-- Tracking Number -->
+                            <!-- Tracking Number Box -->
                             <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
                                 <tr>
-                                    <td style="background-color: #F3F4F6; padding: 25px; border-radius: 12px; text-align: center;">
-                                        <p style="margin: 0 0 8px; color: #666; font-size: 14px;">Kargo Takip Numarası</p>
-                                        <p style="margin: 0; color: #2C2C2C; font-size: 24px; font-weight: 800; font-family: monospace;">${order.trackingNumber}</p>
+                                    <td style="background-color: #FEFAE0; border: 1px solid #E9EDC9; padding: 30px; border-radius: 16px; text-align: center;">
+                                        <p style="margin: 0 0 10px; color: #78856E; font-size: 13px; font-weight: 600; text-transform: uppercase;">Kargo Takip Numaranız</p>
+                                        <p style="margin: 0; color: #2C2C2C; font-size: 26px; font-weight: 800; font-family: monospace; letter-spacing: 2px;">${order.trackingNumber}</p>
                                     </td>
                                 </tr>
                             </table>
                             
-                            <p style="margin: 0 0 30px; color: #666; font-size: 16px;">
-                                Siparişiniz 2-4 iş günü içinde adresinize teslim edilecektir.
+                            <p style="margin: 0 0 35px; color: #666; font-size: 15px; text-align: center;">
+                                Siparişiniz 2-4 iş günü içinde adresinize ulaşacaktır.
                             </p>
                             
                             <!-- CTA Button -->
                             <table width="100%" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td style="text-align: center;">
-                                        <a href="https://tsukodesign.com/order-tracking" style="display: inline-block; background-color: #2C2C2C; color: #FFFFFF; padding: 16px 40px; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 14px;">Kargo Takibi →</a>
+                                        <a href="https://tsukodesign.com/order-tracking" style="display: inline-block; background-color: #2C2C2C; color: #FFFFFF; padding: 16px 40px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 14px;">Kargomu Takip Et →</a>
                                     </td>
                                 </tr>
                             </table>
@@ -237,10 +232,8 @@ export function getOrderShippedEmailHtml(order: {
                     
                     <!-- Footer -->
                     <tr>
-                        <td style="padding: 30px 40px; background-color: #F9F9F9; border-top: 1px solid #EEE; text-align: center;">
-                            <p style="margin: 0; color: #999; font-size: 12px;">
-                                © 2025 Tsuko Design
-                            </p>
+                        <td style="padding: 30px; background-color: #FAFAFA; border-top: 1px solid #EAEAEA; text-align: center;">
+                            <p style="margin: 0; color: #999; font-size: 12px;">© 2025 Tsuko Design</p>
                         </td>
                     </tr>
                 </table>
