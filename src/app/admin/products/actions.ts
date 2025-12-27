@@ -16,7 +16,7 @@ export async function createProduct(formData: any) {
         const stock = parseInt(formData.stock?.toString() || '0');
         const categoryId = formData.categoryId || null;
 
-        await prisma.product.create({
+        const product = await prisma.product.create({
             data: {
                 name: formData.name,
                 slug: formData.slug || formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
@@ -29,6 +29,24 @@ export async function createProduct(formData: any) {
                 isFeatured: formData.isFeatured,
             }
         });
+
+        // Create Variants if provided
+        if (formData.variants && formData.variants.length > 0) {
+            const variantData = formData.variants.map((v: any) => ({
+                productId: product.id,
+                title: v.title,
+                sku: v.sku,
+                price: parseFloat(v.price.toString()),
+                stock: parseInt(v.stock.toString()),
+                weight: v.weight ? parseFloat(v.weight.toString()) : null,
+                attributes: v.attributes || {},
+                images: v.images || [],
+            }));
+
+            await prisma.productVariant.createMany({
+                data: variantData
+            });
+        }
 
         revalidatePath('/admin/products');
         revalidatePath('/'); // Home page might show products

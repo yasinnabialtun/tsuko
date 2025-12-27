@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Save, Loader2, X, Check } from 'lucide-react';
 import Link from 'next/link';
 import ImageUploader from '@/components/admin/image-uploader';
+import VariantManager, { ProductVariant } from '@/components/admin/variant-manager';
 import { createProduct } from '../actions';
 
 interface Category {
@@ -27,6 +28,7 @@ export default function NewProductPage() {
         stock: 10,
         categoryId: '',
         images: [] as string[],
+        variants: [] as ProductVariant[],
         isActive: true,
         isFeatured: false,
         seoTitle: '',
@@ -245,6 +247,12 @@ export default function NewProductPage() {
                         label="Ürün Görselleri *"
                     />
                 </div>
+
+                {/* Variants */}
+                <VariantManager
+                    variants={formData.variants}
+                    onChange={(variants) => setFormData(prev => ({ ...prev, variants }))}
+                />
 
                 {/* Status */}
                 <div className="bg-white rounded-2xl border border-gray-100 p-8">
