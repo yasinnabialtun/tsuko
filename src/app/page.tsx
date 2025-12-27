@@ -18,26 +18,29 @@ async function getProducts() {
   // If database fails (during build or no connection), return empty array or fallback
   try {
     const products = await prisma.product.findMany({
-      where: { isActive: true, isFeatured: true }, // Only fetch featured active products
+      where: { isActive: true, isFeatured: true },
       take: 8,
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      include: { category: true }
     });
 
-    // Transform Decimal to number/string for serialization if needed, or keep as is if component handles it.
-    // For simplicity in this demo, we'll map basic fields.
-    return products.map(p => ({
+    // Transform Prisma objects to plain JS objects for the frontend
+    return products.map((p: any) => ({
       ...p,
-      price: p.price.toString(), // Convert Decimal to string
-      image: p.images[0] || '/images/hero.png' // Fallback image
+      id: p.id,
+      name: p.name,
+      price: `${p.price.toString()} ₺`, // Match mock format
+      image: p.images[0] || '/images/hero.png',
+      category: p.category?.name || 'Tasarım', // Convert object to string name
+      description: p.description
     }));
   } catch (e) {
     console.error("Database connection failed, returning fallback data");
     // Fallback Mock Data for Development/Build Safety
     return [
-      { id: '1', name: 'Nami Vazo', price: '1250', image: '/images/products/nami.png', slug: 'nami-vazo', categoryId: 'cat_1' },
-      { id: '2', name: 'Mantar Lamba', price: '850', image: '/images/products/mantar.png', slug: 'mantar-lamba', categoryId: 'cat_2' },
-      { id: '3', name: 'Kaya Saksı', price: '450', image: '/images/products/kaya.png', slug: 'kaya-saksi', categoryId: 'cat_3' },
-      // ... add more fallbacks if needed
+      { id: '1', name: 'Nami Vazo', price: '1250', image: '/images/products/nami.png', slug: 'nami-vazo', categoryId: 'cat_1', description: 'Minimalist vazo', shopierUrl: '#' },
+      { id: '2', name: 'Mantar Lamba', price: '850', image: '/images/products/mantar.png', slug: 'mantar-lamba', categoryId: 'cat_2', description: 'Mantar lamba', shopierUrl: '#' },
+      { id: '3', name: 'Kaya Saksı', price: '450', image: '/images/products/kaya.png', slug: 'kaya-saksi', categoryId: 'cat_3', description: 'Kaya saksı', shopierUrl: '#' },
     ];
   }
 }
@@ -62,20 +65,20 @@ export default async function Home() {
   const productListSchema = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    itemListElement: products.map((product, index) => ({
+    itemListElement: products.map((product: any, index: number) => ({
       '@type': 'ListItem',
       position: index + 1,
       item: {
         '@type': 'Product',
         name: product.name,
-        description: product.description,
+        description: product.description || '',
         image: `https://tsukodesign.com${product.image}`,
         offers: {
           '@type': 'Offer',
           priceCurrency: 'TRY',
-          price: product.price.replace(' ₺', '').replace('.', ''), // Convert "1.250 ₺" to "1250"
+          price: String(product.price).replace(/[^\d]/g, ''),
           availability: 'https://schema.org/InStock',
-          url: product.shopierUrl
+          url: product.shopierUrl || ''
         }
       }
     }))
@@ -87,10 +90,18 @@ export default async function Home() {
     mainEntity: [
       {
         '@type': 'Question',
-        name: 'Modern ev dekorasyonunda hangi aksesuarlar trend?',
+        name: 'Ürünler kırılır mı, garanti var mı?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: "2025 yılı ev dekorasyon trendlerinde, seri üretim yerine hikayesi olan tasarım ev ürünleri öne çıkıyor. Tsuko Design olarak, 'Pastel Brütalizm' akımını benimsiyoruz; yani mimari ve sert formların (beton etkisi), yumuşak pastel renklerle buluştuğu vazo ve aydınlatma modelleri, modern salon aksesuarları arasında en çok tercih edilenlerdir."
+          text: 'Kullandığımız biyo-polimer materyal, cam veya seramiğe göre çok daha dayanıklıdır. Yine de kargo kaynaklı hasarlarda %100 kırılma garantisi sunuyoruz. Hasarlı ürün gelirse fotoğraf paylaşmanız yeterli, hemen yenisini gönderiyoruz.'
+        }
+      },
+      {
+        '@type': 'Question',
+        name: 'Kargo ücretsiz mi, ne zaman teslim edilir?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Evet, Türkiye genelinde ücretsiz kargo sunuyoruz. Siparişleriniz 1-3 iş günü içinde kargoya verilir ve ortalama 2-4 iş gününde elinize ulaşır.'
         }
       },
       {
@@ -98,15 +109,23 @@ export default async function Home() {
         name: '3D baskı ev ürünleri dayanıklı mıdır?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Kesinlikle. Kullandığımız mimari sınıf biyo-polimerler, geleneksel seramik veya cam ev aksesuarlarına göre darbelere karşı daha dirençlidir. Hem hafif hem de sağlam yapılarıyla, uzun ömürlü bir ev dekor deneyimi sunar.'
+          text: 'Kesinlikle. Kullandığımız mimari sınıf biyo-polimerler (PLA+), geleneksel seramik veya cam ev aksesuarlarına göre darbelere karşı daha dirençlidir. UV dayanımlı, su geçirmez ve uzun ömürlüdür.'
         }
       },
       {
         '@type': 'Question',
-        name: 'Tsuko ürünlerini hangi odalarda kullanabilirim?',
+        name: 'İade ve değişim yapabilir miyim?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: "Koleksiyonumuz çok yönlüdür. 'Tondo' gibi vazo modellerimiz salon dekorasyonu ve konsol üzeri için idealken, 'Aura' serisi aydınlatmalarımız yatak odası veya çalışma masası aksesuarı olarak sıcak bir atmosfer yaratır."
+          text: 'Ürünü teslim aldıktan sonra 14 gün içinde, kullanılmamış ve orijinal ambalajında olmak koşuluyla koşulsuz iade veya değişim yapabilirsiniz. İade kargo ücreti tarafımıza aittir.'
+        }
+      },
+      {
+        '@type': 'Question',
+        name: 'Ödeme seçenekleri neler?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Shopier altyapısı üzerinden kredi kartı, banka kartı ve havale/EFT ile güvenli ödeme yapabilirsiniz. Tüm kart bilgileriniz 256-bit SSL ile korunmaktadır.'
         }
       }
     ]

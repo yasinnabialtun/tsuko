@@ -13,29 +13,38 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
-    const post = await prisma.blogPost.findUnique({
-        where: { slug }
-    });
+    try {
+        const post = await prisma.blogPost.findUnique({
+            where: { slug }
+        });
 
-    if (!post) return { title: 'Not Found' };
+        if (!post) return { title: 'Yazı Bulunamadı' };
 
-    return {
-        title: `${post.title} | Tsuko Journal`,
-        description: post.excerpt,
-        openGraph: {
-            images: [post.coverImage],
-        },
-    };
+        return {
+            title: `${post.title} | Tsuko Journal`,
+            description: post.excerpt,
+            openGraph: {
+                images: [post.coverImage],
+            },
+        };
+    } catch (e) {
+        return { title: 'Blog | Tsuko Design' };
+    }
 }
 
 export async function generateStaticParams() {
-    const posts = await prisma.blogPost.findMany({
-        select: { slug: true }
-    });
+    try {
+        const posts = await prisma.blogPost.findMany({
+            select: { slug: true }
+        });
 
-    return posts.map((post) => ({
-        slug: post.slug,
-    }));
+        return posts.map((post: any) => ({
+            slug: post.slug,
+        }));
+    } catch (e) {
+        console.error("Failed to generate static params for blog", e);
+        return [];
+    }
 }
 
 export default async function BlogPostPage({ params }: PageProps) {

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, ArrowRight, FileText, ShoppingBag } from 'lucide-react';
 import { products } from '@/lib/data';
-import { blogPosts } from '@/lib/blog-data';
+import { BLOG_POSTS } from '@/lib/blog-data';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -32,7 +32,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
         : [];
 
     const filteredPosts = query
-        ? blogPosts.filter(p => p.title.toLowerCase().includes(query.toLowerCase()))
+        ? BLOG_POSTS.filter((p: any) => p.title.toLowerCase().includes(query.toLowerCase()))
         : [];
 
     const hasResults = filteredProducts.length > 0 || filteredPosts.length > 0;
@@ -95,7 +95,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                 <div className="p-4">
                                     <h3 className="text-xs font-bold text-charcoal/40 uppercase tracking-widest mb-4 px-2">Ürünler</h3>
                                     <div className="space-y-2">
-                                        {filteredProducts.map(product => (
+                                        {filteredProducts.map((product: any) => (
                                             <Link
                                                 key={product.id}
                                                 href={`/product/${product.id}`}
@@ -120,7 +120,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                 <div className="p-4 pt-2">
                                     <h3 className="text-xs font-bold text-charcoal/40 uppercase tracking-widest mb-4 px-2">Blog Yazıları</h3>
                                     <div className="space-y-2">
-                                        {filteredPosts.map(post => (
+                                        {filteredPosts.map((post: any) => (
                                             <Link
                                                 key={post.id}
                                                 href={`/blog/${post.slug}`}

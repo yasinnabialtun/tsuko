@@ -46,7 +46,7 @@ export default function LiveSalesNotification() {
                     initial={{ opacity: 0, x: -50, y: 0 }}
                     animate={{ opacity: 1, x: 0, y: 0 }}
                     exit={{ opacity: 0, x: -50 }}
-                    className="fixed bottom-4 left-4 z-40 bg-white p-3 rounded-xl shadow-2xl border border-black/5 flex items-center gap-3 max-w-[300px]"
+                    className="fixed bottom-20 md:bottom-4 left-4 z-[35] bg-white p-3 rounded-xl shadow-2xl border border-black/5 flex items-center gap-3 max-w-[280px] md:max-w-[300px]"
                 >
                     <div className="relative w-12 h-12 bg-alabaster rounded-lg overflow-hidden flex-shrink-0">
                         <Image

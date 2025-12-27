@@ -2,7 +2,7 @@
 
 import { Plus, Edit, Trash2, FileText } from 'lucide-react';
 import Link from 'next/link';
-import { blogPosts } from '@/lib/blog-data';
+import { BLOG_POSTS } from '@/lib/blog-data';
 
 export default function AdminBlogPage() {
     return (
@@ -33,7 +33,7 @@ export default function AdminBlogPage() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                        {blogPosts.map((post) => (
+                        {BLOG_POSTS.map((post: any) => (
                             <tr key={post.id} className="hover:bg-gray-50/50 transition-colors">
                                 <td className="p-6">
                                     <div className="flex items-center gap-4">

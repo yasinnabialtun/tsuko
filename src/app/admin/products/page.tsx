@@ -58,12 +58,12 @@ export default async function ProductList() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[#E6E8E6]">
-                        {PRODUCTS.map((product) => (
+                        {PRODUCTS.map((product: any) => (
                             <tr key={product.id} className="group hover:bg-alabaster/50 transition-colors">
                                 <td className="px-8 py-4">
                                     <div className="flex items-center gap-4">
                                         <div className="w-16 h-16 bg-alabaster rounded-xl relative overflow-hidden border border-[#E6E8E6]">
-                                            <Image src={product.image} alt={product.name} fill className="object-cover" />
+                                            <Image src={product.images[0] || '/images/hero.png'} alt={product.name} fill className="object-cover" />
                                         </div>
                                         <div>
                                             <div className="font-bold text-charcoal">{product.name}</div>
@@ -71,17 +71,17 @@ export default async function ProductList() {
                                         </div>
                                     </div>
                                 </td>
-                                <td className="px-8 py-4 text-sm font-medium text-charcoal/60">{product.category}</td>
+                                <td className="px-8 py-4 text-sm font-medium text-charcoal/60">{product.category?.name || 'Kategorisiz'}</td>
                                 <td className="px-8 py-4">
-                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${product.status === 'Active'
+                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${product.isActive
                                         ? 'bg-green-50 text-green-700 border-green-200'
                                         : 'bg-gray-100 text-gray-500 border-gray-200'
                                         }`}>
-                                        <span className={`w-1.5 h-1.5 rounded-full ${product.status === 'Active' ? 'bg-green-500' : 'bg-gray-400'}`} />
-                                        {product.status === 'Active' ? 'Yayında' : 'Stok Yok'}
+                                        <span className={`w-1.5 h-1.5 rounded-full ${product.isActive ? 'bg-green-500' : 'bg-gray-400'}`} />
+                                        {product.isActive ? 'Yayında' : 'Taslak'}
                                     </span>
                                 </td>
-                                <td className="px-8 py-4 font-bold text-charcoal">{product.price}</td>
+                                <td className="px-8 py-4 font-bold text-charcoal">₺{product.price.toString()}</td>
                                 <td className="px-8 py-4 text-sm font-medium text-charcoal/80">{product.stock} adet</td>
                                 <td className="px-8 py-4 text-right">
                                     <div className="flex items-center justify-end gap-2">

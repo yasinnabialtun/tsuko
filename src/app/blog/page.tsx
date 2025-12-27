@@ -94,7 +94,7 @@ export default async function BlogPage() {
             {otherPosts.length > 0 && (
                 <section className="px-6 pb-32">
                     <div className="container mx-auto max-w-6xl grid md:grid-cols-2 gap-12">
-                        {otherPosts.map((post) => (
+                        {otherPosts.map((post: any) => (
                             <Link href={`/blog/${post.slug}`} key={post.id} className="group block">
                                 <div className="relative w-full aspect-[4/3] rounded-[2rem] overflow-hidden mb-6 bg-white">
                                     <Image src={post.coverImage} alt={post.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />

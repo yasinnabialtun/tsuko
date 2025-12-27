@@ -16,15 +16,21 @@ const syne = Syne({
 
 export const metadata: Metadata = {
   title: {
-    default: "Tsuko Design | Mimari 3D Baskı Dekorasyon & Aydınlatma",
+    default: "Tsuko Design | 3D Baskı Vazo, Aydınlatma & Modern Ev Dekorasyonu",
     template: "%s | Tsuko Design"
   },
-  description: "Modern ev dekor ve ev ürünleri koleksiyonumuzla yaşam alanlarınıza ruh katın. 3D baskı teknolojisiyle üretilen eşsiz vazo, aydınlatma ve minimalist aksesuar modelleri Tsuko Design'da. Salon aksesuarları ve tasarım hediyelikler.",
+  description: "Türkiye'nin ilk 3D baskı ev dekorasyon markası. Mimari estetik, sürdürülebilir biyo-polimer ve el yapımı hissiyatı bir arada. Modern vazo, tasarım aydınlatma ve minimalist ev aksesuarları. Ücretsiz kargo, kırılma garantisi.",
   keywords: [
-    "ev dekor", "ev ürünleri", "aksesuar", "salon aksesuarları", "modern vazo",
-    "ev dekorasyonu", "tasarım aydınlatma", "3d baskı dekorasyon", "hediyelik ev eşyası",
-    "minimalist ev aksesuarları", "dekoratif objeler", "sıradışı ev aksesuarları",
-    "masaüstü dekorasyon", "mimari tasarım", "Tsuko"
+    // Primary - High Volume
+    "ev dekorasyonu", "modern vazo", "dekoratif vazo", "salon dekorasyonu",
+    "ev aksesuarları", "tasarım aydınlatma", "masa lambası", "dekoratif lamba",
+    // Secondary - Intent Based
+    "hediyelik eşya", "özel hediye", "ev hediyesi", "minimalist dekorasyon",
+    // Long-tail - Low Competition
+    "3d baskı vazo", "mimari vazo", "biyo polimer dekorasyon", "sürdürülebilir ev ürünleri",
+    "türk tasarım markası", "el yapımı vazo", "modern saksı", "dekoratif obje",
+    // Brand
+    "Tsuko", "Tsuko Design", "tsukodesign"
   ],
   authors: [{ name: "Tsuko Design Studio" }],
   creator: "Tsuko Design",
@@ -44,38 +50,36 @@ export const metadata: Metadata = {
     type: "website",
     locale: "tr_TR",
     url: "https://tsukodesign.com",
-    title: "Tsuko Design | Yapıya Ruh Katmak",
-    description: "Modern yaşam alanları için mimari 3D dekorasyon. Cansız materyallerin katman katman canlandığı, yaşayan objeler.",
+    title: "Tsuko Design | Mimari Estetik, Evinize Taşındı",
+    description: "3D baskı teknolojisi ve biyo-polimer ile üretilen, doğa dostu vazo ve aydınlatma koleksiyonu. Seri üretimden uzak, sadece sizin için.",
     siteName: "Tsuko Design",
     images: [
       {
         url: "/images/hero.png",
         width: 1200,
         height: 630,
-        alt: "Tsuko Design Koleksiyonu",
+        alt: "Tsuko Design - 3D Baskı Mimari Vazo Koleksiyonu",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tsuko Design | Mimari 3D Dekorasyon",
-    description: "Yapıya ruh katan 3D baskı tasarım objeleri.",
+    title: "Tsuko Design | 3D Baskı Ev Dekorasyonu",
+    description: "Mimari estetik, sürdürülebilir üretim. Türkiye'nin ilk 3D baskı dekorasyon markası.",
     images: ["/images/hero.png"],
     creator: "@tsukodesign",
   },
   alternates: {
     canonical: "https://tsukodesign.com",
   },
+  verification: {
+    google: "your-google-verification-code", // TODO: Add real verification code
+  },
 };
 
-import dynamic from 'next/dynamic';
 import { WishlistProvider } from '@/context/wishlist-context';
 import AnalyticsScripts from '@/components/analytics';
-
-// Lazy Load Heavy Marketing Components (Critical for 100 PageSpeed)
-const ExitIntentPopup = dynamic(() => import('@/components/exit-intent-popup'), { ssr: false });
-const GiftFinder = dynamic(() => import('@/components/gift-finder'), { ssr: false });
-const LiveSalesNotification = dynamic(() => import('@/components/live-sales'), { ssr: false });
+import MarketingWrapper from '@/components/marketing-wrapper';
 
 export default function RootLayout({
   children,
@@ -100,9 +104,7 @@ export default function RootLayout({
         <WishlistProvider>
           {children}
           {/* Deferred Loading for Performance */}
-          <ExitIntentPopup />
-          <GiftFinder />
-          <LiveSalesNotification />
+          <MarketingWrapper />
         </WishlistProvider>
       </body>
     </html>

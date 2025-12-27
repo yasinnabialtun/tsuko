@@ -123,23 +123,23 @@ export default async function AdminDashboard() {
                                 </tr>
                             </thead>
                             <tbody className="text-sm">
-                                {RECENT_ORDERS.map((order) => (
+                                {RECENT_ORDERS.map((order: any) => (
                                     <tr key={order.id} className="border-b border-[#F0F0F0] last:border-0 hover:bg-alabaster transition-colors">
-                                        <td className="py-4 font-bold text-charcoal">{order.id}</td>
-                                        <td className="py-4 text-charcoal/80">{order.customer}</td>
-                                        <td className="py-4 text-charcoal/60">{order.product}</td>
-                                        <td className="py-4 font-bold text-charcoal">{order.amount}</td>
-                                        <td className="py-4">
-                                            <span className={`px-3 py-1 rounded-full text-xs font-bold 
-                                ${order.status === 'Hazırlanıyor' ? 'bg-yellow-100 text-yellow-700' :
-                                                    order.status === 'Kargolandı' ? 'bg-blue-100 text-blue-700' :
-                                                        order.status === 'Teslim Edildi' ? 'bg-green-100 text-green-700' :
-                                                            'bg-red-100 text-red-700'}`
-                                            }>
+                                        <td className="py-4 font-bold text-charcoal">{order.orderNumber}</td>
+                                        <td className="py-4 text-charcoal/80">{order.customerName}</td>
+                                        <td className="py-4 text-charcoal/60">Sipariş #{order.orderNumber}</td>
+                                        <td className="py-4 font-bold text-charcoal">₺{order.totalAmount?.toString()}</td>
+                                        <td className="py-4 text-center">
+                                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-700' :
+                                                    order.status === 'CANCELLED' ? 'bg-red-100 text-red-700' :
+                                                        'bg-clay/10 text-clay'
+                                                }`}>
                                                 {order.status}
                                             </span>
                                         </td>
-                                        <td className="py-4 text-right text-charcoal/40">{order.date}</td>
+                                        <td className="py-4 text-right text-charcoal/40 font-medium">
+                                            {new Date(order.createdAt).toLocaleDateString()}
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
