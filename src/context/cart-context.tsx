@@ -110,6 +110,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 maxStock: stockLimit
             }];
         });
+
+        // GTM DataLayer Event - Add to Cart
+        if (typeof window !== 'undefined' && (window as any).dataLayer) {
+            (window as any).dataLayer.push({
+                event: 'addToCart',
+                ecommerce: {
+                    items: [{
+                        item_id: product.id,
+                        item_name: product.name,
+                        item_variant: variant?.name || '',
+                        price: variant ? variant.price : product.priceNumber,
+                        quantity: quantity
+                    }]
+                }
+            });
+        }
+
         setIsCartOpen(true);
     };
 

@@ -56,6 +56,25 @@ export default function CheckoutPage() {
             }
 
             if (result.mock) {
+                // GTM DataLayer Event - Purchase
+                if (typeof window !== 'undefined' && (window as any).dataLayer) {
+                    (window as any).dataLayer.push({
+                        event: 'purchase',
+                        ecommerce: {
+                            transaction_id: result.orderId,
+                            value: cartTotal,
+                            currency: 'TRY',
+                            items: items.map(item => ({
+                                item_id: item.id,
+                                item_name: item.name,
+                                item_variant: item.variantName || '',
+                                price: item.price,
+                                quantity: item.quantity
+                            }))
+                        }
+                    });
+                }
+
                 // Mock success for development
                 alert('Development Mode: Payment Simulated. Order ID: ' + result.orderId);
                 router.push('/payment/success?orderId=' + result.orderId);
