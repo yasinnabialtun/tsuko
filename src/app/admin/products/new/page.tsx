@@ -3,13 +3,59 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Save, Upload, Info } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ArrowLeft, Save, Upload, Info, Loader2 } from 'lucide-react';
 
 export default function NewProductPage() {
+    const router = useRouter();
+    const [loading, setLoading] = useState(false);
+
+    // Form States
     const [productName, setProductName] = useState('');
+    const [price, setPrice] = useState('');
+    const [description, setDescription] = useState('');
+    const [stock, setStock] = useState('0');
 
     // Auto-generate slug from name
     const slug = productName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+    async function handleSubmit() {
+        if (!productName || !price) {
+            alert("Lütfen ürün adı ve fiyatını giriniz.");
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const res = await fetch('/api/products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: productName,
+                    price: parseFloat(price),
+                    description,
+                    stock: parseInt(stock),
+                    slug,
+                    categoryId: 'clq0...', // Geçici kategori ID (Veritabanında olmalı)
+                    images: ['/images/products/nami.png'], // Geçici resim
+                    seoTitle: productName,
+                    seoDescription: description.substring(0, 160)
+                })
+            });
+
+            if (!res.ok) throw new Error('Failed to create product');
+
+            // Success
+            router.push('/admin/products');
+            router.refresh();
+        } catch (error) {
+            console.error(error);
+            alert("Ürün eklenirken bir hata oluştu.");
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <div className="space-y-8 max-w-5xl mx-auto pb-20">
@@ -26,12 +72,16 @@ export default function NewProductPage() {
                     </div>
                 </div>
                 <div className="flex gap-3">
-                    <button className="px-6 py-2.5 bg-white border border-[#E6E8E6] rounded-xl font-bold text-charcoal text-sm hover:bg-alabaster transition-colors">
+                    <Link href="/admin/products" className="px-6 py-2.5 bg-white border border-[#E6E8E6] rounded-xl font-bold text-charcoal text-sm hover:bg-alabaster transition-colors">
                         İptal
-                    </button>
-                    <button className="px-6 py-2.5 bg-charcoal text-white rounded-xl font-bold text-sm shadow-lg shadow-charcoal/20 hover:bg-black transition-colors flex items-center gap-2">
-                        <Save size={18} />
-                        Kaydet & Yayınla
+                    </Link>
+                    <button
+                        onClick={handleSubmit}
+                        disabled={loading}
+                        className="px-6 py-2.5 bg-charcoal text-white rounded-xl font-bold text-sm shadow-lg shadow-charcoal/20 hover:bg-black transition-colors flex items-center gap-2 disabled:opacity-50"
+                    >
+                        {loading ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                        {loading ? 'Kaydediliyor...' : 'Kaydet & Yayınla'}
                     </button>
                 </div>
             </div>
