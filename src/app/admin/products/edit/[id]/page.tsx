@@ -6,6 +6,7 @@ import { ArrowLeft, Save, Loader2, X, Check } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import ImageUploader from '@/components/admin/image-uploader';
+import { updateProduct } from '../../actions';
 
 interface Category {
     id: string;
@@ -119,25 +120,21 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         setSuccess('');
 
         try {
-            const response = await fetch(`/api/products/${productId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...formData,
-                    price: parseFloat(formData.price)
-                })
+            // Server Action call
+            const result = await updateProduct(productId, {
+                ...formData,
+                price: parseFloat(formData.price)
             });
 
-            const data = await response.json();
-
-            if (response.ok) {
+            if (result.success) {
                 setSuccess('Ürün başarıyla güncellendi!');
                 setTimeout(() => router.push('/admin/products'), 1500);
             } else {
-                setError(data.error || 'Güncelleme başarısız.');
+                setError(result.error || 'Güncelleme başarısız.');
             }
         } catch (err) {
-            setError('Bağlantı hatası.');
+            console.error(err);
+            setError('İşlem sırasında bir hata oluştu.');
         } finally {
             setSaving(false);
         }

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Save, Loader2, X, Check } from 'lucide-react';
 import Link from 'next/link';
 import ImageUploader from '@/components/admin/image-uploader';
+import { createProduct } from '../actions';
 
 interface Category {
     id: string;
@@ -76,6 +77,8 @@ export default function NewProductPage() {
         }
     };
 
+
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
@@ -95,25 +98,21 @@ export default function NewProductPage() {
         }
 
         try {
-            const response = await fetch('/api/products', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...formData,
-                    price: parseFloat(formData.price)
-                })
+            // Server Action call
+            const result = await createProduct({
+                ...formData,
+                price: parseFloat(formData.price)
             });
 
-            const data = await response.json();
-
-            if (response.ok) {
+            if (result.success) {
                 setSuccess('Ürün başarıyla oluşturuldu!');
                 setTimeout(() => router.push('/admin/products'), 1500);
             } else {
-                setError(data.error || 'Kayıt başarısız.');
+                setError(result.error || 'Kayıt başarısız.');
             }
         } catch (err) {
-            setError('Bağlantı hatası.');
+            console.error(err);
+            setError('İşlem sırasında bir hata oluştu.');
         } finally {
             setSaving(false);
         }
