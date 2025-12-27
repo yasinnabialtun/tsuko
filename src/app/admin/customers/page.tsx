@@ -1,138 +1,152 @@
-import { Users, Mail, Calendar, Download, UserPlus } from 'lucide-react';
+
 import { prisma } from '@/lib/prisma';
+import { Mail, Phone, ShoppingBag, Calendar, Search, User } from 'lucide-react';
 
 export const revalidate = 0;
 
-async function getSubscribers() {
-    return await prisma.subscriber.findMany({
-        orderBy: { createdAt: 'desc' },
-        take: 100
-    }).catch(() => []);
+interface CustomerData {
+    email: string;
+    name: string;
+    phone: string;
+    orderCount: number;
+    totalSpent: number;
+    lastOrderDate: Date;
+    city: string;
 }
 
-async function getCustomerStats() {
-    const [totalSubscribers, thisMonth, thisWeek] = await Promise.all([
-        prisma.subscriber.count(),
-        prisma.subscriber.count({
-            where: {
-                createdAt: {
-                    gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-                }
-            }
-        }),
-        prisma.subscriber.count({
-            where: {
-                createdAt: {
-                    gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-                }
-            }
-        })
-    ]).catch(() => [0, 0, 0]);
+async function getCustomers() {
+    // Fetch all orders
+    const orders = await prisma.order.findMany({
+        orderBy: { createdAt: 'desc' },
+        where: {
+            status: { not: 'CANCELLED' }
+        }
+    });
 
-    return { totalSubscribers, thisMonth, thisWeek };
+    // Group by email
+    const customerMap = new Map<string, CustomerData>();
+
+    orders.forEach(order => {
+        const email = order.customerEmail.toLowerCase();
+
+        if (!customerMap.has(email)) {
+            customerMap.set(email, {
+                email: order.customerEmail,
+                name: order.customerName,
+                phone: order.customerPhone,
+                orderCount: 0,
+                totalSpent: 0,
+                lastOrderDate: order.createdAt,
+                city: order.city
+            });
+        }
+
+        const customer = customerMap.get(email)!;
+        customer.orderCount += 1;
+        customer.totalSpent += Number(order.totalAmount);
+        // Dates are sorted desc, so first encounter is last order
+    });
+
+    return Array.from(customerMap.values());
 }
 
 export default async function AdminCustomersPage() {
-    const subscribers = await getSubscribers();
-    const stats = await getCustomerStats();
+    const customers = await getCustomers();
 
     return (
         <div className="space-y-8">
             <div className="flex justify-between items-center">
                 <div>
-                    <h2 className="text-3xl font-bold text-gray-800">Müşteriler & Aboneler</h2>
-                    <p className="text-gray-500">Bülten aboneleri ve müşteri listesi.</p>
+                    <h2 className="text-3xl font-bold text-gray-800">Müşteriler</h2>
+                    <p className="text-gray-500">Sipariş veren müşterilerinizi görüntüleyin ve analiz edin.</p>
                 </div>
-                <button className="bg-charcoal text-white px-6 py-3 rounded-xl hover:bg-black font-medium flex items-center gap-2 transition-colors shadow-lg shadow-charcoal/20">
-                    <Download size={20} />
-                    CSV İndir
-                </button>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-white p-6 rounded-2xl border border-gray-100">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center">
-                            <Users size={24} className="text-indigo-600" />
-                        </div>
-                        <div>
-                            <p className="text-3xl font-black text-charcoal">{stats.totalSubscribers}</p>
-                            <p className="text-gray-500 text-sm">Toplam Abone</p>
-                        </div>
-                    </div>
+                    <p className="text-3xl font-black text-charcoal">{customers.length}</p>
+                    <p className="text-gray-500 text-sm">Toplam Müşteri</p>
                 </div>
                 <div className="bg-white p-6 rounded-2xl border border-gray-100">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
-                            <UserPlus size={24} className="text-green-600" />
-                        </div>
-                        <div>
-                            <p className="text-3xl font-black text-green-600">{stats.thisMonth}</p>
-                            <p className="text-gray-500 text-sm">Bu Ay</p>
-                        </div>
-                    </div>
+                    <p className="text-3xl font-black text-clay">
+                        {customers.reduce((acc, c) => acc + c.orderCount, 0)}
+                    </p>
+                    <p className="text-gray-500 text-sm">Toplam Sipariş</p>
                 </div>
                 <div className="bg-white p-6 rounded-2xl border border-gray-100">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
-                            <Calendar size={24} className="text-blue-600" />
-                        </div>
-                        <div>
-                            <p className="text-3xl font-black text-blue-600">{stats.thisWeek}</p>
-                            <p className="text-gray-500 text-sm">Bu Hafta</p>
-                        </div>
-                    </div>
+                    <p className="text-3xl font-black text-green-600">
+                        ₺{customers.reduce((acc, c) => acc + c.totalSpent, 0).toLocaleString('tr-TR', { maximumFractionDigits: 0 })}
+                    </p>
+                    <p className="text-gray-500 text-sm">Toplam Hacim</p>
                 </div>
             </div>
 
-            {/* Subscribers Table */}
+            {/* Customer List */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-                    <h3 className="font-bold text-gray-800">Bülten Aboneleri</h3>
-                    <span className="text-sm text-gray-500">{subscribers.length} kayıt</span>
-                </div>
                 <table className="w-full">
                     <thead className="bg-gray-50">
                         <tr>
-                            <th className="text-left p-6 text-xs font-bold text-gray-500 uppercase tracking-wider">E-posta</th>
-                            <th className="text-left p-6 text-xs font-bold text-gray-500 uppercase tracking-wider">Kaynak</th>
-                            <th className="text-left p-6 text-xs font-bold text-gray-500 uppercase tracking-wider">Kayıt Tarihi</th>
+                            <th className="text-left p-6 text-xs font-bold text-gray-500 uppercase tracking-wider">Müşteri</th>
+                            <th className="text-left p-6 text-xs font-bold text-gray-500 uppercase tracking-wider">İletişim</th>
+                            <th className="text-left p-6 text-xs font-bold text-gray-500 uppercase tracking-wider">Lokasyon</th>
+                            <th className="text-left p-6 text-xs font-bold text-gray-500 uppercase tracking-wider">Siparişler</th>
+                            <th className="text-left p-6 text-xs font-bold text-gray-500 uppercase tracking-wider">Harcama</th>
+                            <th className="text-right p-6 text-xs font-bold text-gray-500 uppercase tracking-wider">Son Sipariş</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                        {subscribers.length === 0 ? (
+                        {customers.length === 0 ? (
                             <tr>
-                                <td colSpan={3} className="p-12 text-center text-gray-500">
-                                    <Mail size={48} className="mx-auto mb-4 text-gray-300" />
-                                    <p className="font-bold">Henüz abone yok</p>
-                                    <p className="text-sm">Bülten aboneleri burada görünecek.</p>
+                                <td colSpan={6} className="p-12 text-center text-gray-500">
+                                    <User size={48} className="mx-auto mb-4 text-gray-300" />
+                                    <p className="font-bold">Henüz müşteri kaydı yok</p>
+                                    <p className="text-sm">Sipariş geldikçe müşteriler burada listelenecek.</p>
                                 </td>
                             </tr>
                         ) : (
-                            subscribers.map((subscriber: any) => (
-                                <tr key={subscriber.id} className="hover:bg-gray-50/50 transition-colors">
+                            customers.map((customer, idx) => (
+                                <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
                                     <td className="p-6">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-clay to-sage flex items-center justify-center text-white font-bold text-sm">
-                                                {subscriber.email.charAt(0).toUpperCase()}
+                                            <div className="w-10 h-10 rounded-full bg-charcoal text-white flex items-center justify-center font-bold text-sm">
+                                                {customer.name.charAt(0)}
                                             </div>
-                                            <span className="font-medium text-gray-900">{subscriber.email}</span>
+                                            <div>
+                                                <p className="font-bold text-charcoal">{customer.name}</p>
+                                            </div>
                                         </div>
                                     </td>
                                     <td className="p-6">
-                                        <span className="px-3 py-1 bg-gray-100 rounded-full text-xs font-bold text-gray-600">
-                                            {subscriber.source || 'Web'}
+                                        <div className="flex flex-col gap-1 text-sm text-gray-600">
+                                            <div className="flex items-center gap-1.5">
+                                                <Mail size={14} className="text-gray-400" />
+                                                {customer.email}
+                                            </div>
+                                            <div className="flex items-center gap-1.5">
+                                                <Phone size={14} className="text-gray-400" />
+                                                {customer.phone}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="p-6">
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            {customer.city}
                                         </span>
                                     </td>
-                                    <td className="p-6 text-gray-600 text-sm">
-                                        {new Date(subscriber.createdAt).toLocaleDateString('tr-TR', {
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit'
-                                        })}
+                                    <td className="p-6">
+                                        <div className="flex items-center gap-2">
+                                            <ShoppingBag size={16} className="text-clay" />
+                                            <span className="font-bold text-gray-900">{customer.orderCount}</span>
+                                        </div>
+                                    </td>
+                                    <td className="p-6">
+                                        <span className="font-mono font-bold text-green-600">
+                                            ₺{customer.totalSpent.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
+                                        </span>
+                                    </td>
+                                    <td className="p-6 text-right text-gray-500 text-sm font-mono">
+                                        {new Date(customer.lastOrderDate).toLocaleDateString('tr-TR')}
                                     </td>
                                 </tr>
                             ))
