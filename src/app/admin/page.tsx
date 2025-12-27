@@ -157,13 +157,9 @@ export default async function AdminDashboard() {
                         </p>
 
                         <div className="space-y-3">
-                            <div className="p-4 bg-white/10 rounded-xl border border-white/10 hover:bg-white/20 transition-colors cursor-pointer">
-                                <span className="text-xs font-bold text-clay block mb-1">KEYWORD FIRSATI</span>
-                                <div className="font-bold">"Sürdürülebilir Vazo" +%40 Aranıyor</div>
-                            </div>
-                            <div className="p-4 bg-white/10 rounded-xl border border-white/10 hover:bg-white/20 transition-colors cursor-pointer">
-                                <span className="text-xs font-bold text-green-400 block mb-1">STOK UYARISI</span>
-                                <div className="font-bold">Nami Vazo (Stone) Tükenmek Üzere</div>
+                            <div className="p-4 bg-white/10 rounded-xl border border-white/10">
+                                <span className="text-xs font-bold text-clay block mb-1">BİLGİ</span>
+                                <div className="font-bold text-sm">Satış yapıldıkça burada otomatik analizler görünecek.</div>
                             </div>
                         </div>
                     </div>

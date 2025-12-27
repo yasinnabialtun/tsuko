@@ -1,15 +1,11 @@
 
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { auth } from '@clerk/nextjs/server';
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
         const { productId, rating, comment, userName } = body;
-
-        // Clerk auth is optional for reviews, but good to have
-        const { userId } = await auth();
 
         if (!productId || !rating || !userName) {
             return NextResponse.json({ error: 'Eksik bilgi: Puan, İsim ve Ürün ID zorunludur.' }, { status: 400 });
@@ -21,7 +17,6 @@ export async function POST(req: Request) {
                 rating: parseInt(rating),
                 comment,
                 userName,
-                userId: userId || null, // Capture user ID if logged in
                 isApproved: true // Auto approve reviews for MVP
             }
         });

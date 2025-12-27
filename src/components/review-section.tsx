@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from 'react';
 import { Star, User, MessageCircle, Send, Loader2 } from 'lucide-react';
-import { useUser } from '@clerk/nextjs';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Review {
@@ -15,7 +14,6 @@ interface Review {
 }
 
 export default function ReviewSection({ productId }: { productId: string }) {
-    const { user, isLoaded } = useUser();
     const [reviews, setReviews] = useState<Review[]>([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
@@ -30,12 +28,6 @@ export default function ReviewSection({ productId }: { productId: string }) {
     useEffect(() => {
         fetchReviews();
     }, [productId]);
-
-    useEffect(() => {
-        if (user) {
-            setUserName(user.fullName || user.firstName || '');
-        }
-    }, [user]);
 
     const fetchReviews = async () => {
         try {

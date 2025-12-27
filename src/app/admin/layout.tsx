@@ -19,40 +19,12 @@ const MENU_ITEMS = [
     { icon: Settings, label: 'Ayarlar', href: '/admin/settings' },
 ];
 
-// Dynamic import for Clerk components
-let UserButton: any = null;
-let useUser: any = null;
-
-// Check if running on client and Clerk is configured
-if (typeof window !== 'undefined') {
-    try {
-        const clerk = require('@clerk/nextjs');
-        UserButton = clerk.UserButton;
-        useUser = clerk.useUser;
-    } catch (e) {
-        // Clerk not available
-    }
-}
-
 export default function AdminLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
     const pathname = usePathname();
-
-    // Try to use Clerk if available
-    let user = null;
-    let isLoaded = true;
-    if (useUser) {
-        try {
-            const clerkUser = useUser();
-            user = clerkUser.user;
-            isLoaded = clerkUser.isLoaded;
-        } catch (e) {
-            // Clerk not configured
-        }
-    }
 
     return (
         <div className={`min-h-screen bg-[#FDFBF7] flex font-sans ${syne.variable}`}>
@@ -69,40 +41,16 @@ export default function AdminLayout({
                     </div>
                 </div>
 
-                {/* User Info - Only show if Clerk is configured and user is loaded */}
-                {isLoaded && user && UserButton && (
-                    <div className="px-6 py-4 border-b border-[#F0F0F0] flex items-center gap-3">
-                        <UserButton
-                            afterSignOutUrl="/"
-                            appearance={{
-                                elements: {
-                                    avatarBox: 'w-10 h-10'
-                                }
-                            }}
-                        />
-                        <div className="flex-1 min-w-0">
-                            <p className="font-bold text-charcoal text-sm truncate">
-                                {user.firstName || user.emailAddresses[0]?.emailAddress?.split('@')[0]}
-                            </p>
-                            <p className="text-xs text-gray-400 truncate">
-                                {user.emailAddresses[0]?.emailAddress}
-                            </p>
-                        </div>
+                {/* Info */}
+                <div className="px-6 py-4 border-b border-[#F0F0F0] flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-clay/20 flex items-center justify-center">
+                        <User size={20} className="text-clay" />
                     </div>
-                )}
-
-                {/* Fallback user info when Clerk is not configured */}
-                {!user && (
-                    <div className="px-6 py-4 border-b border-[#F0F0F0] flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-clay/20 flex items-center justify-center">
-                            <User size={20} className="text-clay" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="font-bold text-charcoal text-sm">Admin</p>
-                            <p className="text-xs text-gray-400">Yönetici Paneli</p>
-                        </div>
+                    <div className="flex-1 min-w-0">
+                        <p className="font-bold text-charcoal text-sm">Yönetici</p>
+                        <p className="text-xs text-gray-400">Pannel Şifre Korumalı</p>
                     </div>
-                )}
+                </div>
 
                 {/* Navigation */}
                 <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">

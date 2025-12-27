@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: ['/admin/', '/api/'],
         },
-        sitemap: 'https://tsuko.com.tr/sitemap.xml',
+        sitemap: 'https://tsukodesign.com/sitemap.xml',
     };
 }
