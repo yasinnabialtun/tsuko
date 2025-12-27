@@ -69,7 +69,7 @@ export async function POST(request: Request) {
         // 3. Find Order in DB
         const order = await prisma.order.findUnique({
             where: { orderNumber: orderNumber },
-            include: { items: true }
+            include: { items: { include: { product: true } } }
         });
 
         if (!order) {
@@ -112,7 +112,17 @@ export async function POST(request: Request) {
 
         // 5. Send Email (Async, don't block response)
         try {
-            const emailHtml = getOrderConfirmationEmailHtml(order); // Uses existing template
+            const emailData = {
+                orderNumber: order.orderNumber,
+                customerName: order.customerName,
+                totalAmount: order.totalAmount.toString(),
+                items: order.items.map((item: any) => ({
+                    name: item.product.name,
+                    quantity: item.quantity,
+                    price: item.price.toString()
+                }))
+            };
+            const emailHtml = getOrderConfirmationEmailHtml(emailData); // Uses existing template
             await sendEmail({
                 to: order.customerEmail,
                 subject: `Siparişiniz Alındı: ${order.orderNumber}`,
