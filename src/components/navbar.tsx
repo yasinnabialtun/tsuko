@@ -8,8 +8,6 @@ import { Menu, X, ShoppingBag, Search, Heart, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import SearchModal from './search-modal';
 import { useWishlist } from '@/context/wishlist-context';
-import { UserButton, useUser, SignInButton } from "@clerk/nextjs";
-
 import { useCart } from '@/context/cart-context';
 
 export default function Navbar() {
@@ -19,23 +17,6 @@ export default function Navbar() {
 
     const { items: wishlistItems } = useWishlist();
     const { cartCount, toggleCart } = useCart();
-
-    const isClerkConfigured = typeof window !== 'undefined' ? !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY : true;
-
-    // Safely call useUser only if Clerk is configured
-    let user = null;
-    let isLoaded = true;
-
-    try {
-        if (isClerkConfigured) {
-            const clerk = useUser();
-            user = clerk?.user;
-            isLoaded = clerk?.isLoaded ?? true;
-        }
-    } catch (e) {
-        console.warn("Clerk hooks called but ClerkProvider might be missing or keys are not set.");
-        isLoaded = true;
-    }
 
     useEffect(() => {
         const handleScroll = () => {
@@ -92,25 +73,9 @@ export default function Navbar() {
                                 )}
                             </Link>
 
-                            {/* User Auth */}
-                            {isClerkConfigured && isLoaded && (
-                                user ? (
-                                    <div className="flex items-center gap-3">
-                                        <Link href="/orders" title="Siparişlerim" className="hover:text-charcoal transition-colors">
-                                            <User size={22} />
-                                        </Link>
-                                        <div className="w-8 h-8 rounded-full overflow-hidden border border-black/10">
-                                            <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: 'w-8 h-8' } }} />
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <SignInButton mode="modal">
-                                        <button className="hover:text-charcoal transition-colors" title="Giriş Yap">
-                                            <User size={22} />
-                                        </button>
-                                    </SignInButton>
-                                )
-                            )}
+                            <Link href="/admin" className="hover:text-charcoal transition-colors">
+                                <User size={22} />
+                            </Link>
 
                             <button
                                 onClick={toggleCart}
@@ -171,6 +136,7 @@ export default function Navbar() {
                                 <a href="#collection" onClick={() => setMobileMenuOpen(false)}>Koleksiyon</a>
                                 <Link href="/blog" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
                                 <a href="#philosophy" onClick={() => setMobileMenuOpen(false)}>Felsefe</a>
+                                <Link href="/admin" onClick={() => setMobileMenuOpen(false)}>Yönetim</Link>
                             </div>
                             <button
                                 onClick={() => { setMobileMenuOpen(false); toggleCart(); }}

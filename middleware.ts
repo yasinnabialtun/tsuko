@@ -1,16 +1,32 @@
+
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-    // Simple middleware - just pass through
+    const { pathname } = request.nextUrl;
+
+    // Protect /admin routes
+    if (pathname.startsWith('/admin')) {
+        // Skip for the login page itself
+        if (pathname === '/admin/login') {
+            return NextResponse.next();
+        }
+
+        const adminSession = request.cookies.get('admin_session');
+
+        // Check for valid session
+        if (!adminSession || adminSession.value !== 'active') {
+            const url = request.nextUrl.clone();
+            url.pathname = '/admin/login';
+            return NextResponse.redirect(url);
+        }
+    }
+
     return NextResponse.next();
 }
 
 export const config = {
     matcher: [
-        // Skip Next.js internals and all static files
-        '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-        // Always run for API routes
-        '/(api|trpc)(.*)',
+        '/admin/:path*',
     ],
 };

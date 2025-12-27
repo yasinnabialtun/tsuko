@@ -7,8 +7,6 @@ import { CartProvider } from '@/context/cart-context';
 import CartDrawer from '@/components/cart-drawer';
 import AnalyticsScripts from '@/components/analytics';
 import MarketingWrapper from '@/components/marketing-wrapper';
-import { ClerkProvider } from '@clerk/nextjs';
-import { trTR } from '@clerk/localizations';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -61,10 +59,6 @@ export const metadata: Metadata = {
   },
 };
 
-// Check if Clerk is configured
-const isClerkConfigured = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-
-// Force all routes to be dynamic (prevents Clerk prerender errors)
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
@@ -73,7 +67,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const content = (
+  return (
     <html lang="tr" className={`${inter.variable} ${playfair.variable}`}>
       <head>
         <AnalyticsScripts />
@@ -92,22 +86,10 @@ export default function RootLayout({
           <WishlistProvider>
             <CartDrawer />
             {children}
-            {/* Deferred Loading for Performance */}
             <MarketingWrapper />
           </WishlistProvider>
         </CartProvider>
       </body>
     </html>
   );
-
-  // Wrap with ClerkProvider only if configured
-  if (isClerkConfigured) {
-    return (
-      <ClerkProvider localization={trTR}>
-        {content}
-      </ClerkProvider>
-    );
-  }
-
-  return content;
 }
