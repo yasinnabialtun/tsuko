@@ -24,7 +24,6 @@ export async function createProduct(formData: any) {
                 price: price,
                 stock: stock,
                 categoryId: categoryId,
-                image: formData.images[0] || '', // Main image
                 images: formData.images,
                 isActive: formData.isActive,
                 isFeatured: formData.isFeatured,
@@ -58,7 +57,6 @@ export async function updateProduct(id: string, formData: any) {
                 price: price,
                 stock: stock,
                 categoryId: categoryId,
-                image: formData.images[0] || '',
                 images: formData.images,
                 isActive: formData.isActive,
                 isFeatured: formData.isFeatured,
