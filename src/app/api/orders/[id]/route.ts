@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { validateAdminRequest } from '@/lib/admin-auth';
-import { sendEmail } from '@/lib/resend';
-import { getOrderShippedEmailHtml } from '@/lib/email-templates';
+import { sendOrderShippedEmail } from '@/lib/email';
 
 export const dynamic = 'force-dynamic';
 
@@ -86,19 +85,10 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
         // Send shipping notification email if status changed to SHIPPED
         if (body.status === 'SHIPPED' && existingOrder.status !== 'SHIPPED' && body.trackingNumber) {
-            try {
-                await sendEmail({
-                    to: existingOrder.customerEmail,
-                    subject: `Siparişiniz Kargoya Verildi - ${existingOrder.orderNumber} | Tsuko Design`,
-                    html: getOrderShippedEmailHtml({
-                        orderNumber: existingOrder.orderNumber,
-                        customerName: existingOrder.customerName,
-                        trackingNumber: body.trackingNumber
-                    })
-                });
-            } catch (emailError) {
-                console.error('Shipping email failed:', emailError);
-            }
+            await sendOrderShippedEmail({
+                ...updatedOrder,
+                trackingNumber: body.trackingNumber
+            });
         }
 
         return NextResponse.json({
