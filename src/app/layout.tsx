@@ -74,7 +74,7 @@ export default function RootLayout({
       <body className="font-sans bg-alabaster text-charcoal antialiased selection:bg-clay selection:text-white">
         <noscript>
           <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+            src={`https://www.googletagmanager.com/ns.html?id=${process.env.NEXT_PUBLIC_GTM_ID || 'GTM-T2TZGWWP'}`}
             height="0"
             width="0"
             style={{ display: 'none', visibility: 'hidden' }}
