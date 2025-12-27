@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Save, Loader2, ImagePlus, X, Check } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, X, Check } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import ImageUploader from '@/components/admin/image-uploader';
 
 interface Category {
     id: string;
@@ -279,30 +280,13 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
                 {/* Images */}
                 <div className="bg-white rounded-2xl border border-gray-100 p-8">
-                    <h2 className="text-xl font-bold text-charcoal mb-6">Görseller</h2>
-
-                    <div className="grid grid-cols-4 gap-4">
-                        {formData.images.map((img, index) => (
-                            <div key={index} className="relative aspect-square rounded-xl overflow-hidden bg-gray-100 group">
-                                <Image src={img} alt={`Product ${index + 1}`} fill className="object-cover" />
-                                <button
-                                    type="button"
-                                    onClick={() => removeImage(index)}
-                                    className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                    <X size={14} />
-                                </button>
-                            </div>
-                        ))}
-                        <button
-                            type="button"
-                            onClick={addImageUrl}
-                            className="aspect-square rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-clay hover:text-clay transition-colors"
-                        >
-                            <ImagePlus size={24} />
-                            <span className="text-xs font-medium">Görsel Ekle</span>
-                        </button>
-                    </div>
+                    <ImageUploader
+                        value={formData.images}
+                        onChange={(urls) => setFormData(prev => ({ ...prev, images: urls }))}
+                        bucket="products"
+                        maxFiles={5}
+                        label="Ürün Görselleri"
+                    />
                 </div>
 
                 {/* Status */}
