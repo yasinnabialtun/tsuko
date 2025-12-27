@@ -1,15 +1,12 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, ShoppingBag, Trash2, Truck, ChevronRight } from 'lucide-react';
 import { useCart } from '@/context/cart-context';
 import { useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
-
-const FREE_SHIPPING_THRESHOLD = 5000; // Örnek eşik değeri
 
 export default function CartDrawer() {
     const {
@@ -22,10 +19,6 @@ export default function CartDrawer() {
     } = useCart();
 
     const router = useRouter();
-
-    // Calculate progress for free shipping
-    const progress = Math.min((cartTotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
-    const neededAmount = Math.max(FREE_SHIPPING_THRESHOLD - cartTotal, 0);
 
     useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => {
@@ -79,32 +72,16 @@ export default function CartDrawer() {
                             </button>
                         </div>
 
-                        {/* Free Shipping Progress */}
+                        {/* Free Shipping Badge - ALWAYS ON */}
                         {items.length > 0 && (
-                            <div className="px-8 py-6 bg-alabaster/50 border-b border-charcoal/5">
-                                <div className="flex items-center gap-3 mb-3">
-                                    <div className={cn(
-                                        "w-8 h-8 rounded-full flex items-center justify-center transition-colors",
-                                        progress >= 100 ? "bg-green-500 text-white" : "bg-clay/10 text-clay"
-                                    )}>
+                            <div className="px-8 py-4 bg-green-50/50 border-b border-green-100">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center">
                                         <Truck size={16} />
                                     </div>
-                                    <p className="text-sm font-bold text-charcoal">
-                                        {progress >= 100
-                                            ? "🎉 Ücretsiz Kargo Kazandınız!"
-                                            : `Ücretsiz kargo için ${neededAmount.toLocaleString('tr-TR')} ₺ kaldı.`
-                                        }
+                                    <p className="text-[10px] font-black text-green-700 uppercase tracking-widest leading-tight">
+                                        Tüm siparişlerde kargo ücretsizdir
                                     </p>
-                                </div>
-                                <div className="h-1.5 bg-charcoal/5 rounded-full overflow-hidden">
-                                    <motion.div
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${progress}%` }}
-                                        className={cn(
-                                            "h-full rounded-full transition-all duration-500",
-                                            progress >= 100 ? "bg-green-500" : "bg-clay"
-                                        )}
-                                    />
                                 </div>
                             </div>
                         )}
