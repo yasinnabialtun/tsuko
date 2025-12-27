@@ -80,13 +80,18 @@ export const metadata: Metadata = {
 import { WishlistProvider } from '@/context/wishlist-context';
 import AnalyticsScripts from '@/components/analytics';
 import MarketingWrapper from '@/components/marketing-wrapper';
+import { ClerkProvider } from '@clerk/nextjs';
+import { trTR } from '@clerk/localizations';
+
+// Check if Clerk is configured
+const isClerkConfigured = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  return (
+  const content = (
     <html lang="tr" className={`${inter.variable} ${syne.variable}`}>
       <head>
         <AnalyticsScripts />
@@ -109,4 +114,15 @@ export default function RootLayout({
       </body>
     </html>
   );
+
+  // Wrap with ClerkProvider only if configured
+  if (isClerkConfigured) {
+    return (
+      <ClerkProvider localization={trTR}>
+        {content}
+      </ClerkProvider>
+    );
+  }
+
+  return content;
 }

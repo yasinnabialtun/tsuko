@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { sendEmail } from '@/lib/resend';
+import { getOrderConfirmationEmailHtml } from '@/lib/email-templates';
 
 export const dynamic = 'force-dynamic';
 
@@ -89,8 +91,25 @@ export async function POST(request: Request) {
             }
         });
 
-        // TODO: Send order confirmation email
-        // await sendOrderConfirmationEmail(customerEmail, order);
+        // Send order confirmation email
+        try {
+            await sendEmail({
+                to: customerEmail,
+                subject: `Siparişiniz Alındı - ${order.orderNumber} | Tsuko Design`,
+                html: getOrderConfirmationEmailHtml({
+                    orderNumber: order.orderNumber,
+                    customerName,
+                    items: items.map((item: any) => ({
+                        name: item.name || 'Ürün',
+                        quantity: item.quantity,
+                        price: item.price.toString()
+                    })),
+                    totalAmount: totalAmount.toString()
+                })
+            });
+        } catch (emailError) {
+            console.error('Order confirmation email failed:', emailError);
+        }
 
         return NextResponse.json({
             message: 'Order created successfully',

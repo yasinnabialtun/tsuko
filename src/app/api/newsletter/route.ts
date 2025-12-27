@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { sendEmail } from '@/lib/resend';
+import { getWelcomeEmailHtml } from '@/lib/email-templates';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,8 +38,17 @@ export async function POST(request: Request) {
             }
         });
 
-        // TODO: Send welcome email with Resend
-        // await sendWelcomeEmail(email);
+        // Send welcome email with discount code
+        try {
+            await sendEmail({
+                to: email,
+                subject: 'Tsuko Design\'a Hoş Geldiniz! 🎉 %10 İndirim Kodunuz İçeride',
+                html: getWelcomeEmailHtml(email)
+            });
+        } catch (emailError) {
+            console.error('Welcome email failed:', emailError);
+            // Don't fail the subscription if email fails
+        }
 
         return NextResponse.json(
             {

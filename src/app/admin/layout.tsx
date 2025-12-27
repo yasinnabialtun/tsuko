@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LayoutDashboard, ShoppingBag, FileText, Settings, Users, Package, LogOut, ExternalLink } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, FileText, Settings, Users, Package, ExternalLink, User } from 'lucide-react';
 import { Syne } from 'next/font/google';
 
 const syne = Syne({ subsets: ['latin'], variable: '--font-syne' });
@@ -13,9 +13,24 @@ const MENU_ITEMS = [
     { icon: ShoppingBag, label: 'Ürünler', href: '/admin/products' },
     { icon: Package, label: 'Siparişler', href: '/admin/orders' },
     { icon: FileText, label: 'Blog', href: '/admin/blog' },
-    { icon: Users, label: 'Müşteriler', href: '/admin/users' },
+    { icon: Users, label: 'Müşteriler', href: '/admin/customers' },
     { icon: Settings, label: 'Ayarlar', href: '/admin/settings' },
 ];
+
+// Dynamic import for Clerk components
+let UserButton: any = null;
+let useUser: any = null;
+
+// Check if running on client and Clerk is configured
+if (typeof window !== 'undefined') {
+    try {
+        const clerk = require('@clerk/nextjs');
+        UserButton = clerk.UserButton;
+        useUser = clerk.useUser;
+    } catch (e) {
+        // Clerk not available
+    }
+}
 
 export default function AdminLayout({
     children,
@@ -23,6 +38,19 @@ export default function AdminLayout({
     children: React.ReactNode
 }) {
     const pathname = usePathname();
+
+    // Try to use Clerk if available
+    let user = null;
+    let isLoaded = true;
+    if (useUser) {
+        try {
+            const clerkUser = useUser();
+            user = clerkUser.user;
+            isLoaded = clerkUser.isLoaded;
+        } catch (e) {
+            // Clerk not configured
+        }
+    }
 
     return (
         <div className={`min-h-screen bg-[#FDFBF7] flex font-sans ${syne.variable}`}>
@@ -39,11 +67,47 @@ export default function AdminLayout({
                     </div>
                 </div>
 
+                {/* User Info - Only show if Clerk is configured and user is loaded */}
+                {isLoaded && user && UserButton && (
+                    <div className="px-6 py-4 border-b border-[#F0F0F0] flex items-center gap-3">
+                        <UserButton
+                            afterSignOutUrl="/"
+                            appearance={{
+                                elements: {
+                                    avatarBox: 'w-10 h-10'
+                                }
+                            }}
+                        />
+                        <div className="flex-1 min-w-0">
+                            <p className="font-bold text-charcoal text-sm truncate">
+                                {user.firstName || user.emailAddresses[0]?.emailAddress?.split('@')[0]}
+                            </p>
+                            <p className="text-xs text-gray-400 truncate">
+                                {user.emailAddresses[0]?.emailAddress}
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Fallback user info when Clerk is not configured */}
+                {!user && (
+                    <div className="px-6 py-4 border-b border-[#F0F0F0] flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-clay/20 flex items-center justify-center">
+                            <User size={20} className="text-clay" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="font-bold text-charcoal text-sm">Admin</p>
+                            <p className="text-xs text-gray-400">Yönetici Paneli</p>
+                        </div>
+                    </div>
+                )}
+
                 {/* Navigation */}
-                <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
+                <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
                     <div className="px-4 pb-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Yönetim</div>
                     {MENU_ITEMS.map((item) => {
-                        const isActive = pathname === item.href;
+                        const isActive = pathname === item.href ||
+                            (item.href !== '/admin' && pathname?.startsWith(item.href));
                         return (
                             <Link
                                 key={item.href}
@@ -67,10 +131,6 @@ export default function AdminLayout({
                         <ExternalLink size={18} />
                         Siteyi Görüntüle
                     </Link>
-                    <button className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 rounded-xl transition-colors">
-                        <LogOut size={18} />
-                        Çıkış Yap
-                    </button>
                 </div>
             </aside>
 
