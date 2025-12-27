@@ -10,6 +10,7 @@ import CouponValidation from '@/components/coupon-validation';
 import BundleSuggester from '@/components/bundle-suggester';
 import { useCart } from '@/context/cart-context';
 import Breadcrumb from '@/components/breadcrumb';
+import ReviewSection from '@/components/review-section';
 
 interface ProductData {
     id: string;
@@ -226,6 +227,10 @@ export default function ProductPageClient({ product }: { product: ProductData })
                             <BundleSuggester products={product.similarProducts} />
                         </div>
                     </div>
+                </div>
+
+                <div className="mt-24 max-w-4xl mx-auto">
+                    <ReviewSection productId={product.id} />
                 </div>
             </div>
         </>
