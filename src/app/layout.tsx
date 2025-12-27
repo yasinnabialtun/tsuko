@@ -7,6 +7,9 @@ import { CartProvider } from '@/context/cart-context';
 import CartDrawer from '@/components/cart-drawer';
 import AnalyticsScripts from '@/components/analytics';
 import MarketingWrapper from '@/components/marketing-wrapper';
+import WhatsAppButton from '@/components/whatsapp-button';
+import PromoBanner from '@/components/promo-banner';
+import { Toaster } from 'sonner';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -73,6 +76,7 @@ export default function RootLayout({
         <AnalyticsScripts />
       </head>
       <body className="font-sans bg-alabaster text-charcoal antialiased selection:bg-clay selection:text-white">
+        <PromoBanner />
         <noscript>
           <iframe
             src={`https://www.googletagmanager.com/ns.html?id=${process.env.NEXT_PUBLIC_GTM_ID || 'GTM-T2TZGWWP'}`}
@@ -84,9 +88,11 @@ export default function RootLayout({
 
         <CartProvider>
           <WishlistProvider>
+            <Toaster position="top-center" richColors />
             <CartDrawer />
             {children}
             <MarketingWrapper />
+            <WhatsAppButton />
           </WishlistProvider>
         </CartProvider>
       </body>
