@@ -99,7 +99,6 @@ export async function POST(request: Request) {
                 customerPhone: customer.phone,
                 shippingAddress: fullAddress,
                 city: customer.city,
-                // If Order model has separate fields for district/zip, use them, otherwise they are in address
                 totalAmount: finalAmount,
                 discountAmount: discountAmount,
                 couponCode: discountAmount > 0 ? couponCode.toUpperCase() : null,
@@ -110,6 +109,22 @@ export async function POST(request: Request) {
                 }
             }
         });
+
+        // 2.1 Deduct Stock
+        for (const item of orderItemsData) {
+            await prisma.product.update({
+                where: { id: item.productId },
+                data: { stock: { decrement: item.quantity } }
+            });
+        }
+
+        // 2.2 Increment Coupon Usage
+        if (discountAmount > 0 && couponCode) {
+            await prisma.coupon.update({
+                where: { code: couponCode.toUpperCase() },
+                data: { usedCount: { increment: 1 } }
+            });
+        }
 
         // 3. Prepare Shopier Form
         if (!SHOPIER_API_KEY || !SHOPIER_API_SECRET) {
