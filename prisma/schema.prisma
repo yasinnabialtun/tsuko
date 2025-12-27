@@ -48,13 +48,14 @@ model Category {
 }
 
 model Order {
-  id            String      @id @default(cuid())
-  orderNumber   String      @unique // #TS-1024 format
-  customerName  String
-  customerEmail String
-  customerPhone String
-  address       String
-  city          String
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique // #TS-1024 format
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  shippingAddress String      @default("")
+  city            String      @default("")
+  trackingNumber  String?
   
   items         OrderItem[]
   totalAmount   Decimal     @db.Decimal(10, 2)
@@ -79,6 +80,7 @@ model OrderItem {
 model Subscriber {
   id        String   @id @default(cuid())
   email     String   @unique
+  source    String   @default("website")
   createdAt DateTime @default(now())
   isActive  Boolean  @default(true)
 }
@@ -91,6 +93,7 @@ model BlogPost {
   content     String   @db.Text
   coverImage  String
   category    String
+  author      String   @default("Tsuko Design")
   date        String   // Display date
   
   // SEO
