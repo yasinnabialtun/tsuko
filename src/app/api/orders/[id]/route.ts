@@ -12,7 +12,7 @@ interface RouteParams {
 // GET /api/orders/[id] - Get single order (Admin only)
 export async function GET(request: Request, { params }: RouteParams) {
     // 🔒 Admin Check
-    const authError = validateAdminRequest(request);
+    const authError = await validateAdminRequest(request);
     if (authError) return authError;
 
     try {
@@ -59,7 +59,7 @@ export async function GET(request: Request, { params }: RouteParams) {
 // PUT /api/orders/[id] - Update order status
 export async function PUT(request: Request, { params }: RouteParams) {
     // 🔒 Admin Check
-    const authError = validateAdminRequest(request);
+    const authError = await validateAdminRequest(request);
     if (authError) return authError;
 
     try {

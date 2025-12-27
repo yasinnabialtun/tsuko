@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 // GET /api/orders - List orders (admin)
 export async function GET(request: Request) {
     // 🔒 Admin Check
-    const authError = validateAdminRequest(request);
+    const authError = await validateAdminRequest(request);
     if (authError) return authError;
 
     try {
@@ -58,7 +58,7 @@ export async function GET(request: Request) {
 // Note: Shopier webhooks use /api/webhooks/shopier
 export async function POST(request: Request) {
     // 🔒 Admin Check
-    const authError = validateAdminRequest(request);
+    const authError = await validateAdminRequest(request);
     if (authError) return authError;
 
     try {

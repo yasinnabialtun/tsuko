@@ -87,7 +87,7 @@ const BLOG_POSTS = [
 ];
 
 export async function POST(request: Request) {
-    const authError = validateAdminRequest(request);
+    const authError = await validateAdminRequest(request);
     if (authError) return authError;
 
     try {

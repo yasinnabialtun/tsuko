@@ -21,7 +21,7 @@ export async function GET() {
 // POST /api/products -> Yeni ürün ekle
 export async function POST(request: Request) {
     // 🔒 Admin Check
-    const authError = validateAdminRequest(request);
+    const authError = await validateAdminRequest(request);
     if (authError) return authError;
 
     try {
