@@ -1,13 +1,17 @@
 import { MetadataRoute } from 'next';
+import { prisma } from '@/lib/prisma';
 
-export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://tsuko.com.tr'; // Gerçek domain buraya gelecek
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+    const baseUrl = 'https://tsukodesign.com';
 
-    // Statik Sayfalar
-    const routes = [
+    // Static Pages
+    const staticRoutes = [
         '',
         '/blog',
-        '/products',
+        '/products', // This might be a category page or removed if handled by homepage
+        '/contact',
+        '/#collection',
+        '/#philosophy'
     ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),
@@ -15,17 +19,39 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: route === '' ? 1 : 0.8,
     }));
 
-    // Blog Yazıları (Dinamik) - Gerçekte veritabanından gelecek
-    const posts = [
-        'minimalist-salon-dekorasyonu-ipuclari',
-        'surdurulebilir-tasarim-nedir',
-        'wabi-sabi-felsefesi-ile-ev-duzeni',
-    ].map((slug) => ({
-        url: `${baseUrl}/blog/${slug}`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly' as const,
-        priority: 0.7,
-    }));
+    // Dynamic Products
+    let products = [];
+    try {
+        const productData = await prisma.product.findMany({
+            where: { isActive: true },
+            select: { slug: true, updatedAt: true }
+        });
+        products = productData.map((p) => ({
+            url: `${baseUrl}/product/${p.slug}`,
+            lastModified: p.updatedAt,
+            changeFrequency: 'weekly' as const,
+            priority: 0.9,
+        }));
+    } catch (e) {
+        console.error('Sitemap product fetch error', e);
+    }
 
-    return [...routes, ...posts];
+    // Dynamic Blog Posts
+    let posts = [];
+    try {
+        const postData = await prisma.blogPost.findMany({
+            where: { published: true },
+            select: { slug: true, updatedAt: true }
+        });
+        posts = postData.map((p) => ({
+            url: `${baseUrl}/blog/${p.slug}`,
+            lastModified: p.updatedAt,
+            changeFrequency: 'weekly' as const,
+            priority: 0.7,
+        }));
+    } catch (e) {
+        console.error('Sitemap blog fetch error', e);
+    }
+
+    return [...staticRoutes, ...products, ...posts];
 }
