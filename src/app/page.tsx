@@ -9,9 +9,42 @@ import LightingSection from '@/components/lighting-section';
 import FAQ from '@/components/faq';
 import Newsletter from '@/components/newsletter';
 import Footer from '@/components/footer';
-import { products } from '@/lib/data';
+import { prisma } from "@/lib/prisma";
 
-export default function Home() {
+// Revalidate data every hour
+export const revalidate = 3600;
+
+async function getProducts() {
+  // If database fails (during build or no connection), return empty array or fallback
+  try {
+    const products = await prisma.product.findMany({
+      where: { isActive: true, isFeatured: true }, // Only fetch featured active products
+      take: 8,
+      orderBy: { createdAt: 'desc' }
+    });
+
+    // Transform Decimal to number/string for serialization if needed, or keep as is if component handles it.
+    // For simplicity in this demo, we'll map basic fields.
+    return products.map(p => ({
+      ...p,
+      price: p.price.toString(), // Convert Decimal to string
+      image: p.images[0] || '/images/hero.png' // Fallback image
+    }));
+  } catch (e) {
+    console.error("Database connection failed, returning fallback data");
+    // Fallback Mock Data for Development/Build Safety
+    return [
+      { id: '1', name: 'Nami Vazo', price: '1250', image: '/images/products/nami.png', slug: 'nami-vazo', categoryId: 'cat_1' },
+      { id: '2', name: 'Mantar Lamba', price: '850', image: '/images/products/mantar.png', slug: 'mantar-lamba', categoryId: 'cat_2' },
+      { id: '3', name: 'Kaya Saksı', price: '450', image: '/images/products/kaya.png', slug: 'kaya-saksi', categoryId: 'cat_3' },
+      // ... add more fallbacks if needed
+    ];
+  }
+}
+
+export default async function Home() {
+  const products = await getProducts();
+
   // Schema.org Structured Data
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -97,10 +130,10 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Stories />
-      <Philosophy />
-      <Process />
       <ShopTheLook />
-      <Collection />
+      <Philosophy />
+      {/* Pass real database products to Collection */}
+      <Collection products={products} />
       <LightingSection />
       <FAQ />
       <Newsletter />
