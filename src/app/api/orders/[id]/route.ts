@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { validateAdminRequest } from '@/lib/admin-auth';
 import { sendEmail } from '@/lib/resend';
 import { getOrderShippedEmailHtml } from '@/lib/email-templates';
 
@@ -9,8 +10,12 @@ interface RouteParams {
     params: Promise<{ id: string }>;
 }
 
-// GET /api/orders/[id] - Get single order
+// GET /api/orders/[id] - Get single order (Admin only)
 export async function GET(request: Request, { params }: RouteParams) {
+    // 🔒 Admin Check
+    const authError = validateAdminRequest(request);
+    if (authError) return authError;
+
     try {
         const { id } = await params;
 
@@ -54,6 +59,10 @@ export async function GET(request: Request, { params }: RouteParams) {
 
 // PUT /api/orders/[id] - Update order status
 export async function PUT(request: Request, { params }: RouteParams) {
+    // 🔒 Admin Check
+    const authError = validateAdminRequest(request);
+    if (authError) return authError;
+
     try {
         const { id } = await params;
         const body = await request.json();

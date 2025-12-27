@@ -9,11 +9,14 @@ import { cn } from '@/lib/utils';
 import SearchModal from './search-modal';
 import { useWishlist } from '@/context/wishlist-context';
 
+import { useCart } from '@/context/cart-context';
+
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
-    const { items } = useWishlist();
+    const { items: wishlistItems } = useWishlist();
+    const { cartCount, toggleCart } = useCart();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -39,13 +42,13 @@ export default function Navbar() {
                                 src="/logo.png"
                                 alt="Tsuko Logo"
                                 fill
-                                className="object-contain object-left md:object-center" // Mobile: left aligned, Desktop: center if needed, but usually left is safer. Let's keep object-contain.
+                                className="object-contain object-left md:object-center"
                                 priority
                             />
                         </div>
                     </Link>
 
-                    {/* Desktop Navigation - Centered */}
+                    {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center gap-12 text-sm font-bold uppercase tracking-widest text-charcoal/60">
                         <a href="/#collection" className="hover:text-charcoal transition-colors">Koleksiyon</a>
                         <Link href="/blog" className="hover:text-charcoal transition-colors">Blog</Link>
@@ -59,28 +62,46 @@ export default function Navbar() {
                         </button>
 
                         <Link href="/wishlist" className="hover:text-charcoal transition-colors relative">
-                            <Heart size={22} className={cn("transition-colors", items.length > 0 && "fill-rose text-rose")} />
-                            {items.length > 0 && (
+                            <Heart size={22} className={cn("transition-colors", wishlistItems.length > 0 && "fill-rose text-rose")} />
+                            {wishlistItems.length > 0 && (
                                 <span className="absolute -top-1 -right-1 w-2 h-2 bg-rose rounded-full animate-pulse" />
                             )}
                         </Link>
-                        <a href="#lighting-demo" className="hover:text-charcoal transition-colors">Aydınlatma</a>
-                        <a
-                            href="#"
-                            className="flex items-center gap-2 bg-charcoal text-white px-6 py-3 rounded-full hover:bg-black transition-all"
+
+                        <button
+                            onClick={toggleCart}
+                            className="flex items-center gap-2 bg-charcoal text-white px-6 py-3 rounded-full hover:bg-black transition-all relative"
                         >
                             <ShoppingBag size={18} />
-                            Shopier
-                        </a>
+                            <span>Sepet</span>
+                            {cartCount > 0 && (
+                                <span className="absolute -top-1 -right-1 w-5 h-5 bg-clay text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white">
+                                    {cartCount}
+                                </span>
+                            )}
+                        </button>
                     </div>
 
                     {/* Mobile Menu Button */}
-                    <button
-                        className="md:hidden text-charcoal"
-                        onClick={() => setMobileMenuOpen(true)}
-                    >
-                        <Menu size={24} />
-                    </button>
+                    <div className="flex items-center gap-4 md:hidden">
+                        <button
+                            onClick={toggleCart}
+                            className="text-charcoal relative"
+                        >
+                            <ShoppingBag size={24} />
+                            {cartCount > 0 && (
+                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-clay text-white text-[10px] flex items-center justify-center rounded-full">
+                                    {cartCount}
+                                </span>
+                            )}
+                        </button>
+                        <button
+                            className="text-charcoal"
+                            onClick={() => setMobileMenuOpen(true)}
+                        >
+                            <Menu size={24} />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Mobile Menu Overlay */}
@@ -105,15 +126,14 @@ export default function Navbar() {
                                 <a href="#collection" onClick={() => setMobileMenuOpen(false)}>Koleksiyon</a>
                                 <Link href="/blog" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
                                 <a href="#philosophy" onClick={() => setMobileMenuOpen(false)}>Felsefe</a>
-                                <a href="#lighting-demo" onClick={() => setMobileMenuOpen(false)}>Aydınlatma</a>
                             </div>
-                            <a
-                                href="#"
+                            <button
+                                onClick={() => { setMobileMenuOpen(false); toggleCart(); }}
                                 className="w-full max-w-xs flex items-center justify-center gap-3 bg-charcoal text-white py-6 rounded-2xl text-xl font-bold"
                             >
                                 <ShoppingBag size={24} />
-                                Mağaza (Shopier)
-                            </a>
+                                Sepeti Görüntüle ({cartCount})
+                            </button>
                         </motion.div>
                     )}
                 </AnimatePresence>

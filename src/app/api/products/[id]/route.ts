@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { validateAdminRequest } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,6 +36,10 @@ export async function GET(request: Request, { params }: RouteParams) {
 
 // PUT /api/products/[id] - Update product
 export async function PUT(request: Request, { params }: RouteParams) {
+    // 🔒 Admin Check
+    const authError = validateAdminRequest(request);
+    if (authError) return authError;
+
     try {
         const { id } = await params;
         const body = await request.json();
@@ -90,6 +95,10 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
 // DELETE /api/products/[id] - Delete product (soft delete - set isActive to false)
 export async function DELETE(request: Request, { params }: RouteParams) {
+    // 🔒 Admin Check
+    const authError = validateAdminRequest(request);
+    if (authError) return authError;
+
     try {
         const { id } = await params;
 

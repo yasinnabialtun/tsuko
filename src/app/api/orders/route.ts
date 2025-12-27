@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { validateAdminRequest } from '@/lib/admin-auth';
 import { sendEmail } from '@/lib/resend';
 import { getOrderConfirmationEmailHtml } from '@/lib/email-templates';
 
@@ -7,6 +8,10 @@ export const dynamic = 'force-dynamic';
 
 // GET /api/orders - List orders (admin)
 export async function GET(request: Request) {
+    // 🔒 Admin Check
+    const authError = validateAdminRequest(request);
+    if (authError) return authError;
+
     try {
         const { searchParams } = new URL(request.url);
         const status = searchParams.get('status');
@@ -49,8 +54,13 @@ export async function GET(request: Request) {
     }
 }
 
-// POST /api/orders - Create new order (from Shopier webhook or manual)
+// POST /api/orders - Create new order (Manual admin order)
+// Note: Shopier webhooks use /api/webhooks/shopier
 export async function POST(request: Request) {
+    // 🔒 Admin Check
+    const authError = validateAdminRequest(request);
+    if (authError) return authError;
+
     try {
         const body = await request.json();
 

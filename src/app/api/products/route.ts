@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { validateAdminRequest } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,6 +20,10 @@ export async function GET() {
 
 // POST /api/products -> Yeni ürün ekle
 export async function POST(request: Request) {
+    // 🔒 Admin Check
+    const authError = validateAdminRequest(request);
+    if (authError) return authError;
+
     try {
         const body = await request.json();
 

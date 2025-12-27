@@ -78,6 +78,8 @@ export const metadata: Metadata = {
 };
 
 import { WishlistProvider } from '@/context/wishlist-context';
+import { CartProvider } from '@/context/cart-context';
+import CartDrawer from '@/components/cart-drawer';
 import AnalyticsScripts from '@/components/analytics';
 import MarketingWrapper from '@/components/marketing-wrapper';
 import { ClerkProvider } from '@clerk/nextjs';
@@ -106,11 +108,14 @@ export default function RootLayout({
           />
         </noscript>
 
-        <WishlistProvider>
-          {children}
-          {/* Deferred Loading for Performance */}
-          <MarketingWrapper />
-        </WishlistProvider>
+        <CartProvider>
+          <WishlistProvider>
+            <CartDrawer />
+            {children}
+            {/* Deferred Loading for Performance */}
+            <MarketingWrapper />
+          </WishlistProvider>
+        </CartProvider>
       </body>
     </html>
   );
