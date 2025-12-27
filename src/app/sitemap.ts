@@ -26,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             where: { isActive: true },
             select: { slug: true, updatedAt: true }
         });
-        products = productData.map((p) => ({
+        products = productData.map((p: { slug: string; updatedAt: Date }) => ({
             url: `${baseUrl}/product/${p.slug}`,
             lastModified: p.updatedAt,
             changeFrequency: 'weekly' as const,
@@ -43,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             where: { published: true },
             select: { slug: true, updatedAt: true }
         });
-        posts = postData.map((p) => ({
+        posts = postData.map((p: { slug: string; updatedAt: Date }) => ({
             url: `${baseUrl}/blog/${p.slug}`,
             lastModified: p.updatedAt,
             changeFrequency: 'weekly' as const,
