@@ -38,9 +38,9 @@ async function getProducts() {
     console.error("Database connection failed, returning fallback data");
     // Fallback Mock Data for Development/Build Safety
     return [
-      { id: '1', name: 'Nami Vazo', price: '1250', image: '/images/products/nami.png', slug: 'nami-vazo', categoryId: 'cat_1', description: 'Minimalist vazo', shopierUrl: '#' },
-      { id: '2', name: 'Mantar Lamba', price: '850', image: '/images/products/mantar.png', slug: 'mantar-lamba', categoryId: 'cat_2', description: 'Mantar lamba', shopierUrl: '#' },
-      { id: '3', name: 'Kaya Saksı', price: '450', image: '/images/products/kaya.png', slug: 'kaya-saksi', categoryId: 'cat_3', description: 'Kaya saksı', shopierUrl: '#' },
+      { id: '1', name: 'Aura Vazo', price: '1250', image: '/images/aura.png', slug: 'aura-vazo', categoryId: 'cat_1', description: 'Minimalist vazo', shopierUrl: '#' },
+      { id: '2', name: 'Kora Lamba', price: '1850', image: '/images/kora.png', slug: 'kora-lamba', categoryId: 'cat_2', description: 'Modern lamba', shopierUrl: '#' },
+      { id: '3', name: 'Tondo Saksı', price: '450', image: '/images/tondo.png', slug: 'tondo-saksi', categoryId: 'cat_3', description: 'Kaya saksı', shopierUrl: '#' },
     ];
   }
 }

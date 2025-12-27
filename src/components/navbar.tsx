@@ -16,9 +16,26 @@ export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
+
     const { items: wishlistItems } = useWishlist();
     const { cartCount, toggleCart } = useCart();
-    const { user, isLoaded } = useUser();
+
+    const isClerkConfigured = typeof window !== 'undefined' ? !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY : true;
+
+    // Safely call useUser only if Clerk is configured
+    let user = null;
+    let isLoaded = true;
+
+    try {
+        if (isClerkConfigured) {
+            const clerk = useUser();
+            user = clerk?.user;
+            isLoaded = clerk?.isLoaded ?? true;
+        }
+    } catch (e) {
+        console.warn("Clerk hooks called but ClerkProvider might be missing or keys are not set.");
+        isLoaded = true;
+    }
 
     useEffect(() => {
         const handleScroll = () => {
@@ -76,7 +93,7 @@ export default function Navbar() {
                             </Link>
 
                             {/* User Auth */}
-                            {isLoaded && (
+                            {isClerkConfigured && isLoaded && (
                                 user ? (
                                     <div className="flex items-center gap-3">
                                         <Link href="/orders" title="Siparişlerim" className="hover:text-charcoal transition-colors">
