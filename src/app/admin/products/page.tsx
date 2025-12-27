@@ -85,10 +85,17 @@ export default async function ProductList() {
                                 <td className="px-8 py-4 text-sm font-medium text-charcoal/80">{product.stock} adet</td>
                                 <td className="px-8 py-4 text-right">
                                     <div className="flex items-center justify-end gap-2">
-                                        <button className="p-2 text-charcoal/40 hover:text-clay hover:bg-clay/10 rounded-lg transition-colors">
+                                        <Link
+                                            href={`/admin/products/edit/${product.id}`}
+                                            className="p-2 text-charcoal/40 hover:text-clay hover:bg-clay/10 rounded-lg transition-colors"
+                                            title="Düzenle"
+                                        >
                                             <Edit2 size={18} />
-                                        </button>
-                                        <button className="p-2 text-charcoal/40 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                                        </Link>
+                                        <button
+                                            className="p-2 text-charcoal/40 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                            title="Arşivle"
+                                        >
                                             <Archive size={18} />
                                         </button>
                                     </div>

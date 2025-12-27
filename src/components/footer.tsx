@@ -72,6 +72,7 @@ export default function Footer() {
                     <div className="space-y-6">
                         <h4 className="font-bold uppercase tracking-widest text-clay text-sm">Destek</h4>
                         <ul className="space-y-3 text-white/70">
+                            <li><Link href="/order-tracking" className="hover:text-white transition-colors">Sipariş Takibi</Link></li>
                             <li><Link href="/contact" className="hover:text-white transition-colors">İletişim</Link></li>
                             <li><Link href="/shipping" className="hover:text-white transition-colors">Kargo & Teslimat</Link></li>
                             <li><Link href="/returns" className="hover:text-white transition-colors">İade & Değişim</Link></li>
