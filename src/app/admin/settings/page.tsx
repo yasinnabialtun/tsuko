@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Save, Loader2, Check, Globe, Mail, Phone, Palette, Bell, Shield, AlertTriangle, Package } from 'lucide-react';
+import { Save, Loader2, Check, Globe, Mail, Phone, Palette, Bell, Shield, AlertTriangle, Package, RefreshCcw } from 'lucide-react';
 
 export default function AdminSettingsPage() {
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
+    const [seeding, setSeeding] = useState(false);
+    const [seedSuccess, setSeedSuccess] = useState('');
     const [maintenanceMode, setMaintenanceMode] = useState(false);
 
     const [settings, setSettings] = useState({
@@ -51,6 +53,28 @@ export default function AdminSettingsPage() {
         setSaving(false);
         setSaved(true);
         setTimeout(() => setSaved(false), 3000);
+    };
+
+    const handleSeed = async () => {
+        if (!confirm('Tüm kategoriler ve örnek blog yazıları oluşturulacak. Devam etmek istiyor musunuz?')) return;
+
+        setSeeding(true);
+        setSeedSuccess('');
+
+        try {
+            const res = await fetch('/api/admin/seed', { method: 'POST' });
+            if (res.ok) {
+                setSeedSuccess('Veritabanı başarıyla başlatıldı!');
+                setTimeout(() => setSeedSuccess(''), 5000);
+            } else {
+                alert('Seed işlemi başarısız oldu.');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Bağlantı hatası.');
+        } finally {
+            setSeeding(false);
+        }
     };
 
     return (
@@ -332,18 +356,19 @@ export default function AdminSettingsPage() {
                 </div>
             </div>
 
-            {/* Maintenance Mode */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-8">
-                <div className="flex items-center gap-3 mb-6">
+            {/* Maintenance Mode & Data Seed */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-8 space-y-8">
+                <div className="flex items-center gap-3">
                     <div className="p-3 bg-orange-50 rounded-xl">
                         <AlertTriangle size={24} className="text-orange-600" />
                     </div>
                     <div>
-                        <h2 className="text-xl font-bold text-charcoal">Acil Durum</h2>
-                        <p className="text-sm text-gray-500">Bakım modu ve acil ayarlar</p>
+                        <h2 className="text-xl font-bold text-charcoal">Geliştirici & Sistem</h2>
+                        <p className="text-sm text-gray-500">Kritik sistem ayarları</p>
                     </div>
                 </div>
 
+                {/* Maintenance Toggle */}
                 <div className="flex items-center justify-between p-6 bg-orange-50 rounded-xl border border-orange-100">
                     <div>
                         <h4 className="font-bold text-orange-900">Bakım Modu</h4>
@@ -354,6 +379,27 @@ export default function AdminSettingsPage() {
                         className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${maintenanceMode ? 'bg-orange-500' : 'bg-gray-300'}`}
                     >
                         <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${maintenanceMode ? 'translate-x-7' : 'translate-x-1'}`} />
+                    </button>
+                </div>
+
+                {/* Database Seed */}
+                <div className="flex items-center justify-between p-6 bg-blue-50 rounded-xl border border-blue-100">
+                    <div>
+                        <h4 className="font-bold text-blue-900">Veritabanını Başlat (Seed)</h4>
+                        <p className="text-sm text-blue-700">Varsayılan kategorileri ve örnek blog yazılarını yükler.</p>
+                        {seedSuccess && <p className="text-green-600 font-bold mt-2 text-sm">✓ {seedSuccess}</p>}
+                    </div>
+                    <button
+                        onClick={handleSeed}
+                        disabled={seeding}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition-colors disabled:opacity-50"
+                    >
+                        {seeding ? (
+                            <Loader2 size={16} className="animate-spin" />
+                        ) : (
+                            <RefreshCcw size={16} />
+                        )}
+                        Başlat
                     </button>
                 </div>
             </div>
@@ -379,8 +425,8 @@ export default function AdminSettingsPage() {
                         <p className="font-mono text-sm mt-1">RESEND_API_KEY</p>
                     </div>
                     <div className="bg-white/10 rounded-xl p-4">
-                        <span className="text-xs text-white/50 uppercase tracking-wider">Clerk</span>
-                        <p className="font-mono text-sm mt-1">CLERK_SECRET_KEY</p>
+                        <span className="text-xs text-white/50 uppercase tracking-wider">Shopier</span>
+                        <p className="font-mono text-sm mt-1">SHOPIER_API_KEY</p>
                     </div>
                     <div className="bg-white/10 rounded-xl p-4">
                         <span className="text-xs text-white/50 uppercase tracking-wider">Storage</span>
