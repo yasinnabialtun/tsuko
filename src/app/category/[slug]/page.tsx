@@ -1,54 +1,144 @@
-'use client';
-
-import { useState } from 'react';
+import { prisma } from '@/lib/prisma';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
 import ProductCard from '@/components/product-card';
 import Breadcrumbs from '@/components/breadcrumbs';
-import { products } from '@/lib/data';
+import { notFound } from 'next/navigation';
 import { SlidersHorizontal, ArrowUpDown, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Metadata } from 'next';
+
+// Revalidate every hour
+export const revalidate = 3600;
 
 interface CategoryPageProps {
     params: Promise<{ slug: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default function CategoryPage({ params }: CategoryPageProps) {
-    const [localParams, setLocalParams] = useState<{ slug: string } | null>(null);
+// 1. Dynamic SEO Metadata
+export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
+    const { slug } = await params;
 
-    // Unwrap params
-    useState(() => {
-        params.then(setLocalParams);
+    // Handle "all" case or specific category
+    if (slug === 'all') {
+        return {
+            title: 'Tüm Koleksiyon | Tsuko Design',
+            description: 'Tsuko Design\'ın tüm sürdürülebilir 3D baskı dekorasyon ürünlerini keşfedin. Vazolardan aydınlatmaya modern tasarımlar.',
+        };
+    }
+
+    const category = await prisma.category.findUnique({
+        where: { slug },
     });
 
-    const slug = localParams?.slug;
-    const categoryName = slug ? slug.charAt(0).toUpperCase() + slug.slice(1) : '';
+    if (!category) {
+        return {
+            title: 'Kategori Bulunamadı | Tsuko Design',
+        };
+    }
 
-    // State for filters
-    const [showFilters, setShowFilters] = useState(false);
-    const [sortBy, setSortBy] = useState<'newest' | 'price-asc' | 'price-desc'>('newest');
-
-    // Mock data filtering (In a real app, this would be more robust)
-    // Mapping slug to category names in data.ts usually requires exact match or normalization
-    const categoryProducts = products.filter(p =>
-        slug === 'all' ? true : p.category.toLowerCase().includes(slug?.toLowerCase() || '')
-    );
-
-    // Sorting Logic
-    const sortedProducts = [...categoryProducts].sort((a, b) => {
-        if (sortBy === 'price-asc') {
-            return parseFloat(a.price.replace(/[^0-9.-]+/g, "")) - parseFloat(b.price.replace(/[^0-9.-]+/g, ""));
+    return {
+        title: `${category.name} | Tsuko Design`,
+        description: category.description || `${category.name} koleksiyonumuzla evinize modern bir dokunuş katın.`,
+        openGraph: {
+            title: `${category.name} Koleksiyonu`,
+            description: category.description || 'Sürdürülebilir ve estetik tasarımlar.',
         }
-        if (sortBy === 'price-desc') {
-            return parseFloat(b.price.replace(/[^0-9.-]+/g, "")) - parseFloat(a.price.replace(/[^0-9.-]+/g, ""));
-        }
-        return 0; // Default (id based or newest)
-    });
+    };
+}
 
-    if (!slug) return <div className="min-h-screen bg-white flex items-center justify-center">Yükleniyor...</div>;
+// 2. Generate Static Paths for faster loading
+export async function generateStaticParams() {
+    try {
+        const categories = await prisma.category.findMany({
+            select: { slug: true }
+        });
+        return categories.map((c: { slug: string }) => ({ slug: c.slug }));
+    } catch {
+        return [];
+    }
+}
+
+export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
+    const { slug } = await params;
+    const resolvedSearchParams = await searchParams;
+    const sort = resolvedSearchParams.sort as string || 'newest';
+
+    // 3. Database Fetching Logic
+    let categoryName = '';
+    let categoryDescription = '';
+    let products = [];
+
+    if (slug === 'all') {
+        categoryName = 'Tüm Koleksiyon';
+        categoryDescription = 'Modern yaşam alanları için tasarlanmış, sürdürülebilir ve estetik parçalar.';
+        products = await prisma.product.findMany({
+            where: { isActive: true },
+            include: { category: true },
+            orderBy: sort === 'price-asc' ? { price: 'asc' } :
+                sort === 'price-desc' ? { price: 'desc' } :
+                    { createdAt: 'desc' }
+        });
+    } else {
+        const category = await prisma.category.findUnique({
+            where: { slug },
+            include: {
+                products: {
+                    where: { isActive: true },
+                    include: { category: true },
+                    orderBy: sort === 'price-asc' ? { price: 'asc' } :
+                        sort === 'price-desc' ? { price: 'desc' } :
+                            { createdAt: 'desc' }
+                }
+            }
+        });
+
+        if (!category) {
+            notFound();
+        }
+
+        categoryName = category.name;
+        categoryDescription = category.description || 'Bu kategorideki özel tasarım ürünlerimizi keşfedin.';
+        products = category.products;
+    }
+
+    // Transform for frontend
+    const formattedProducts = products.map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        image: p.images[0] || '/images/hero.png',
+        price: `${p.price.toString()} ₺`,
+        category: p.category?.name
+    }));
+
+    // Schema.org Structured Data
+    const breadcrumbJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Anasayfa',
+                item: 'https://tsukodesign.com'
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: categoryName,
+                item: `https://tsukodesign.com/category/${slug}`
+            }
+        ]
+    };
 
     return (
         <main className="min-h-screen bg-white">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+            />
+
             <Navbar />
 
             <section className="pt-32 pb-24 px-6 md:px-0">
@@ -61,105 +151,49 @@ export default function CategoryPage({ params }: CategoryPageProps) {
 
                     <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
                         <div>
-                            <h1 className="text-5xl font-black text-charcoal mb-4 capitalize">{categoryName === 'All' ? 'Tüm Koleksiyon' : `${categoryName} Koleksiyonu`}</h1>
+                            <h1 className="text-4xl md:text-5xl font-black text-charcoal mb-4 capitalize">
+                                {categoryName}
+                            </h1>
                             <p className="text-charcoal/60 text-lg max-w-2xl">
-                                Yaşam alanınıza mimari bir dokunuş katacak, sürdürülebilir materyallerle üretilmiş eşsiz parçalar.
-                                Toplam {categoryProducts.length} parça listeleniyor.
+                                {categoryDescription}
+                                <span className="block mt-2 text-sm font-bold text-clay uppercase tracking-widest">
+                                    {products.length} Ürün Listeleniyor
+                                </span>
                             </p>
                         </div>
 
+                        {/* Sort Actions (Client-side functionality handled via URL params or simple links in SSR) */}
                         <div className="flex gap-4">
-                            {/* Filter Toggle (Mobile/Desktop) */}
-                            <button
-                                onClick={() => setShowFilters(!showFilters)}
-                                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${showFilters ? 'bg-charcoal text-white' : 'bg-alabaster text-charcoal hover:bg-black/5'}`}
-                            >
-                                <SlidersHorizontal size={18} />
-                                Filtrele
-                            </button>
-
-                            {/* Sort Dropdown */}
-                            <div className="relative group z-20">
-                                <button className="flex items-center gap-2 px-6 py-3 rounded-xl bg-alabaster text-charcoal font-bold hover:bg-black/5 transition-all">
-                                    <ArrowUpDown size={18} />
-                                    Sırala: {sortBy === 'newest' ? 'En Yeniler' : sortBy === 'price-asc' ? 'Fiyat: Artan' : 'Fiyat: Azalan'}
-                                </button>
-                                <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-black/5 shadow-xl rounded-2xl overflow-hidden hidden group-hover:block p-2">
-                                    <button onClick={() => setSortBy('newest')} className="w-full text-left px-4 py-2 hover:bg-alabaster rounded-lg text-sm font-medium transition-colors">En Yeniler</button>
-                                    <button onClick={() => setSortBy('price-asc')} className="w-full text-left px-4 py-2 hover:bg-alabaster rounded-lg text-sm font-medium transition-colors">Fiyat (Düşükten Yükseğe)</button>
-                                    <button onClick={() => setSortBy('price-desc')} className="w-full text-left px-4 py-2 hover:bg-alabaster rounded-lg text-sm font-medium transition-colors">Fiyat (Yüksekten Düşüğe)</button>
-                                </div>
+                            {/* Simple Sort Links for SSR SEO */}
+                            <div className="hidden md:flex bg-alabaster rounded-xl p-1">
+                                <a href={`?sort=newest`} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${sort === 'newest' ? 'bg-white shadow-sm text-charcoal' : 'text-charcoal/40 hover:text-charcoal'}`}>
+                                    Yeniler
+                                </a>
+                                <a href={`?sort=price-asc`} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${sort === 'price-asc' ? 'bg-white shadow-sm text-charcoal' : 'text-charcoal/40 hover:text-charcoal'}`}>
+                                    Fiyat Artan
+                                </a>
+                                <a href={`?sort=price-desc`} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${sort === 'price-desc' ? 'bg-white shadow-sm text-charcoal' : 'text-charcoal/40 hover:text-charcoal'}`}>
+                                    Fiyat Azalan
+                                </a>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex flex-col lg:flex-row gap-12 items-start">
-                        {/* Dynamic Sidebar Filters */}
-                        <AnimatePresence>
-                            {showFilters && (
-                                <motion.aside
-                                    initial={{ width: 0, opacity: 0 }}
-                                    animate={{ width: 300, opacity: 1 }}
-                                    exit={{ width: 0, opacity: 0 }}
-                                    className="flex-shrink-0 overflow-hidden"
-                                >
-                                    <div className="w-[300px] bg-alabaster p-8 rounded-3xl border border-black/5 space-y-8 sticky top-32">
-                                        <div className="flex justify-between items-center">
-                                            <h3 className="font-bold text-lg">Filtreler</h3>
-                                            <button onClick={() => setShowFilters(false)}><X size={20} className="text-charcoal/40" /></button>
-                                        </div>
-
-                                        {/* Price Range Mock */}
-                                        <div>
-                                            <h4 className="font-bold text-sm uppercase tracking-wider text-charcoal/50 mb-4">Fiyat Aralığı</h4>
-                                            <div className="flex gap-4 items-center">
-                                                <input type="number" placeholder="Min" className="w-full bg-white p-3 rounded-xl text-sm border border-transparent focus:border-clay outline-none" />
-                                                <span className="text-charcoal/40">-</span>
-                                                <input type="number" placeholder="Max" className="w-full bg-white p-3 rounded-xl text-sm border border-transparent focus:border-clay outline-none" />
-                                            </div>
-                                        </div>
-
-                                        {/* Material Mock */}
-                                        <div>
-                                            <h4 className="font-bold text-sm uppercase tracking-wider text-charcoal/50 mb-4">Materyal</h4>
-                                            <div className="space-y-2">
-                                                <label className="flex items-center gap-3 cursor-pointer group">
-                                                    <div className="w-5 h-5 rounded border border-black/10 flex items-center justify-center group-hover:border-clay">
-                                                        <div className="w-3 h-3 bg-clay rounded-sm opacity-0 group-hover:opacity-100 transition-opacity" />
-                                                    </div>
-                                                    <span className="text-sm font-medium text-charcoal/80">Recycled PLA</span>
-                                                </label>
-                                                <label className="flex items-center gap-3 cursor-pointer group">
-                                                    <div className="w-5 h-5 rounded border border-black/10 flex items-center justify-center group-hover:border-clay"></div>
-                                                    <span className="text-sm font-medium text-charcoal/80">Wood Blend</span>
-                                                </label>
-                                            </div>
-                                        </div>
-
-                                        <button className="w-full py-3 bg-charcoal text-white rounded-xl font-bold hover:bg-black transition-colors">
-                                            Sonuçları Göster
-                                        </button>
-                                    </div>
-                                </motion.aside>
-                            )}
-                        </AnimatePresence>
-
-                        {/* Product Grid */}
-                        <div className="flex-grow w-full">
-                            {sortedProducts.length > 0 ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    {sortedProducts.map((product, index) => (
-                                        <ProductCard key={product.id} product={product} index={index} />
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="bg-alabaster rounded-3xl p-12 text-center text-charcoal/50">
-                                    <p className="font-bold text-xl mb-2">Ürün Bulunamadı 😔</p>
-                                    <p>Seçtiğiniz kriterlere uygun ürünümüz kalmamış olabilir.</p>
-                                    <button onClick={() => window.location.href = '/#collection'} className="mt-6 text-clay font-bold underline">Tüm Koleksiyonu Gör</button>
-                                </div>
-                            )}
-                        </div>
+                    {/* Product Grid */}
+                    <div className="w-full">
+                        {formattedProducts.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                                {formattedProducts.map((product: any, index: number) => (
+                                    <ProductCard key={product.id} product={product} index={index} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="bg-alabaster rounded-3xl p-16 text-center text-charcoal/50 border border-black/5">
+                                <SlidersHorizontal className="mx-auto mb-4 opacity-20" size={48} />
+                                <p className="font-bold text-xl mb-2">Bu kategoride henüz ürün yok.</p>
+                                <p>Yeni tasarımlarımız fırından çıkmak üzere! Lütfen daha sonra tekrar kontrol edin.</p>
+                            </div>
+                        )}
                     </div>
 
                 </div>

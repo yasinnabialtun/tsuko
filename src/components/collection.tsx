@@ -24,12 +24,7 @@ const CATEGORIES = [
 ];
 
 export default function Collection({ products = [] }: { products?: Product[] }) {
-    const [selectedCategory, setSelectedCategory] = useState('TÜMÜ');
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-    const filteredProducts = selectedCategory === 'TÜMÜ'
-        ? products
-        : products.filter(p => p.category?.toUpperCase() === selectedCategory);
 
     return (
         <section id="collection" className="py-24 bg-alabaster">
@@ -45,18 +40,18 @@ export default function Collection({ products = [] }: { products?: Product[] }) 
                             Koleksiyon
                         </h2>
                         <p className="text-xl text-charcoal/60 max-w-md">
-                            Modern yaşam alanları için tasarlanmış, sürdürülebilir ve estetik parçalar.
+                            Modern yaşam alanları için tasarlanmış, öne çıkan en yeni tasarımlarımız.
                         </p>
                     </motion.div>
 
-                    {/* Category Dropdown */}
+                    {/* Category Dropdown Navigation */}
                     <div className="relative">
                         <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                             className="flex items-center gap-3 bg-white px-8 py-4 rounded-2xl border border-charcoal/5 shadow-sm hover:shadow-md transition-all group"
                         >
                             <span className="text-xs font-black uppercase tracking-widest text-charcoal/40 group-hover:text-charcoal transition-colors">
-                                Kategori: <span className="text-charcoal ml-1">{selectedCategory}</span>
+                                Tüm Kategoriler
                             </span>
                             <ChevronDown size={16} className={cn("text-charcoal/40 group-hover:text-charcoal transition-transform duration-300", isMenuOpen && "rotate-180")} />
                         </button>
@@ -69,23 +64,23 @@ export default function Collection({ products = [] }: { products?: Product[] }) 
                                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                     className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-charcoal/5 p-2 z-20 overflow-hidden"
                                 >
-                                    {CATEGORIES.map((cat) => (
-                                        <button
-                                            key={cat}
-                                            onClick={() => {
-                                                setSelectedCategory(cat);
-                                                setIsMenuOpen(false);
-                                            }}
-                                            className={cn(
-                                                "w-full text-left px-6 py-4 rounded-xl text-sm font-bold transition-all",
-                                                selectedCategory === cat
-                                                    ? "bg-clay text-white"
-                                                    : "text-charcoal/60 hover:bg-alabaster hover:text-charcoal"
-                                            )}
-                                        >
-                                            {cat}
-                                        </button>
-                                    ))}
+                                    {CATEGORIES.map((cat) => {
+                                        let slug = 'all';
+                                        if (cat === 'DUVAR SAATLERİ') slug = 'duvar-saatleri';
+                                        else if (cat === 'AYDINLATMALAR') slug = 'aydinlatmalar';
+                                        else if (cat === 'VAZO VE SAKSILAR') slug = 'vazo-ve-saksilar';
+                                        else if (cat === 'DÜZENLEYİCİLER') slug = 'duzenleyiciler';
+
+                                        return (
+                                            <a
+                                                key={cat}
+                                                href={`/category/${slug}`}
+                                                className="block w-full text-left px-6 py-4 rounded-xl text-sm font-bold transition-all text-charcoal/60 hover:bg-alabaster hover:text-charcoal"
+                                            >
+                                                {cat}
+                                            </a>
+                                        );
+                                    })}
                                 </motion.div>
                             )}
                         </AnimatePresence>
@@ -105,14 +100,14 @@ export default function Collection({ products = [] }: { products?: Product[] }) 
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16"
                 >
                     <AnimatePresence mode="popLayout">
-                        {filteredProducts.map((product, index) => (
+                        {products.map((product, index) => (
                             <motion.div
                                 layout
                                 key={product.id}
                                 initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                transition={{ duration: 0.4 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.4, delay: index * 0.1 }}
                                 className={index % 2 === 1 ? "md:translate-y-12" : ""}
                             >
                                 <ProductCard product={product as any} index={index} />
@@ -120,12 +115,18 @@ export default function Collection({ products = [] }: { products?: Product[] }) 
                         ))}
                     </AnimatePresence>
 
-                    {filteredProducts.length === 0 && (
+                    {products.length === 0 && (
                         <div className="col-span-full py-20 text-center">
-                            <p className="text-charcoal/40 font-bold uppercase tracking-widest">Bu kategoride henüz ürün bulunmuyor.</p>
+                            <p className="text-charcoal/40 font-bold uppercase tracking-widest">Henüz ürün bulunmuyor.</p>
                         </div>
                     )}
                 </motion.div>
+
+                <div className="mt-24 text-center">
+                    <a href="/category/all" className="inline-block bg-charcoal text-white px-10 py-4 rounded-2xl font-bold hover:bg-black transition-all shadow-lg shadow-charcoal/20">
+                        Tüm Ürünleri İncele
+                    </a>
+                </div>
             </div>
         </section>
     );
