@@ -1,5 +1,6 @@
 import { TrendingUp, Users, ShoppingBag, DollarSign, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
+import Link from 'next/link';
 
 async function getStats() {
     try {
@@ -71,12 +72,12 @@ export default async function AdminDashboard() {
                     <p className="text-charcoal/60">İşletmenizin anlık performans metrikleri.</p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="bg-white border border-[#E6E8E6] px-4 py-2 rounded-xl text-sm font-bold text-charcoal hover:bg-alabaster transition-colors">
-                        Rapor İndir
-                    </button>
-                    <button className="bg-charcoal text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-charcoal/20 hover:bg-black transition-colors">
+                    <Link href="/admin/orders" className="bg-white border border-[#E6E8E6] px-4 py-2 rounded-xl text-sm font-bold text-charcoal hover:bg-alabaster transition-colors">
+                        Siparişler
+                    </Link>
+                    <Link href="/admin/products/new" className="bg-charcoal text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-charcoal/20 hover:bg-black transition-colors">
                         + Yeni Ürün
-                    </button>
+                    </Link>
                 </div>
             </div>
 
@@ -107,7 +108,7 @@ export default async function AdminDashboard() {
                 <div className="lg:col-span-2 bg-white rounded-3xl border border-[#E6E8E6] p-8 shadow-sm">
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="text-xl font-bold text-charcoal">Son Siparişler</h3>
-                        <button className="text-sm font-bold text-clay hover:underline">Tümünü Gör</button>
+                        <Link href="/admin/orders" className="text-sm font-bold text-clay hover:underline">Tümünü Gör</Link>
                     </div>
 
                     <div className="overflow-x-auto">
@@ -131,8 +132,8 @@ export default async function AdminDashboard() {
                                         <td className="py-4 font-bold text-charcoal">₺{order.totalAmount?.toString()}</td>
                                         <td className="py-4 text-center">
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-700' :
-                                                    order.status === 'CANCELLED' ? 'bg-red-100 text-red-700' :
-                                                        'bg-clay/10 text-clay'
+                                                order.status === 'CANCELLED' ? 'bg-red-100 text-red-700' :
+                                                    'bg-clay/10 text-clay'
                                                 }`}>
                                                 {order.status}
                                             </span>

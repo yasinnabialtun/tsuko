@@ -1,219 +1,337 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Save, Upload, Info, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, X, Check } from 'lucide-react';
+import Link from 'next/link';
+import ImageUploader from '@/components/admin/image-uploader';
+
+interface Category {
+    id: string;
+    name: string;
+}
 
 export default function NewProductPage() {
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
-    // Form States
-    const [productName, setProductName] = useState('');
-    const [price, setPrice] = useState('');
-    const [description, setDescription] = useState('');
-    const [stock, setStock] = useState('0');
+    const [formData, setFormData] = useState({
+        name: '',
+        slug: '',
+        description: '',
+        price: '',
+        stock: 10,
+        categoryId: '',
+        images: [] as string[],
+        isActive: true,
+        isFeatured: false,
+        seoTitle: '',
+        seoDescription: ''
+    });
 
-    // Auto-generate slug from name
-    const slug = productName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    // Fetch categories
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await fetch('/api/categories');
+                const data = await res.json();
+                if (data.categories) {
+                    setCategories(data.categories);
+                }
+            } catch (err) {
+                console.error('Categories fetch failed');
+            }
+        };
+        fetchCategories();
+    }, []);
 
-    async function handleSubmit() {
-        if (!productName || !price) {
-            alert("Lütfen ürün adı ve fiyatını giriniz.");
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const { name, value, type } = e.target;
+
+        if (type === 'checkbox') {
+            const checked = (e.target as HTMLInputElement).checked;
+            setFormData(prev => ({ ...prev, [name]: checked }));
+        } else if (type === 'number') {
+            setFormData(prev => ({ ...prev, [name]: parseFloat(value) || 0 }));
+        } else {
+            setFormData(prev => ({ ...prev, [name]: value }));
+
+            // Auto-generate slug from name
+            if (name === 'name') {
+                const autoSlug = value
+                    .toLowerCase()
+                    .replace(/ğ/g, 'g')
+                    .replace(/ü/g, 'u')
+                    .replace(/ş/g, 's')
+                    .replace(/ı/g, 'i')
+                    .replace(/ö/g, 'o')
+                    .replace(/ç/g, 'c')
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/^-+|-+$/g, '');
+                setFormData(prev => ({ ...prev, slug: autoSlug }));
+            }
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSaving(true);
+        setError('');
+        setSuccess('');
+
+        if (!formData.name || !formData.price) {
+            setError('Ürün adı ve fiyat zorunludur.');
+            setSaving(false);
             return;
         }
 
-        setLoading(true);
+        if (formData.images.length === 0) {
+            setError('En az bir ürün görseli eklemelisiniz.');
+            setSaving(false);
+            return;
+        }
 
         try {
-            const res = await fetch('/api/products', {
+            const response = await fetch('/api/products', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name: productName,
-                    price: parseFloat(price),
-                    description,
-                    stock: parseInt(stock),
-                    slug,
-                    categoryId: 'clq0...', // Geçici kategori ID (Veritabanında olmalı)
-                    images: ['/images/products/nami.png'], // Geçici resim
-                    seoTitle: productName,
-                    seoDescription: description.substring(0, 160)
+                    ...formData,
+                    price: parseFloat(formData.price)
                 })
             });
 
-            if (!res.ok) throw new Error('Failed to create product');
+            const data = await response.json();
 
-            // Success
-            router.push('/admin/products');
-            router.refresh();
-        } catch (error) {
-            console.error(error);
-            alert("Ürün eklenirken bir hata oluştu.");
+            if (response.ok) {
+                setSuccess('Ürün başarıyla oluşturuldu!');
+                setTimeout(() => router.push('/admin/products'), 1500);
+            } else {
+                setError(data.error || 'Kayıt başarısız.');
+            }
+        } catch (err) {
+            setError('Bağlantı hatası.');
         } finally {
-            setLoading(false);
+            setSaving(false);
         }
-    }
+    };
 
     return (
-        <div className="space-y-8 max-w-5xl mx-auto pb-20">
-
+        <div className="max-w-4xl mx-auto space-y-8">
             {/* Header */}
-            <div className="flex items-center justify-between sticky top-4 z-40 bg-[#FDFBF7]/80 backdrop-blur-md py-4 -mx-4 px-4 border-b border-charcoal/5">
-                <div className="flex items-center gap-4">
-                    <Link href="/admin/products" className="p-2 hover:bg-white rounded-full transition-colors border border-transparent hover:border-[#E6E8E6]">
-                        <ArrowLeft size={20} />
-                    </Link>
-                    <div>
-                        <h1 className="text-2xl font-black text-charcoal">Yeni Ürün Ekle</h1>
-                        <p className="text-xs text-charcoal/60 font-bold uppercase tracking-wider">Taslak Modu</p>
+            <div className="flex items-center gap-4">
+                <Link href="/admin/products" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <ArrowLeft size={24} />
+                </Link>
+                <div>
+                    <h1 className="text-3xl font-bold text-charcoal">Yeni Ürün Ekle</h1>
+                    <p className="text-gray-500">Ürün bilgilerini doldurun.</p>
+                </div>
+            </div>
+
+            {/* Messages */}
+            {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl flex items-center gap-3">
+                    <X size={20} />
+                    <span>{error}</span>
+                </div>
+            )}
+
+            {success && (
+                <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl flex items-center gap-3">
+                    <Check size={20} />
+                    <span>{success}</span>
+                </div>
+            )}
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Basic Info */}
+                <div className="bg-white rounded-2xl border border-gray-100 p-8">
+                    <h2 className="text-xl font-bold text-charcoal mb-6">Temel Bilgiler</h2>
+
+                    <div className="space-y-6">
+                        <div className="grid grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Ürün Adı *</label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="Örn: Spiral Vazo"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay focus:ring-2 focus:ring-clay/20 outline-none transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">URL Slug</label>
+                                <input
+                                    type="text"
+                                    name="slug"
+                                    value={formData.slug}
+                                    onChange={handleChange}
+                                    placeholder="otomatik-olusturulur"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay focus:ring-2 focus:ring-clay/20 outline-none transition-all font-mono text-sm"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-2">Açıklama</label>
+                            <textarea
+                                name="description"
+                                value={formData.description}
+                                onChange={handleChange}
+                                rows={4}
+                                placeholder="Ürün açıklaması..."
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay focus:ring-2 focus:ring-clay/20 outline-none transition-all resize-none"
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-6">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Fiyat (₺) *</label>
+                                <input
+                                    type="number"
+                                    name="price"
+                                    value={formData.price}
+                                    onChange={handleChange}
+                                    required
+                                    min="0"
+                                    step="0.01"
+                                    placeholder="199.90"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay focus:ring-2 focus:ring-clay/20 outline-none transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Stok</label>
+                                <input
+                                    type="number"
+                                    name="stock"
+                                    value={formData.stock}
+                                    onChange={handleChange}
+                                    min="0"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay focus:ring-2 focus:ring-clay/20 outline-none transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Kategori</label>
+                                <select
+                                    name="categoryId"
+                                    value={formData.categoryId}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay focus:ring-2 focus:ring-clay/20 outline-none transition-all"
+                                >
+                                    <option value="">Kategori Seç</option>
+                                    {categories.map(cat => (
+                                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div className="flex gap-3">
-                    <Link href="/admin/products" className="px-6 py-2.5 bg-white border border-[#E6E8E6] rounded-xl font-bold text-charcoal text-sm hover:bg-alabaster transition-colors">
+
+                {/* Images */}
+                <div className="bg-white rounded-2xl border border-gray-100 p-8">
+                    <ImageUploader
+                        value={formData.images}
+                        onChange={(urls) => setFormData(prev => ({ ...prev, images: urls }))}
+                        bucket="products"
+                        maxFiles={5}
+                        label="Ürün Görselleri *"
+                    />
+                </div>
+
+                {/* Status */}
+                <div className="bg-white rounded-2xl border border-gray-100 p-8">
+                    <h2 className="text-xl font-bold text-charcoal mb-6">Durum</h2>
+
+                    <div className="flex gap-8">
+                        <label className="flex items-center gap-3 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                name="isActive"
+                                checked={formData.isActive}
+                                onChange={handleChange}
+                                className="w-5 h-5 rounded border-gray-300 text-clay focus:ring-clay"
+                            />
+                            <span className="font-medium text-charcoal">Aktif (Yayında)</span>
+                        </label>
+                        <label className="flex items-center gap-3 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                name="isFeatured"
+                                checked={formData.isFeatured}
+                                onChange={handleChange}
+                                className="w-5 h-5 rounded border-gray-300 text-clay focus:ring-clay"
+                            />
+                            <span className="font-medium text-charcoal">Öne Çıkan</span>
+                        </label>
+                    </div>
+                </div>
+
+                {/* SEO */}
+                <div className="bg-white rounded-2xl border border-gray-100 p-8">
+                    <h2 className="text-xl font-bold text-charcoal mb-6">SEO Ayarları</h2>
+
+                    <div className="space-y-6">
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-2">SEO Başlığı</label>
+                            <input
+                                type="text"
+                                name="seoTitle"
+                                value={formData.seoTitle}
+                                onChange={handleChange}
+                                placeholder="Ürün adı | Tsuko Design"
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay focus:ring-2 focus:ring-clay/20 outline-none transition-all"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-2">SEO Açıklaması</label>
+                            <textarea
+                                name="seoDescription"
+                                value={formData.seoDescription}
+                                onChange={handleChange}
+                                rows={2}
+                                placeholder="Ürün açıklaması (max 160 karakter)"
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay focus:ring-2 focus:ring-clay/20 outline-none transition-all resize-none"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex justify-end gap-4">
+                    <Link
+                        href="/admin/products"
+                        className="px-6 py-3 rounded-xl border border-gray-200 font-bold text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
                         İptal
                     </Link>
                     <button
-                        onClick={handleSubmit}
-                        disabled={loading}
-                        className="px-6 py-2.5 bg-charcoal text-white rounded-xl font-bold text-sm shadow-lg shadow-charcoal/20 hover:bg-black transition-colors flex items-center gap-2 disabled:opacity-50"
+                        type="submit"
+                        disabled={saving}
+                        className="px-8 py-3 rounded-xl bg-charcoal text-white font-bold hover:bg-black transition-colors disabled:opacity-50 flex items-center gap-2"
                     >
-                        {loading ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-                        {loading ? 'Kaydediliyor...' : 'Kaydet & Yayınla'}
+                        {saving ? (
+                            <>
+                                <Loader2 size={18} className="animate-spin" />
+                                Kaydediliyor...
+                            </>
+                        ) : (
+                            <>
+                                <Save size={18} />
+                                Ürün Oluştur
+                            </>
+                        )}
                     </button>
                 </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                {/* Left Column - Main Content */}
-                <div className="lg:col-span-2 space-y-6">
-
-                    {/* General Info */}
-                    <section className="bg-white p-6 rounded-3xl border border-[#E6E8E6] shadow-sm">
-                        <h3 className="text-lg font-bold text-charcoal mb-4">Temel Bilgiler</h3>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-bold text-charcoal/70 mb-2">Ürün Adı</label>
-                                <input
-                                    type="text"
-                                    value={productName}
-                                    onChange={(e) => setProductName(e.target.value)}
-                                    placeholder="Örn: Nami Vazo - Stone Edition"
-                                    className="w-full px-4 py-3 bg-alabaster rounded-xl border border-transparent focus:bg-white focus:border-clay/20 outline-none transition-all font-medium"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-bold text-charcoal/70 mb-2">Açıklama</label>
-                                <textarea
-                                    rows={6}
-                                    placeholder="Ürünün hikayesini, malzemesini ve hissini anlatın..."
-                                    className="w-full px-4 py-3 bg-alabaster rounded-xl border border-transparent focus:bg-white focus:border-clay/20 outline-none transition-all resize-none"
-                                />
-                                <p className="text-xs text-charcoal/40 mt-2 text-right">0/500 karakter</p>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* SEO Settings (Critical) */}
-                    <section className="bg-white p-6 rounded-3xl border border-[#E6E8E6] shadow-sm relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-[100px] z-0" />
-                        <div className="relative z-10">
-                            <div className="flex items-center gap-2 mb-6">
-                                <h3 className="text-lg font-bold text-charcoal">Arama Motoru (SEO)</h3>
-                                <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Kritik</span>
-                            </div>
-
-                            <div className="space-y-4">
-                                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 mb-6">
-                                    <div className="text-xs text-charcoal/40 font-medium mb-1">Google Önizleme</div>
-                                    <div className="text-blue-600 text-lg font-medium hover:underline cursor-pointer truncate">
-                                        {productName || 'Ürün Başlığı'} | Tsuko Modern Dekor
-                                    </div>
-                                    <div className="text-green-700 text-xs mb-1 truncate">
-                                        https://tsuko.com.tr/product/{slug || 'urun-slug'}
-                                    </div>
-                                    <div className="text-charcoal/60 text-sm leading-relaxed line-clamp-2">
-                                        Minimalist Japon tasarımı {productName} ile evinizin havasını değiştirin. Biyo-bozunur malzemeden 3D baskı ile üretilmiştir. Sürdürülebilir lüksü keşfedin.
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-bold text-charcoal/70 mb-2">Sayfa Başlığı (Meta Title)</label>
-                                    <input type="text" placeholder={productName} className="w-full px-4 py-2 bg-alabaster rounded-xl border-none outline-none text-sm" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-bold text-charcoal/70 mb-2">Meta Açıklama</label>
-                                    <textarea rows={3} className="w-full px-4 py-2 bg-alabaster rounded-xl border-none outline-none text-sm resize-none" />
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                </div>
-
-                {/* Right Column - Sidebar */}
-                <div className="space-y-6">
-
-                    {/* Status */}
-                    <div className="bg-white p-6 rounded-3xl border border-[#E6E8E6] shadow-sm">
-                        <h3 className="text-sm font-bold text-charcoal mb-4 uppercase tracking-wider">Durum</h3>
-                        <select className="w-full px-4 py-3 bg-alabaster rounded-xl border-none outline-none font-bold text-charcoal">
-                            <option>Yayında (Active)</option>
-                            <option>Taslak (Draft)</option>
-                            <option>Arşivlendi (Archived)</option>
-                        </select>
-                    </div>
-
-                    {/* Pricing */}
-                    <div className="bg-white p-6 rounded-3xl border border-[#E6E8E6] shadow-sm">
-                        <h3 className="text-sm font-bold text-charcoal mb-4 uppercase tracking-wider">Fiyatlandırma</h3>
-                        <div className="relative">
-                            <DollarSignIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-charcoal/40" size={18} />
-                            <input type="number" placeholder="0.00" className="w-full pl-10 pr-4 py-3 bg-alabaster rounded-xl border-none outline-none font-bold text-lg" />
-                        </div>
-                        <div className="mt-4 flex items-center gap-2">
-                            <input type="checkbox" id="tax" className="w-4 h-4 rounded text-clay focus:ring-clay" defaultChecked />
-                            <label htmlFor="tax" className="text-sm text-charcoal/70">KDV Dahil</label>
-                        </div>
-                    </div>
-
-                    {/* Media */}
-                    <div className="bg-white p-6 rounded-3xl border border-[#E6E8E6] shadow-sm">
-                        <h3 className="text-sm font-bold text-charcoal mb-4 uppercase tracking-wider">Medya</h3>
-                        <div className="border-2 border-dashed border-[#E6E8E6] rounded-2xl p-8 flex flex-col items-center justify-center text-center hover:bg-alabaster transition-colors cursor-pointer group">
-                            <div className="w-12 h-12 bg-alabaster rounded-full flex items-center justify-center mb-3 group-hover:bg-white transition-colors">
-                                <Upload size={20} className="text-charcoal/40" />
-                            </div>
-                            <div className="text-sm font-bold text-charcoal">Görsel Yükle</div>
-                            <div className="text-xs text-charcoal/40 mt-1">PNG, JPG, WEBP</div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+            </form>
         </div>
     );
-}
-
-function DollarSignIcon(props: any) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <line x1="12" x2="12" y1="2" y2="22" />
-            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-        </svg>
-    )
 }
