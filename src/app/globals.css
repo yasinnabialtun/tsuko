@@ -4,7 +4,25 @@
 
 @layer base {
   :root {
-    --radius: 1rem;
+    /* Pastel & Soft Minimalism Palette */
+    --background: #F9F9F7;
+    /* Porcelain - Warm Off-white */
+    --foreground: #2D2D2D;
+    /* Soft Charcoal */
+
+    /* Brand Colors */
+    --color-porcelain: #F9F9F7;
+    --color-stone: #EFEDE8;
+    /* Warm Stone surface */
+    --color-clay: #DAA590;
+    /* Muted Clay (Pastel) */
+    --color-sage: #B4C5B9;
+    /* Sage Mist */
+    --color-charcoal: #2D2D2D;
+
+    /* UI Tokens */
+    --radius: 1.5rem;
+    /* More organic, rounded corners */
     --font-inter: 'Inter', sans-serif;
   }
 

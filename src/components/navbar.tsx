@@ -32,7 +32,7 @@ export default function Navbar() {
 
             <nav className={cn(
                 "fixed top-0 left-0 w-full z-50 transition-all duration-500 border-b border-transparent",
-                isScrolled ? "bg-porcelain/90 backdrop-blur-xl py-4 border-stone/50" : "bg-transparent py-6"
+                isScrolled ? "bg-porcelain shadow-[0_2px_20px_rgba(0,0,0,0.02)] py-4" : "bg-transparent py-6"
             )}>
                 <div className="container mx-auto px-6 flex justify-between items-center">
                     {/* Logo - Minimal text fallback if image fails, but prioritizing image */}

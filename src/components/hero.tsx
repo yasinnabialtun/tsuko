@@ -11,8 +11,8 @@ export default function Hero() {
         <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden bg-porcelain">
             {/* Background Texture/Gradient - Muted & Premium */}
             <div className="absolute inset-0 z-0 opacity-60 pointer-events-none">
-                <div className="absolute top-[-20%] right-[-10%] w-[900px] h-[900px] bg-mauve/15 rounded-full blur-[180px]" />
-                <div className="absolute bottom-[-10%] left-[-20%] w-[800px] h-[800px] bg-stone/40 rounded-full blur-[150px]" />
+                <div className="absolute top-[-20%] right-[-10%] w-[900px] h-[900px] bg-clay/10 rounded-full blur-[180px]" />
+                <div className="absolute bottom-[-10%] left-[-20%] w-[800px] h-[800px] bg-sage/20 rounded-full blur-[150px]" />
             </div>
 
             <div className="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center relative z-10 pt-28 lg:pt-0">
@@ -24,35 +24,35 @@ export default function Hero() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
                     >
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone/50 border border-stone mb-8 animate-reveal" style={{ animationDelay: '0.1s' }}>
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-stone/50 border border-stone mb-10 animate-reveal" style={{ animationDelay: '0.1s' }}>
                             <span className="w-1.5 h-1.5 rounded-full bg-clay"></span>
-                            <span className="text-[10px] md:text-xs font-semibold tracking-widest text-charcoal/70 uppercase">El Yapımı & 3D Baskı</span>
+                            <span className="text-[10px] md:text-xs font-semibold tracking-widest text-[#2D2D2D]/70 uppercase">El Yapımı & 3D Baskı</span>
                         </div>
 
-                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-charcoal leading-[1.05] tracking-tight mb-8">
+                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-[#2D2D2D] leading-[1.05] tracking-tight mb-8 font-heading">
                             Evinizin <br />
                             <span className="text-purplish-grey relative inline-block">
                                 Heykel
-                                <svg className="absolute w-full h-3 -bottom-1 left-0 text-mauve/40 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
+                                <svg className="absolute w-full h-3 -bottom-1 left-0 text-sage/40 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
                                     <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
                                 </svg>
                             </span>
                             Hali.
                         </h1>
 
-                        <p className="text-lg text-charcoal/60 font-normal max-w-md leading-relaxed mb-12">
+                        <p className="text-lg text-[#2D2D2D]/60 font-light max-w-md leading-relaxed mb-12 font-body">
                             Parametrik tasarımın estetiği, doğa dostu malzemelerle buluştu. Sıradan objeleri sanat eserine dönüştürüyoruz.
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center gap-5">
-                            <Link href="/#collection" className="group relative px-10 py-5 bg-charcoal text-white rounded-xl font-medium overflow-hidden transition-all hover:shadow-2xl hover:shadow-mauve/20 shadow-lg w-full sm:w-auto text-center">
+                            <Link href="/#collection" className="group relative px-10 py-5 bg-[#2D2D2D] text-white rounded-full font-medium overflow-hidden transition-all hover:shadow-xl hover:shadow-clay/20 shadow-lg w-full sm:w-auto text-center">
                                 <span className="relative z-10 flex items-center justify-center gap-3">
                                     KEŞFET
                                     <MoveRight size={18} className="transition-transform group-hover:translate-x-1" />
                                 </span>
                                 <div className="absolute inset-0 bg-clay transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500 ease-out" />
                             </Link>
-                            <Link href="/about" className="px-10 py-5 text-charcoal border border-stone bg-white/50 backdrop-blur-sm rounded-xl hover:bg-white hover:border-mauve/50 transition-all font-medium w-full sm:w-auto text-center">
+                            <Link href="/about" className="px-10 py-5 text-[#2D2D2D] border border-stone bg-white/50 backdrop-blur-sm rounded-full hover:bg-white hover:border-sage/50 transition-all font-medium w-full sm:w-auto text-center">
                                 Atölye Hikayesi
                             </Link>
                         </div>

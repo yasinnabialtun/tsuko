@@ -9,20 +9,21 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                background: "#FAFAFA", // Porcelain
-                foreground: "#1F1F23", // Charcoal
+                background: "var(--background)",
+                foreground: "var(--foreground)",
 
-                // Brand Colors
-                porcelain: "#FAFAFA",
-                stone: "#E6E3DF",
-                mauve: "#C7A4E0",
-                charcoal: "#1F1F23",
-                clay: "#E07A5F",
+                // Brand Colors (Pastel)
+                porcelain: "var(--color-porcelain)",
+                stone: "var(--color-stone)",
+                clay: "var(--color-clay)",
+                sage: "var(--color-sage)",
+                charcoal: "var(--color-charcoal)",
 
-                // Semantic
-                primary: "#E07A5F",
-                secondary: "#C7A4E0",
-                muted: "#E6E3DF"
+                // Aliases
+                mauve: "var(--color-sage)",
+                primary: "var(--color-clay)",
+                secondary: "var(--color-sage)",
+                muted: "var(--color-stone)"
             },
             fontFamily: {
                 sans: ['var(--font-inter)', 'sans-serif'],

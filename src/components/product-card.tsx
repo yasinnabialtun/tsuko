@@ -39,7 +39,7 @@ export default function ProductCard({ product, index }: { product: any; index: n
             transition={{ duration: 0.8, delay: index * 0.1 }}
             className="group block"
         >
-            <div className="relative aspect-[3/4] bg-stone/20 rounded-[1.5rem] overflow-hidden mb-6 cursor-pointer">
+            <div className="relative aspect-[3/4] bg-stone rounded-[2rem] overflow-hidden mb-6 cursor-pointer transform transition-transform duration-500 hover:scale-[1.02]">
                 {/* Main Image */}
                 <Link href={`/product/${product.slug}`} className="block w-full h-full">
                     <Image
@@ -55,7 +55,7 @@ export default function ProductCard({ product, index }: { product: any; index: n
 
                 {/* Tags / Badge */}
                 {index === 0 && (
-                    <div className="absolute top-4 left-4 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-[10px] font-bold tracking-widest uppercase text-charcoal border border-stone/50 z-20">
+                    <div className="absolute top-4 left-4 px-4 py-1.5 bg-porcelain rounded-full text-[10px] font-bold tracking-widest uppercase text-charcoal/80 z-20 shadow-sm">
                         Yeni
                     </div>
                 )}
