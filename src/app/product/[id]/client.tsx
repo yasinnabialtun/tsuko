@@ -84,8 +84,8 @@ export default function ProductPageClient({ product }: { product: ProductData })
         },
         {
             id: 'specs',
-            title: 'Teknik Detaylar & Malzeme',
-            content: "Tsuko Design ürünleri, doğada %100 çözünebilen organik biyo-polimerler (PLA+) kullanılarak üretilir. Petrol türevi plastik içermez. Yüksek hassasiyetli parametrik 3D baskı teknolojisi ile katman katman işlenmiştir. Hafif, dayanıklı ve benzersiz bir dokuya sahiptir.",
+            title: 'Malzeme & İşçilik',
+            content: "Tsuko Design objeleri, doğadan ilham alır. Kullandığımız organik biyo-polimer (PLA+), mısır nişastasından elde edilen, sürdürülebilir ve toksik olmayan bir materyaldir. Her bir obje, parametrik algoritmalarla tasarlanır ve 18 saati bulan hassas katmanlama süreciyle fiziksel forma kavuşur. Dokunduğunuzda, dijital zanaatin izlerini hissedeceksiniz.",
             icon: Box
         },
         {
