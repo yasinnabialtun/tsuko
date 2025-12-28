@@ -1,20 +1,20 @@
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
 import { prisma } from '@/lib/prisma';
-import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingBag } from 'lucide-react';
 import { Metadata } from 'next';
+import RecentlyViewed from '@/components/recently-viewed';
+import ProductCard from '@/components/product-card';
 
-// Revalidate every hour
-export const revalidate = 3600;
+// Force dynamic because we read searchParams and query DB
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
     title: 'Koleksiyon | Tsuko Design',
     description: 'Tsuko Design özel tasarım 3D baskı vazo, saksı ve aydınlatma ürünlerini keşfedin.',
 };
 
-async function getProducts(categorySlug?: string) {
+async function getProducts(categorySlug?: string, sort?: string) {
     const whereClause: any = { isActive: true };
 
     if (categorySlug && categorySlug !== 'all') {
@@ -24,13 +24,21 @@ async function getProducts(categorySlug?: string) {
         }
     }
 
+    let orderBy: any = { createdAt: 'desc' };
+    if (sort === 'price_asc') orderBy = { price: 'asc' };
+    if (sort === 'price_desc') orderBy = { price: 'desc' };
+
     try {
         const products = await prisma.product.findMany({
             where: whereClause,
-            orderBy: { createdAt: 'desc' },
+            orderBy: orderBy,
             include: { category: true }
         });
-        return products;
+        // Transform Decimal to number/string for client component
+        return products.map(p => ({
+            ...p,
+            price: p.price.toString()
+        }));
     } catch (e) {
         return [];
     }
@@ -44,10 +52,11 @@ async function getCategories() {
     }
 }
 
-export default async function CollectionPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
-    const sp = await searchParams; // Await the searchParams promise
+export default async function CollectionPage({ searchParams }: { searchParams: Promise<{ category?: string, sort?: string }> }) {
+    const sp = await searchParams;
     const selectedCategory = sp.category || 'all';
-    const products = await getProducts(selectedCategory);
+    const currentSort = sp.sort || 'newest';
+    const products = await getProducts(selectedCategory, currentSort);
     const categories = await getCategories();
 
     return (
@@ -66,23 +75,46 @@ export default async function CollectionPage({ searchParams }: { searchParams: P
 
             <section className="py-20 px-6">
                 <div className="container mx-auto">
-                    {/* Filter Tabs */}
-                    <div className="flex flex-wrap justify-center gap-4 mb-16">
-                        <Link
-                            href="/collection"
-                            className={`px-6 py-2 rounded-full text-sm font-bold tracking-wider uppercase transition-all ${selectedCategory === 'all' ? 'bg-charcoal text-white' : 'bg-gray-100 text-charcoal/60 hover:bg-gray-200'}`}
-                        >
-                            Tümü
-                        </Link>
-                        {categories.map(cat => (
+                    {/* Filter & Sort Bar */}
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-16">
+                        {/* Filter Tabs */}
+                        <div className="flex flex-wrap justify-center md:justify-start gap-4">
                             <Link
-                                key={cat.id}
-                                href={`/collection?category=${cat.slug}`}
-                                className={`px-6 py-2 rounded-full text-sm font-bold tracking-wider uppercase transition-all ${selectedCategory === cat.slug ? 'bg-charcoal text-white' : 'bg-gray-100 text-charcoal/60 hover:bg-gray-200'}`}
+                                href={`/collection${currentSort !== 'newest' ? `?sort=${currentSort}` : ''}`}
+                                className={`px-6 py-2 rounded-full text-sm font-bold tracking-wider uppercase transition-all ${selectedCategory === 'all' ? 'bg-charcoal text-white' : 'bg-gray-100 text-charcoal/60 hover:bg-gray-200'}`}
                             >
-                                {cat.name}
+                                Tümü
                             </Link>
-                        ))}
+                            {categories.map(cat => (
+                                <Link
+                                    key={cat.id}
+                                    href={`/collection?category=${cat.slug}${currentSort !== 'newest' ? `&sort=${currentSort}` : ''}`}
+                                    className={`px-6 py-2 rounded-full text-sm font-bold tracking-wider uppercase transition-all ${selectedCategory === cat.slug ? 'bg-charcoal text-white' : 'bg-gray-100 text-charcoal/60 hover:bg-gray-200'}`}
+                                >
+                                    {cat.name}
+                                </Link>
+                            ))}
+                        </div>
+
+                        {/* Sort Dropdown */}
+                        <div className="flex items-center gap-4 border-b border-charcoal/10 pb-1">
+                            <span className="text-[10px] font-bold text-charcoal/40 uppercase tracking-widest">Sırala:</span>
+                            <div className="flex gap-4">
+                                {[
+                                    { label: 'En Yeni', value: 'newest' },
+                                    { label: 'Fiyat (Artan)', value: 'price_asc' },
+                                    { label: 'Fiyat (Azalan)', value: 'price_desc' }
+                                ].map((opt) => (
+                                    <Link
+                                        key={opt.value}
+                                        href={`/collection?${selectedCategory !== 'all' ? `category=${selectedCategory}&` : ''}sort=${opt.value}`}
+                                        className={`text-xs font-bold transition-colors ${currentSort === opt.value ? 'text-clay' : 'text-charcoal/60 hover:text-charcoal'}`}
+                                    >
+                                        {opt.label}
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
                     </div>
 
                     {/* Products Grid */}
@@ -93,45 +125,22 @@ export default async function CollectionPage({ searchParams }: { searchParams: P
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                             {products.map((product) => (
-                                <Link href={`/product/${product.slug}`} key={product.id} className="group cursor-pointer">
-                                    <div className="relative aspect-[4/5] bg-alabaster rounded-[2rem] overflow-hidden mb-6">
-                                        <Image
-                                            src={product.images[0] || '/images/hero.png'}
-                                            alt={product.name}
-                                            fill
-                                            className="object-cover transition-transform duration-700 group-hover:scale-105"
-                                        />
-                                        {product.stock === 0 && (
-                                            <div className="absolute top-4 right-4 bg-charcoal text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest z-10">
-                                                Tükendi
-                                            </div>
-                                        )}
-                                        {/* Quick Add Overlay (Desktop) */}
-                                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                            <div className="bg-white text-charcoal px-6 py-3 rounded-xl font-bold flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-xl">
-                                                <ShoppingBag size={18} />
-                                                İncele
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="text-center space-y-2">
-                                        <span className="text-[10px] font-bold tracking-widest text-clay uppercase">
-                                            {(product as any).category?.name || 'DKOR'}
-                                        </span>
-                                        <h3 className="text-xl font-bold text-charcoal group-hover:text-mauve transition-colors">
-                                            {product.name}
-                                        </h3>
-                                        <p className="text-lg font-medium text-charcoal/60">
-                                            {String(product.price)} ₺
-                                        </p>
-                                    </div>
-                                </Link>
+                                <ProductCard
+                                    key={product.id}
+                                    product={{
+                                        ...product,
+                                        image: product.images[0] || '/images/hero.png',
+                                        images: product.images,
+                                        category: product.category ? { name: product.category.name } : undefined
+                                    }}
+                                />
                             ))}
                         </div>
                     )}
                 </div>
             </section>
+
+            <RecentlyViewed />
 
             <Footer />
         </main>

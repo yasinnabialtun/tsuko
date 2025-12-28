@@ -12,6 +12,8 @@ import Breadcrumbs from '@/components/breadcrumbs';
 import ReviewSection from '@/components/review-section';
 import StockNotifyForm from '@/components/stock-notify-form';
 import VariantSelector from '@/components/variant-selector';
+import { useRecentProducts } from '@/hooks/use-recent-products';
+import ProductGallery from '@/components/product-gallery';
 import { cn } from '@/lib/utils';
 
 interface ProductData {
@@ -36,11 +38,23 @@ export default function ProductPageClient({ product }: { product: ProductData })
     const { scrollY } = useScroll();
     const [viewers] = useState(getRandomViewers());
     const [showSticky, setShowSticky] = useState(false);
-    const [selectedImage, setSelectedImage] = useState(0);
     const [selectedVariant, setSelectedVariant] = useState<any>(null);
     const [activeTab, setActiveTab] = useState('details'); // details, specs, shipping
 
     const { addToCart } = useCart();
+
+    const { addProduct } = useRecentProducts();
+
+    useEffect(() => {
+        addProduct({
+            id: product.id,
+            name: product.name,
+            slug: product.slug,
+            price: product.price,
+            image: product.image,
+            category: product.category
+        });
+    }, [product]);
 
     useEffect(() => {
         return scrollY.onChange((latest) => {
@@ -130,39 +144,11 @@ export default function ProductPageClient({ product }: { product: ProductData })
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-20 mt-8">
                     {/* Gallery Section */}
-                    <div className="lg:col-span-7 space-y-6">
-                        <div className="relative aspect-[4/5] bg-stone-100/50 rounded-[2rem] overflow-hidden group">
-                            <Image
-                                src={product.images[selectedImage] || product.image}
-                                alt={product.name}
-                                fill
-                                className="object-cover transition-transform duration-700 hover:scale-105"
-                                priority
-                            />
-                            {isOutOfStock && (
-                                <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-20">
-                                    <span className="bg-charcoal text-white px-6 py-3 rounded-xl font-bold tracking-widest uppercase">
-                                        Tükendi
-                                    </span>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Thumbnails */}
-                        {product.images.length > 1 && (
-                            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none">
-                                {product.images.map((img, index) => (
-                                    <button
-                                        key={index}
-                                        onClick={() => setSelectedImage(index)}
-                                        className={cn(
-                                            "relative w-24 h-24 rounded-2xl overflow-hidden border-2 transition-all flex-shrink-0",
-                                            selectedImage === index ? 'border-charcoal opacity-100' : 'border-transparent opacity-60 hover:opacity-100'
-                                        )}
-                                    >
-                                        <Image src={img} alt="" fill className="object-cover" />
-                                    </button>
-                                ))}
+                    <div className="lg:col-span-7">
+                        <ProductGallery images={product.images} name={product.name} />
+                        {isOutOfStock && (
+                            <div className="mt-4 bg-charcoal text-white px-6 py-3 rounded-xl font-bold tracking-widest uppercase text-center">
+                                Tükendi
                             </div>
                         )}
                     </div>
@@ -183,8 +169,25 @@ export default function ProductPageClient({ product }: { product: ProductData })
                                     {product.name}
                                 </h1>
 
-                                <div className="flex items-end gap-4 border-b border-gray-100 pb-8">
+                                <div className="flex items-end justify-between border-b border-gray-100 pb-8">
                                     <p className="text-3xl font-medium text-charcoal">{currentPrice.toFixed(2)} ₺</p>
+                                    <button
+                                        onClick={() => {
+                                            if (navigator.share) {
+                                                navigator.share({
+                                                    title: product.name,
+                                                    text: product.description,
+                                                    url: window.location.href,
+                                                });
+                                            } else {
+                                                navigator.clipboard.writeText(window.location.href);
+                                                alert('Bağlantı kopyalandı!');
+                                            }
+                                        }}
+                                        className="p-3 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors text-charcoal/40"
+                                    >
+                                        <Share2 size={18} />
+                                    </button>
                                 </div>
                             </div>
 

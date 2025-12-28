@@ -12,6 +12,23 @@ import ProductPageClient from './client';
 // SSR with revalidation
 export const revalidate = 60; // Revalidate every minute
 
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+    const product = await getProduct(id);
+
+    if (!product) return { title: 'Ürün Bulunamadı' };
+
+    return {
+        title: `${product.name} | Tsuko Design`,
+        description: product.description.substring(0, 160),
+        openGraph: {
+            title: product.name,
+            description: product.description,
+            images: [product.images[0] || '/images/hero.png'],
+        }
+    };
+}
+
 // Generate static params for known products
 export async function generateStaticParams() {
     try {
@@ -137,7 +154,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         '@type': 'Product',
         name: product.name,
         description: product.description,
-        image: product.images[0] ? `https://tsukodesign.com${product.images[0]}` : undefined,
+        image: product.images[0]?.startsWith('http')
+            ? product.images[0]
+            : (product.images[0] ? `https://tsukodesign.com${product.images[0]}` : undefined),
         offers: {
             '@type': 'Offer',
             priceCurrency: 'TRY',

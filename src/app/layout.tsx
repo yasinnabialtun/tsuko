@@ -4,7 +4,8 @@ import './globals.css';
 import { CartProvider } from '@/context/cart-context';
 import { WishlistProvider } from '@/context/wishlist-context';
 import { Toaster } from 'react-hot-toast';
-import Analytics from '@/components/analytics'; // Import Analytics
+import TopBanner from '@/components/top-banner';
+import Analytics from '@/components/analytics';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' });
@@ -45,8 +46,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
-      <body className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-background text-foreground`}>
-        <Analytics />
+      <body className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-white`}>
         <CartProvider>
           <WishlistProvider>
             <Toaster
@@ -70,7 +70,9 @@ export default function RootLayout({
                 },
               }}
             />
+            <TopBanner />
             {children}
+            <Analytics />
           </WishlistProvider>
         </CartProvider>
       </body>
