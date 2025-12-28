@@ -1,9 +1,7 @@
-
 'use client';
 
 import { useEffect } from 'react';
-import Link from 'next/link';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { RefreshCcw, AlertTriangle } from 'lucide-react';
 
 export default function Error({
     error,
@@ -13,41 +11,45 @@ export default function Error({
     reset: () => void;
 }) {
     useEffect(() => {
-        // Log the error to an error reporting service
-        console.error(error);
+        // Log error to an error reporting service
+        console.error('Application Error:', error);
     }, [error]);
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-alabaster text-charcoal px-6 text-center">
-            <div className="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mb-8">
-                <AlertTriangle size={48} className="text-red-500" />
+        <div className="flex flex-col items-center justify-center min-h-screen bg-alabaster px-6 text-center">
+            <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-6">
+                <AlertTriangle size={40} />
             </div>
 
-            <h1 className="text-3xl font-black text-charcoal mb-4">Küçük Bir Aksaklık Oluştu</h1>
+            <h2 className="text-3xl font-black text-charcoal mb-4">
+                Oops! Bir şeyler ters gitti.
+            </h2>
+
             <p className="text-charcoal/60 max-w-md mb-8">
-                Sistemlerimizde beklenmedik bir hata meydana geldi. Ekibimiz şu an üzerinde çalışıyor.
+                Merak etmeyin, bu sizin hatanız değil. Mühendislerimiz durumu inceliyor. Lütfen sayfayı yenilemeyi deneyin.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex gap-4">
                 <button
-                    onClick={reset}
-                    className="flex items-center justify-center gap-2 bg-charcoal text-white px-8 py-4 rounded-xl font-bold hover:bg-black transition-colors"
+                    onClick={() => reset()}
+                    className="flex items-center gap-2 bg-charcoal text-white px-8 py-4 rounded-xl font-bold hover:bg-black transition-colors shadow-lg shadow-charcoal/20"
                 >
-                    <RefreshCw size={20} />
+                    <RefreshCcw size={18} />
                     Tekrar Dene
                 </button>
-                <Link
-                    href="/"
-                    className="flex items-center justify-center gap-2 bg-white border border-black/10 text-charcoal px-8 py-4 rounded-xl font-bold hover:bg-gray-50 transition-colors"
+                <button
+                    onClick={() => window.location.href = '/'}
+                    className="px-8 py-4 rounded-xl font-bold text-charcoal border border-black/10 hover:bg-white transition-colors"
                 >
-                    Ana Sayfaya Dön
-                </Link>
+                    Ana Sayfa
+                </button>
             </div>
 
-            {/* Dev Info (Only distinct in visual, hidden or technical look for user) */}
+            {/* Dev Info (Only visible in dev or if needed) */}
             {process.env.NODE_ENV === 'development' && (
-                <div className="mt-12 p-4 bg-gray-100 rounded-lg text-left text-xs font-mono text-red-600 max-w-2xl overflow-auto w-full">
+                <div className="mt-12 p-4 bg-red-100/50 text-red-800 rounded-lg text-xs font-mono max-w-2xl text-left overflow-auto">
                     {error.message}
+                    {error.digest && <div className="mt-2 text-red-600">Digest: {error.digest}</div>}
                 </div>
             )}
         </div>
