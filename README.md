@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tsuko Design E-Commerce Platform
 
-## Getting Started
+Tsuko Design is a premium e-commerce platform built for high-end 3D printed home decor. It features a custom "Soft Minimalism & Pastel UX" design language and a robust full-stack architecture.
 
-First, run the development server:
+![Tsuko Design](public/images/hero.png)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Tech Stack
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+*   **Framework:** Next.js 16 (App Router)
+*   **Database:** PostgreSQL (via Supabase)
+*   **ORM:** Prisma
+*   **Styling:** Tailwind CSS v3
+*   **Payments:** Shopier Integration
+*   **Email:** Resend API
+*   **Analytics:** GTM & Facebook Pixel
+*   **State Management:** React Context (Cart & Wishlist)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Key Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+*   🛍️ **Dynamic E-Commerce:** Product catalog, variants, and stock management.
+*   💳 **Secure Checkout:** Integrated with Shopier for credit card payments.
+*   📦 **Order Management:** Admin dashboard for tracking orders and updating statuses.
+*   🎨 **Custom Admin Panel:** Manage products, categories, coupons, and view analytics.
+*   💌 **Newsletter:** Automatic subscription and welcome emails.
+*   🔍 **SEO Optimized:** Dynamic sitemap, JSON-LD schemas, and meta tags.
+*   📱 **Responsive:** Mobile-first design with sticky actions and optimized navigation.
 
-## Learn More
+## Setup & Installation
 
-To learn more about Next.js, take a look at the following resources:
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/yasinnabialtun/tsuko.git
+    cd tsuko
+    ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3.  **Environment Variables:**
+    Create a `.env` file based on `.env.example` (or ask the admin for credentials). Key variables:
+    *   `DATABASE_URL`
+    *   `SHOPIER_API_KEY`
+    *   `RESEND_API_KEY`
+    *   `ADMIN_PASSWORD`
 
-## Deploy on Vercel
+4.  **Database Migration:**
+    ```bash
+    npx prisma generate
+    npx prisma db push
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5.  **Run Development Server:**
+    ```bash
+    npm run dev
+    ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Admin Access
+
+Access the admin panel at `/admin`.
+Default password (if not set in env): `tsuko123`
+
+## Deployment
+
+Deploy on [Vercel](https://vercel.com) for best performance. Ensure all environment variables are properly configured in Vercel project settings.
+
+## License
+
+All rights reserved © 2025 Tsuko Design.
