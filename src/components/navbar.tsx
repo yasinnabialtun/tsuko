@@ -51,7 +51,7 @@ export default function Navbar() {
                     {/* Desktop Navigation - Elite & Minimal */}
                     <div className="hidden md:flex items-center gap-10 text-sm font-semibold tracking-wide text-charcoal/80">
                         <div className="flex items-center gap-8">
-                            <Link href="/#collection" className="hover:text-mauve transition-colors duration-300">Koleksiyon</Link>
+                            <Link href="/collection" className="hover:text-mauve transition-colors duration-300">Koleksiyon</Link>
                             <Link href="/blog" className="hover:text-mauve transition-colors duration-300">Journal</Link>
                             <Link href="/about" className="hover:text-mauve transition-colors duration-300">Atölye</Link>
                         </div>
@@ -137,7 +137,7 @@ export default function Navbar() {
 
                             <div className="flex-1 flex flex-col justify-center items-center gap-10 p-8">
                                 <nav className="flex flex-col items-center gap-8 text-3xl font-light text-charcoal">
-                                    <Link href="/#collection" onClick={() => setMobileMenuOpen(false)} className="hover:text-mauve transition-colors">Koleksiyon</Link>
+                                    <Link href="/collection" onClick={() => setMobileMenuOpen(false)} className="hover:text-mauve transition-colors">Koleksiyon</Link>
                                     <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="hover:text-mauve transition-colors">Journal</Link>
                                     <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-mauve transition-colors">Atölye</Link>
                                     <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="hover:text-mauve transition-colors">İletişim</Link>
