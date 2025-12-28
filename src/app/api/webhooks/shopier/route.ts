@@ -54,8 +54,12 @@ export async function POST(req: Request) {
         });
 
         // 2. Send Email
-        // Run in background (fire and forget) to reply fast to Shopier
-        sendOrderConfirmationEmail(updatedOrder).catch(e => console.error('Email fail', e));
+        // Verify email sending by waiting (prevents lambda freeze before send)
+        try {
+            await sendOrderConfirmationEmail(updatedOrder);
+        } catch (emailErr) {
+            console.error('Email failed but order is paid:', emailErr);
+        }
 
         return NextResponse.json({ success: true });
 
