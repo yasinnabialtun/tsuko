@@ -1,7 +1,7 @@
-
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import toast from 'react-hot-toast';
 
 export interface CartItem {
     id: string; // Product ID
@@ -90,6 +90,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
             if (existing) {
                 const newQuantity = Math.min(existing.quantity + quantity, stockLimit);
+                toast.success(`Ürün miktarı güncellendi (${newQuantity} adet)`);
                 return prev.map(item =>
                     (item.id === product.id && item.variantId === variant?.id)
                         ? { ...item, quantity: newQuantity }
@@ -98,6 +99,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             }
 
             // New Item
+            toast.success('Sepete eklendi');
             return [...prev, {
                 id: product.id,
                 variantId: variant?.id,
@@ -132,6 +134,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const removeFromCart = (productId: string, variantId?: string) => {
         setItems(prev => prev.filter(item => !(item.id === productId && item.variantId === variantId)));
+        toast.error('Ürün sepetten çıkarıldı');
     };
 
     const updateQuantity = (productId: string, quantity: number, variantId?: string) => {
@@ -169,17 +172,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
                     discountAmount: data.discountAmount,
                     message: data.message
                 });
+                toast.success('Kupon uygulandı! 🎉');
                 return { success: true, message: data.message || 'Kupon uygulandı!' };
             } else {
                 setActiveCoupon(null);
+                toast.error(data.error || 'Geçersiz kupon.');
                 return { success: false, message: data.error || 'Geçersiz kupon.' };
             }
         } catch (error) {
+            toast.error('Bağlantı hatası.');
             return { success: false, message: 'Bağlantı hatası.' };
         }
     };
 
-    const removeCoupon = () => setActiveCoupon(null);
+    const removeCoupon = () => {
+        setActiveCoupon(null);
+        toast('Kupon kaldırıldı');
+    };
 
     // Calculate total with active coupon
     const discountAmount = activeCoupon ? activeCoupon.discountAmount : 0;
