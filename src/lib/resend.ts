@@ -6,7 +6,7 @@ const resendApiKey = process.env.RESEND_API_KEY;
 export const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 // Email sender address
-export const FROM_EMAIL = 'Tsuko Design <noreply@tsukodesign.com>';
+export const FROM_EMAIL = process.env.RESEND_SENDER_EMAIL || 'Tsuko Design <onboarding@resend.dev>';
 export const REPLY_TO_EMAIL = 'info@tsukodesign.com';
 
 // Email Types
