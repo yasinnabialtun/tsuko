@@ -4,7 +4,11 @@ import { useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Minus, ShoppingBag, Trash2, Truck, ChevronRight } from 'lucide-react';
+import { X, Plus, Minus, ShoppingBag, Trash2, Truck, ChevronRight, Percent } from 'lucide-react';
+// ...
+<div className="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center">
+    <Percent size={12} />
+</div>
 import { useCart } from '@/context/cart-context';
 import { useRouter } from 'next/navigation';
 
@@ -15,7 +19,10 @@ export default function CartDrawer() {
         toggleCart,
         updateQuantity,
         removeFromCart,
-        cartTotal
+        cartTotal,
+        activeCoupon,
+        applyCoupon,
+        removeCoupon
     } = useCart();
 
     const router = useRouter();
@@ -179,6 +186,53 @@ export default function CartDrawer() {
                         {/* Footer */}
                         {items.length > 0 && (
                             <div className="p-8 border-t border-charcoal/5 bg-white relative z-10 shadow-[0_-20px_40px_rgba(0,0,0,0.02)]">
+
+                                {/* Coupon Code */}
+                                <div className="mb-6">
+                                    {activeCoupon ? (
+                                        <div className="flex items-center justify-between p-3 bg-green-50 rounded-xl border border-green-100">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center">
+                                                    <Percent size={12} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs font-bold text-green-700">{activeCoupon.code}</p>
+                                                    <p className="text-[10px] text-green-600">İndirim uygulandı</p>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={removeCoupon}
+                                                className="p-1 hover:bg-white rounded-lg transition-colors text-green-700"
+                                            >
+                                                <X size={14} />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <form
+                                            onSubmit={(e) => {
+                                                e.preventDefault();
+                                                const form = e.target as HTMLFormElement;
+                                                const input = form.elements.namedItem('coupon') as HTMLInputElement;
+                                                if (input.value) applyCoupon(input.value);
+                                            }}
+                                            className="flex gap-2"
+                                        >
+                                            <input
+                                                name="coupon"
+                                                type="text"
+                                                placeholder="İndirim kodu"
+                                                className="flex-1 bg-alabaster border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-clay/20 outline-none uppercase placeholder:normal-case"
+                                            />
+                                            <button
+                                                type="submit"
+                                                className="px-4 py-3 bg-charcoal text-white rounded-xl text-sm font-bold hover:bg-black transition-colors"
+                                            >
+                                                Uygula
+                                            </button>
+                                        </form>
+                                    )}
+                                </div>
+
                                 <div className="space-y-4 mb-8">
                                     <div className="flex justify-between items-center text-charcoal/40 font-bold uppercase tracking-widest text-[10px]">
                                         <span>Ara Toplam</span>

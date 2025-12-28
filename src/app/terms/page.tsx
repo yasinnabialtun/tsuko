@@ -10,29 +10,36 @@ export default function Terms() {
                 <div className="container mx-auto max-w-3xl">
                     <h1 className="text-4xl font-bold text-charcoal mb-8">Kullanım Koşulları</h1>
 
-                    <div className="prose prose-lg text-charcoal/70">
-                        <h3>1. Giriş</h3>
+                    <div className="prose prose-lg text-charcoal/70 max-w-none">
+                        <h3>1. Taraflar</h3>
                         <p>
-                            Tsuko Design web sitesini kullanarak aşağıdaki koşulları kabul etmiş sayılırsınız.
+                            İşbu sözleşme, Tsuko Design (bundan böyle "Satıcı" olarak anılacaktır) ile bu web sitesi üzerinden alışveriş yapan kişi ("Alıcı") arasında düzenlenmiştir.
                         </p>
 
-                        <h3>2. Fikri Mülkiyet</h3>
+                        <h3>2. Konu</h3>
                         <p>
-                            Sitede yer alan tüm tasarımlar, 3D modeller, görseller ve metinler Tsuko Design'a aittir.
-                            Kaynak gösterilmeden veya izinsiz kullanılması, kopyalanması yasaktır.
+                            İşbu sözleşmenin konusu, Alıcının Satıcıya ait internet sitesinden elektronik ortamda siparişini yaptığı, nitelikleri ve satış fiyatı belirtilen ürünün satışı ve teslimi ile ilgili olarak 6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmelere Dair Yönetmelik hükümleri gereğince tarafların hak ve yükümlülüklerinin saptanmasıdır.
                         </p>
 
-                        <h3>3. Ürünler</h3>
+                        <h3>3. Ürünler ve İade Politikası</h3>
                         <p>
-                            Ürünlerimiz 3D baskı teknolojisi ile sipariş üzerine üretilir. El işçiliği ve üretim tekniği doğası gereği,
-                            görseller ile nihai ürün arasında mikro düzeyde farklılıklar olabilir. Bu bir hata değil, ürünün biricikliğidir.
+                            Tsuko Design ürünleri, sipariş üzerine 3D baskı teknolojisi ve biyo-bozunur polimerler kullanılarak üretilmektedir. 
+                        </p>
+                        <ul>
+                            <li><strong>Ayıplı Mal:</strong> Kargo sırasında hasar gören veya üretim hatası olan ürünler, teslimattan itibaren 14 gün içinde ücretsiz değiştirilir.</li>
+                            <li><strong>Cayma Hakkı:</strong> Kişiye özel üretilen, renk veya boyut özelleştirmesi yapılan ürünlerde cayma hakkı kullanılamaz. Standart ürünlerde iade kargo ücreti alıcıya aittir.</li>
+                        </ul>
+
+                        <h3>4. Teslimat</h3>
+                        <p>
+                            Ürünler, sipariş onayından itibaren en geç 3-5 iş günü içinde kargoya verilir. Kargo şirketi kaynaklı gecikmelerden Satıcı sorumlu değildir.
                         </p>
 
-                        <h3>4. İade ve Değişim</h3>
+                        <h3>5. Gizlilik</h3>
                         <p>
-                            Kişiye özel üretilen ürünlerde (özel renk/boyut) iade kabul edilmemektedir.
-                            Kargoda hasar gören ürünler için "Kırılma Garantisi" kapsamında ücretsiz değişim yapılır.
+                            Alıcının kişisel bilgileri, siparişin işlenmesi ve yasal zorunluluklar dışında üçüncü şahıslarla paylaşılmaz. Ödeme bilgileri (kredi kartı vb.) Satıcı tarafından saklanmaz, ödeme altyapısı sağlayıcısı (Shopier) tarafından işlenir.
                         </p>
+                    </div>
 
                         <p className="text-sm border-t border-black/10 pt-4 mt-8">
                             Son güncelleme: 27 Aralık 2025
@@ -42,6 +49,6 @@ export default function Terms() {
             </section>
 
             <Footer />
-        </main>
+        </main >
     );
 }
