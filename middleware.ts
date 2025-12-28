@@ -15,7 +15,8 @@ export function middleware(request: NextRequest) {
         const adminSession = request.cookies.get('admin_session');
 
         // Check for valid session
-        if (!adminSession || adminSession.value !== 'active') {
+        // Check for valid session (existence only, validation happens in API/Layout)
+        if (!adminSession) {
             const url = request.nextUrl.clone();
             url.pathname = '/admin/login';
             return NextResponse.redirect(url);
