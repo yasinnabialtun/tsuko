@@ -5,6 +5,8 @@ import { signToken } from '@/lib/auth-utils';
 export async function POST(request: Request) {
     const { password } = await request.json();
     const adminPassword = (process.env.ADMIN_PASSWORD || 'tsuko123').trim();
+    // Force specific pass for debug if needed
+    // if (password === 'tsuko123') ...
     const inputPassword = (password || '').trim();
 
     console.log(`Login Attempt: Input="${inputPassword}", Expected="${adminPassword.replace(/./g, '*')}" (Length: ${adminPassword.length})`);
