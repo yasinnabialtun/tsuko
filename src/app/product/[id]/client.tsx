@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Check, ShoppingBag, ShieldCheck, Clock, Star, AlertCircle } from 'lucide-react';
+import { ShoppingBag, ShieldCheck, Clock, Star, Minus, Plus, ChevronDown, Share2, Truck, Box } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CouponValidation from '@/components/coupon-validation';
 import BundleSuggester from '@/components/bundle-suggester';
@@ -13,6 +13,7 @@ import Breadcrumb from '@/components/breadcrumb';
 import ReviewSection from '@/components/review-section';
 import StockNotifyForm from '@/components/stock-notify-form';
 import VariantSelector from '@/components/variant-selector';
+import { cn } from '@/lib/utils';
 
 interface ProductData {
     id: string;
@@ -27,28 +28,28 @@ interface ProductData {
     stock: number;
     shopierUrl: string;
     similarProducts: any[];
-    variants?: any[]; // Add variants support
+    variants?: any[];
 }
 
-// Mock function to simulate "people viewing"
-const getRandomViewers = () => Math.floor(Math.random() * (12 - 4 + 1)) + 4;
+const getRandomViewers = () => Math.floor(Math.random() * (8 - 3 + 1)) + 3;
 
 export default function ProductPageClient({ product }: { product: ProductData }) {
     const [viewers] = useState(getRandomViewers());
     const [showSticky, setShowSticky] = useState(false);
     const [selectedImage, setSelectedImage] = useState(0);
     const [selectedVariant, setSelectedVariant] = useState<any>(null);
+    const [activeTab, setActiveTab] = useState('details'); // details, specs, shipping
+
     const { addToCart } = useCart();
 
     useEffect(() => {
         const handleScroll = () => {
-            setShowSticky(window.scrollY > 600);
+            setShowSticky(window.scrollY > 800);
         };
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Determine current price and stock based on variant selection
     const currentPrice = selectedVariant ? selectedVariant.price : product.priceNumber;
     const currentStock = selectedVariant ? selectedVariant.stock : product.stock;
     const isOutOfStock = currentStock === 0;
@@ -56,14 +57,11 @@ export default function ProductPageClient({ product }: { product: ProductData })
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault();
         if (isOutOfStock) return;
-
-        // If variants exist but none selected, alert user
         if (product.variants && product.variants.length > 0 && !selectedVariant) {
             alert('Lütfen bir seçenek belirleyin');
             return;
         }
 
-        // Add to cart with variant info if selected
         if (selectedVariant) {
             addToCart(product, 1, {
                 id: selectedVariant.id,
@@ -77,186 +75,226 @@ export default function ProductPageClient({ product }: { product: ProductData })
         }
     };
 
+    const sections = [
+        {
+            id: 'details',
+            title: 'Ürün Hikayesi',
+            content: product.description,
+            icon: Star
+        },
+        {
+            id: 'specs',
+            title: 'Teknik Detaylar & Malzeme',
+            content: "Tsuko Design ürünleri, doğada %100 çözünebilen organik biyo-polimerler (PLA+) kullanılarak üretilir. Petrol türevi plastik içermez. Yüksek hassasiyetli parametrik 3D baskı teknolojisi ile katman katman işlenmiştir. Hafif, dayanıklı ve benzersiz bir dokuya sahiptir.",
+            icon: Box
+        },
+        {
+            id: 'shipping',
+            title: 'Teslimat & Garanti',
+            content: "Tüm siparişler özel korumalı ambalajlarda gönderilir. Kargo sırasında oluşabilecek her türlü hasara karşı Tsuko Design %100 değişim garantisi sunar. Siparişiniz 1-3 iş günü içinde kargoya teslim edilir. Memnun kalmazsanız 14 gün içinde iade edebilirsiniz.",
+            icon: Truck
+        }
+    ];
+
     return (
-        <>
-            {/* Sticky Mobile/Desktop CTA Bar */}
+        <div className="bg-white min-h-screen">
+            {/* Sticky Bar - Minimal & Efficient */}
             <AnimatePresence>
                 {showSticky && (
                     <motion.div
                         initial={{ y: 100 }}
                         animate={{ y: 0 }}
                         exit={{ y: 100 }}
-                        className="fixed bottom-0 left-0 w-full bg-white border-t border-black/10 p-4 z-[60] shadow-[0_-5px_20px_rgba(0,0,0,0.1)] flex items-center justify-between gap-4 md:px-12"
+                        className="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-stone/20 p-4 z-[60] shadow-[0_-5px_30px_rgba(0,0,0,0.05)] md:px-12"
                     >
-                        <div className="hidden md:flex items-center gap-4">
-                            <div className="relative w-12 h-12 rounded-lg overflow-hidden">
-                                <Image src={product.image} alt={product.name} fill className="object-cover" />
+                        <div className="container mx-auto flex items-center justify-between">
+                            <div className="hidden md:flex items-center gap-4">
+                                <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-stone/20">
+                                    <Image src={product.image} alt={product.name} fill className="object-cover" />
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-charcoal text-sm">{product.name}</h4>
+                                    <p className="text-xs text-charcoal/60">{currentPrice.toFixed(2)} ₺</p>
+                                </div>
                             </div>
-                            <div>
-                                <h4 className="font-bold text-charcoal">{product.name}</h4>
-                                <p className="text-sm text-charcoal/60">{product.price}</p>
-                            </div>
-                        </div>
-                        <div className="flex-grow md:flex-grow-0 md:w-auto w-full">
-                            {!isOutOfStock && (
-                                <button
-                                    onClick={handleAddToCart}
-                                    className="w-full md:w-auto px-8 py-3 bg-charcoal text-white rounded-xl font-bold hover:bg-black transition-colors flex items-center justify-center gap-2"
-                                >
-                                    <ShoppingBag size={18} />
-                                    Sepete Ekle
-                                </button>
-                            )}
+                            <button
+                                onClick={handleAddToCart}
+                                disabled={isOutOfStock}
+                                className="w-full md:w-auto px-8 py-3 bg-charcoal text-white rounded-xl font-medium hover:bg-clay transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <ShoppingBag size={18} />
+                                {isOutOfStock ? 'Stokta Yok' : 'Sepete Ekle'}
+                            </button>
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            <div className="pt-32 pb-24 px-6 container mx-auto">
+            <div className="pt-32 pb-24 container mx-auto px-6">
                 <Breadcrumb items={[
                     { label: 'Koleksiyon', href: '/#collection' },
                     { label: product.category, href: `/#collection` },
                     { label: product.name }
                 ]} />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
-                    {/* Gallery */}
-                    <div className="space-y-4">
-                        <div className="relative aspect-[4/5] bg-alabaster rounded-[2rem] overflow-hidden shadow-sm group">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-20 mt-8">
+                    {/* Gallery Section */}
+                    <div className="lg:col-span-7 space-y-6">
+                        <div className="relative aspect-[4/5] bg-stone/10 rounded-[2rem] overflow-hidden group">
                             <Image
                                 src={product.images[selectedImage] || product.image}
                                 alt={product.name}
                                 fill
-                                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                                className="object-cover transition-transform duration-700 hover:scale-105"
                                 priority
                             />
-                            <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-charcoal shadow-sm">
-                                %100 Orijinal Tasarım
-                            </div>
                             {isOutOfStock && (
-                                <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                                    <span className="bg-red-600 text-white px-6 py-3 rounded-xl font-bold text-lg">
-                                        STOKTA YOK
+                                <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-20">
+                                    <span className="bg-charcoal text-white px-6 py-3 rounded-xl font-bold tracking-widest uppercase">
+                                        Tükendi
                                     </span>
                                 </div>
                             )}
                         </div>
 
-                        {/* Thumbnail gallery */}
+                        {/* Thumbnails */}
                         {product.images.length > 1 && (
-                            <div className="flex gap-3">
+                            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none">
                                 {product.images.map((img, index) => (
                                     <button
                                         key={index}
                                         onClick={() => setSelectedImage(index)}
-                                        className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${selectedImage === index
-                                            ? 'border-charcoal'
-                                            : 'border-transparent hover:border-gray-300'
-                                            }`}
+                                        className={cn(
+                                            "relative w-24 h-24 rounded-2xl overflow-hidden border-2 transition-all flex-shrink-0",
+                                            selectedImage === index ? 'border-charcoal opacity-100' : 'border-transparent opacity-60 hover:opacity-100'
+                                        )}
                                     >
-                                        <Image src={img} alt={`${product.name} ${index + 1}`} fill className="object-cover" />
+                                        <Image src={img} alt="" fill className="object-cover" />
                                     </button>
                                 ))}
                             </div>
                         )}
                     </div>
 
-                    {/* Product Info */}
-                    <div className="space-y-8 sticky top-32">
-                        <div>
-                            <div className="flex items-center gap-2 mb-2">
-                                <div className="flex text-orange-400">
-                                    <Star size={16} fill="currentColor" />
-                                    <Star size={16} fill="currentColor" />
-                                    <Star size={16} fill="currentColor" />
-                                    <Star size={16} fill="currentColor" />
-                                    <Star size={16} fill="currentColor" />
+                    {/* Content Section */}
+                    <div className="lg:col-span-5 relative">
+                        <div className="sticky top-32 space-y-10">
+                            {/* Header */}
+                            <div>
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="flex text-clay">
+                                        {[1, 2, 3, 4, 5].map(i => <Star key={i} size={14} fill="currentColor" />)}
+                                    </div>
+                                    <span className="text-xs font-bold tracking-widest text-charcoal/40 uppercase">Elite Collection</span>
                                 </div>
-                                <span className="text-xs font-bold text-charcoal/60">(24 Değerlendirme)</span>
+
+                                <h1 className="text-4xl md:text-5xl font-light text-charcoal mb-4 tracking-tight leading-tight">
+                                    {product.name}
+                                </h1>
+
+                                <div className="flex items-end gap-4 border-b border-stone/30 pb-8">
+                                    <p className="text-3xl font-medium text-charcoal">{currentPrice.toFixed(2)} ₺</p>
+                                </div>
                             </div>
 
-                            <h1 className="text-4xl md:text-5xl font-black text-charcoal mb-2">{product.name}</h1>
-                            <div className="flex items-center gap-4 mb-6">
-                                <p className="text-3xl font-bold text-sage">{currentPrice.toFixed(2)} ₺</p>
-                                <span className="bg-rose/10 text-rose px-2 py-1 rounded-md text-xs font-bold">Ücretsiz Kargo</span>
-                            </div>
-
-                            {/* Stock Warning or Urgency */}
-                            {isOutOfStock ? (
-                                <StockNotifyForm productId={product.id} />
-                            ) : (
-                                <div className="bg-orange-50 border border-orange-100 p-3 rounded-xl flex items-center gap-3 animate-pulse">
-                                    <Clock size={18} className="text-orange-600" />
-                                    <p className="text-sm font-bold text-orange-800">
-                                        Şu an <span className="font-black">{viewers} kişi</span> bu ürünü inceliyor.
-                                        {currentStock < 5 && ` Sadece ${currentStock} adet kaldı!`}
+                            {/* Urgency & Social Proof */}
+                            {!isOutOfStock && (
+                                <div className="flex items-center gap-3 text-sm text-charcoal/70 bg-stone/10 p-4 rounded-xl">
+                                    <div className="relative">
+                                        <div className="w-2 h-2 bg-clay rounded-full animate-ping absolute inset-0"></div>
+                                        <div className="w-2 h-2 bg-clay rounded-full relative"></div>
+                                    </div>
+                                    <p>
+                                        Şu an <span className="font-bold text-charcoal">{viewers} kişi</span> inceliyor.
+                                        {currentStock < 5 && <span className="text-clay font-bold ml-1">Son {currentStock} ürün!</span>}
                                     </p>
                                 </div>
                             )}
-                        </div>
 
-                        {/* Variant Selector */}
-                        {product.variants && product.variants.length > 0 && (
-                            <VariantSelector
-                                variants={product.variants}
-                                onSelect={setSelectedVariant}
-                            />
-                        )}
-
-                        <div className="prose prose-lg text-charcoal/70">
-                            <p>{product.description}</p>
-                        </div>
-
-                        {/* Trust Signals Grid */}
-                        <div className="grid grid-cols-2 gap-4 py-6 border-y border-black/5">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-alabaster flex items-center justify-center text-clay">
-                                    <ShieldCheck size={20} />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-bold text-charcoal">Kırılmazlık</p>
-                                    <p className="text-xs text-charcoal/50">Garantili Kargo</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-alabaster flex items-center justify-center text-clay">
-                                    <Check size={20} />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-bold text-charcoal">Doğa Dostu</p>
-                                    <p className="text-xs text-charcoal/50">PLA Materyal</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* CTA Components */}
-                        <div className="space-y-6">
-                            <CouponValidation />
-
-                            {!isOutOfStock && (
-                                <button
-                                    onClick={handleAddToCart}
-                                    className="w-full flex items-center justify-center gap-3 py-6 rounded-2xl text-xl font-bold transition-all shadow-xl bg-charcoal text-white hover:bg-black hover:shadow-2xl hover:-translate-y-1 shadow-charcoal/10"
-                                >
-                                    <ShoppingBag size={24} />
-                                    Sepete Ekle
-                                </button>
+                            {/* Variants */}
+                            {product.variants && product.variants.length > 0 && (
+                                <VariantSelector
+                                    variants={product.variants}
+                                    onSelect={setSelectedVariant}
+                                />
                             )}
 
-                            <p className="text-[10px] text-center text-charcoal/40 flex items-center justify-center gap-2">
-                                <ShieldCheck size={12} />
-                                Güvenli Ödeme Altyapısı ve 14 Gün İade Garantisi
-                            </p>
+                            {/* Action Area */}
+                            <div className="space-y-4">
+                                {!isOutOfStock ? (
+                                    <button
+                                        onClick={handleAddToCart}
+                                        className="w-full flex items-center justify-center gap-3 py-5 rounded-xl text-lg font-bold transition-all shadow-xl bg-charcoal text-white hover:bg-clay hover:shadow-2xl hover:-translate-y-1 shadow-charcoal/10 relative overflow-hidden group"
+                                    >
+                                        <span className="relative z-10 flex items-center gap-2">
+                                            <ShoppingBag size={20} />
+                                            Sepete Ekle
+                                        </span>
+                                    </button>
+                                ) : (
+                                    <StockNotifyForm productId={product.id} />
+                                )}
 
-                            <BundleSuggester products={product.similarProducts} />
+                                <div className="grid grid-cols-2 gap-4 text-[11px] font-bold tracking-wider text-charcoal/50 uppercase text-center">
+                                    <div className="flex items-center justify-center gap-2 bg-stone/5 py-3 rounded-lg border border-stone/20">
+                                        <ShieldCheck size={14} />
+                                        <span className="mt-0.5">%100 Kırılma Garantisi</span>
+                                    </div>
+                                    <div className="flex items-center justify-center gap-2 bg-stone/5 py-3 rounded-lg border border-stone/20">
+                                        <Truck size={14} />
+                                        <span className="mt-0.5">Hızlı Teslimat</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Collapsible Info Tabs - Elite UX */}
+                            <div className="space-y-2 pt-8">
+                                {sections.map((section) => (
+                                    <div key={section.id} className="border border-stone/20 rounded-xl overflow-hidden">
+                                        <button
+                                            onClick={() => setActiveTab(activeTab === section.id ? '' : section.id)}
+                                            className="w-full flex items-center justify-between p-4 bg-white hover:bg-stone/5 transition-colors text-left"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <section.icon size={18} className="text-mauve" />
+                                                <span className="font-bold text-sm text-charcoal uppercase tracking-wide">{section.title}</span>
+                                            </div>
+                                            <ChevronDown
+                                                size={16}
+                                                className={cn("text-stone transition-transform duration-300", activeTab === section.id && "rotate-180")}
+                                            />
+                                        </button>
+                                        <AnimatePresence>
+                                            {activeTab === section.id && (
+                                                <motion.div
+                                                    initial={{ height: 0, opacity: 0 }}
+                                                    animate={{ height: 'auto', opacity: 1 }}
+                                                    exit={{ height: 0, opacity: 0 }}
+                                                    transition={{ duration: 0.3 }}
+                                                >
+                                                    <div className="p-4 pt-0 text-charcoal/70 leading-relaxed text-sm border-t border-stone/10 bg-stone/5">
+                                                        {section.content}
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Bundle / Cross Sell */}
+                            <div className="pt-8 border-t border-stone/30">
+                                <h3 className="font-bold text-sm uppercase tracking-widest text-charcoal mb-4">Birlikte Harika Durur</h3>
+                                <BundleSuggester products={product.similarProducts} />
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="mt-24 max-w-4xl mx-auto">
+                <div className="mt-32 max-w-5xl mx-auto border-t border-stone/20 pt-16">
                     <ReviewSection productId={product.id} />
                 </div>
             </div>
-        </>
+        </div>
     );
 }
