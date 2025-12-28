@@ -3,9 +3,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 import { Metadata } from 'next';
+import Navbar from '@/components/navbar';
+import Footer from '@/components/footer';
 
 // 1 Hour ISR
-export const revalidate = 3600;
+// export const revalidate = 3600; 
+export const dynamic = 'force-dynamic';
+
 
 export const metadata: Metadata = {
     title: 'Blog | Tsuko Design - Dekorasyon ve Tasarım Trendleri',

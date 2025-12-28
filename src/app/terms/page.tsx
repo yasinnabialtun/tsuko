@@ -23,7 +23,7 @@ export default function Terms() {
 
                         <h3>3. Ürünler ve İade Politikası</h3>
                         <p>
-                            Tsuko Design ürünleri, sipariş üzerine 3D baskı teknolojisi ve biyo-bozunur polimerler kullanılarak üretilmektedir. 
+                            Tsuko Design ürünleri, sipariş üzerine 3D baskı teknolojisi ve biyo-bozunur polimerler kullanılarak üretilmektedir.
                         </p>
                         <ul>
                             <li><strong>Ayıplı Mal:</strong> Kargo sırasında hasar gören veya üretim hatası olan ürünler, teslimattan itibaren 14 gün içinde ücretsiz değiştirilir.</li>
@@ -41,14 +41,13 @@ export default function Terms() {
                         </p>
                     </div>
 
-                        <p className="text-sm border-t border-black/10 pt-4 mt-8">
-                            Son güncelleme: 27 Aralık 2025
-                        </p>
-                    </div>
+                    <p className="text-sm border-t border-black/10 pt-4 mt-8">
+                        Son güncelleme: 27 Aralık 2025
+                    </p>
                 </div>
             </section>
 
             <Footer />
-        </main >
+        </main>
     );
 }
