@@ -9,9 +9,9 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                background: "var(--background)",
-                foreground: "var(--foreground)",
-                // New Premium Palette
+                background: "#FAFAFA",
+                foreground: "#1F1F23",
+                // Safe Mode: Hardcoded Premium Palette
                 porcelain: "#FAFAFA",
                 stone: "#E6E3DF",
                 mauve: "#C7A4E0",
@@ -19,14 +19,18 @@ const config: Config = {
                 clay: "#E07A5F",
                 white: "#FFFFFF",
                 black: "#000000",
+                sage: "#E6E3DF", // Mapped to stone for safety
+                rose: "#E07A5F", // Mapped to clay for safety
+                softWhite: "#FDFBF7",
             },
             fontFamily: {
                 sans: ['Inter', 'sans-serif'],
+                heading: ['Inter', 'sans-serif'], // Fallback
             },
             borderRadius: {
-                lg: "var(--radius)",
-                md: "calc(var(--radius) - 2px)",
-                sm: "calc(var(--radius) - 4px)",
+                lg: "1rem",
+                md: "0.75rem",
+                sm: "0.5rem",
             },
             animation: {
                 'reveal': 'reveal 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
