@@ -1,50 +1,67 @@
+# Tsuko Design - Yönetici Rehberi
 
-# Tsuko Design - Yönetici Kılavuzu
+## 🚀 Kurulum ve İlk Çalıştırma
 
-Bu belge, Tsuko Design e-ticaret platformunun yönetim paneli özelliklerini ve kullanımını açıklar.
+### 1. Canlıya Alma (Vercel)
+Bu projeyi Vercel'e dağıtırken aşağıdaki **Environment Variable**'ları eklemelisiniz:
 
-**Yönetim Paneli Adresi:** `tsuko.vercel.app/admin`  
-(Erişmek için sitede yönetici hesabıyla giriş yapmış olmalısınız.)
+```env
+# Veritabanı
+DATABASE_URL="postgres://..."
+
+# Admin Paneli Girişi (BURAYI GÜÇLÜ BİR ŞİFRE YAPIN)
+ADMIN_PASSWORD="super-secret-password"
+
+# Ödeme Sistemi (Shopier)
+SHOPIER_API_KEY="..."
+SHOPIER_API_SECRET="..."
+SHOPIER_WEBSITE_INDEX="1"
+
+# Email Sistemi (Resend)
+RESEND_API_KEY="re_..."
+RESEND_SENDER_EMAIL="Tsuko <bilgi@tsukodesign.com>"
+
+# Site Adresi (Callback URLleri için)
+NEXT_PUBLIC_SITE_URL="https://tsukodesign.com"
+```
+
+### 2. Veritabanını Hazırlama
+Projeyi yükledikten sonra veritabanı tablolarını oluşturmak için:
+- Build adımı otomatik olarak `prisma generate` yapar.
+- Ancak tabloları oluşturmak için **Deployment** sonrası Vercel Console'dan veya localden şunu çalıştırın:
+```bash
+npx prisma db push
+```
+
+### 3. Demo Verisi (Seeding)
+Veritabanını örnek ürünler, kategoriler ve blog yazılarıyla doldurmak için:
+Browser'dan şu adrese gidin:
+`https://siteniz.com/api/seed?secret=ADMIN_PASSWORD_DEGERINIZ`
+
+Bu işlem veritabanına otomatik olarak:
+- Kategoriler (Vazo, Aydınlatma vb.)
+- Örnek Ürünler
+- Blog Yazıları
+- İndirim Kuponu (MERHABA10)
+Ekleyecektir.
 
 ---
 
-## 1. 🛍️ Sipariş Yönetimi
-**Menü:** `Siparişler`
-*   Gelen tüm siparişleri tarih sırasına göre görebilirsiniz.
-*   Bir siparişe tıklayarak müşteri bilgilerini ve satın alınan ürünleri inceleyin.
-*   **Kargo Takibi:** Siparişi kargoya verdiğinizde, "Kargo Takip No" alanını doldurup Kaydet'e basın. Müşteriye otomatik e-posta gidecektir.
-*   **İptal/İade:** Sorunlu siparişlerin durumunu "İptal Edildi" olarak güncelleyebilirsiniz.
+## 🛠 Yönetim Paneli
+Adres: `/admin`
+Giriş Şifresi: `.env` dosyasındaki `ADMIN_PASSWORD`
 
-## 2. 📦 Ürün Yönetimi
-**Menü:** `Ürünler`
-*   **Yeni Ürün Ekle:** Sağ üstteki butonu kullanın.
-*   **Stok Takibi:** Stok adedini güncel tutun. Stok 0 olduğunda ürün otomatik olarak "Tükendi" etiketi alır ve sepete eklenemez.
-*   **Öne Çıkanlar:** Bir ürünü ana sayfada göstermek için "Öne Çıkanlar Listesine Ekle" kutucuğunu işaretleyin.
-*   **SEO:** Her ürün için "SEO Başlığı" ve "Açıklaması" girmeyi unutmayın.
-
-## 3. 🎫 Kupon Sistemi
-**Menü:** `Kuponlar`
-*   Özel günler veya kampanyalar için indirim kodları oluşturun.
-*   **İndirim Türü:** % Oran (Yüzde) veya Sabit Tutar (TL).
-*   **Sınırlar:** "Minimum Sepet Tutarı" veya "Kullanım Limiti" (örn: İlk 50 kişi) koyabilirsiniz.
-*   *Örnek:* `YAZ2025` kodu ile %15 indirim.
-
-## 4. 📝 Blog Yönetimi
-**Menü:** `Blog`
-*   SEO trafiği çekmek için düzenli makaleler yayınlayın.
-*   Görsel seçimi önemlidir (Yatay format önerilir).
-*   Yazıları "Taslak" olarak kaydedip sonra yayınlayabilirsiniz.
-
-## 5. 📧 Bülten & Aboneler
-**Menü:** `Aboneler`
-*   Sitenin footer kısmından veya pop-up'tan bültene kayıt olan e-postalar buraya düşer.
-*   Bu listeyi Excel olarak indirip (kopyalayıp) toplu e-posta servislerinde (Mailchimp vb.) kullanabilirsiniz.
+### Özellikler:
+- **Siparişler:** Gelen siparişleri görün, kargo takip no girin, durumu güncelleyin.
+- **Ürünler:** Yeni ürün ekleyin, stok güncelleyin, varyant (renk/boyut) ekleyin.
+- **Kuponlar:** Yüzdelik veya sabit indirim kuponları oluşturun.
+- **Blog:** SEO uyumlu blog yazıları yazın.
+- **Aboneler:** Newsletter abonelerini toplayın.
 
 ---
 
-## ⚠️ Teknik Notlar
-*   **Ödeme Sistemi:** Shopier entegrasyonu aktiftir. Ödemeler Shopier panelinize düşer.
-*   **Stok Mantığı:** Sipariş verildiği an stok düşer. İptal edilen siparişlerde stoku manuel düzelmeniz gerekebilir.
-*   **Destek:** Teknik bir sorun yaşarsanız `error.tsx` sayfası devreye girer.
+## ⚠️ Önemli Notlar
+1. **Görseller:** Şu an tüm görseller `/images/hero.png` placeholder'ını kullanıyor. Ürün düzenleme sayfasından gerçek resim URL'lerini girmelisiniz.
+2. **Ödeme:** Shopier API bilgileri girilmeden ödeme alınamaz. Test sırasında "Geri Dönüş URL"leri (Callback) Shopier panelinden de ayarlanmalıdır ama kod içinde dinamik olarak gönderiyoruz, çoğu zaman sorun olmaz.
 
-**Bol Kazançlar!** 🚀
+İyi satışlar!
