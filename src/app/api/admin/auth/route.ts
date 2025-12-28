@@ -4,9 +4,12 @@ import { signToken } from '@/lib/auth-utils';
 
 export async function POST(request: Request) {
     const { password } = await request.json();
-    const adminPassword = process.env.ADMIN_PASSWORD || 'tsuko123';
+    const adminPassword = (process.env.ADMIN_PASSWORD || 'tsuko123').trim();
+    const inputPassword = (password || '').trim();
 
-    if (password === adminPassword) {
+    console.log(`Login Attempt: Input="${inputPassword}", Expected="${adminPassword.replace(/./g, '*')}" (Length: ${adminPassword.length})`);
+
+    if (inputPassword === adminPassword) {
         // Create secure token with expiration (1 week)
         const token = signToken({ role: 'admin', exp: Date.now() + 7 * 24 * 60 * 60 * 1000 });
 
