@@ -68,7 +68,7 @@ export default function RootLayout({
       <head>
         <AnalyticsScripts />
       </head>
-      <body className="font-sans bg-background text-foreground antialiased selection:bg-mauve selection:text-charcoal">
+      <body suppressHydrationWarning className="font-sans bg-background text-foreground antialiased selection:bg-mauve selection:text-charcoal">
         <PromoBanner />
         <noscript>
           <iframe

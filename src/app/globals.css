@@ -18,6 +18,7 @@
   --color-muted: var(--color-stone);
 
   /* Shared Tokens */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --radius-xl: 1.5rem;
   --radius-2xl: 2rem;
 
