@@ -2,20 +2,22 @@ import { MetadataRoute } from 'next';
 import { prisma } from '@/lib/prisma';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = 'https://tsukodesign.com';
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tsukodesign.com';
 
     // Static Pages
     const staticRoutes = [
         '',
         '/blog',
-        '/products', // This might be a category page or removed if handled by homepage
+        '/about',
         '/contact',
-        '/#collection',
-        '/#philosophy'
+        '/privacy',
+        '/terms',
+        '/shipping',
+        '/returns',
     ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),
-        changeFrequency: 'daily' as const,
+        changeFrequency: 'weekly' as const,
         priority: route === '' ? 1 : 0.8,
     }));
 
@@ -26,14 +28,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             where: { isActive: true },
             select: { slug: true, updatedAt: true }
         });
-        products = productData.map((p: { slug: string; updatedAt: Date }) => ({
+        products = productData.map((p) => ({
             url: `${baseUrl}/product/${p.slug}`,
             lastModified: p.updatedAt,
-            changeFrequency: 'weekly' as const,
+            changeFrequency: 'daily' as const,
             priority: 0.9,
         }));
     } catch (e) {
         console.error('Sitemap product fetch error', e);
+    }
+
+    // Dynamic Categories
+    let categories: MetadataRoute.Sitemap = [];
+    try {
+        const categoryData = await prisma.category.findMany({ // Assuming Category model exists
+            select: { slug: true }
+        });
+        categories = categoryData.map((c) => ({
+            url: `${baseUrl}/category/${c.slug}`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly' as const,
+            priority: 0.8,
+        }));
+    } catch (e) {
+        console.error('Sitemap category fetch error', e);
     }
 
     // Dynamic Blog Posts
@@ -43,7 +61,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             where: { published: true },
             select: { slug: true, updatedAt: true }
         });
-        posts = postData.map((p: { slug: string; updatedAt: Date }) => ({
+        posts = postData.map((p) => ({
             url: `${baseUrl}/blog/${p.slug}`,
             lastModified: p.updatedAt,
             changeFrequency: 'weekly' as const,
@@ -53,5 +71,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         console.error('Sitemap blog fetch error', e);
     }
 
-    return [...staticRoutes, ...products, ...posts];
+    return [...staticRoutes, ...products, ...categories, ...posts];
 }
