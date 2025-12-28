@@ -1,17 +1,11 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
-  --color-alabaster: #FDFBF7;
-  --color-charcoal: #2C2C2C;
-  --color-sage: #84A98C;
-  --color-rose: #C9A9A6;
-  --color-clay: #CD8B62;
-  @tailwind base;
-  @tailwind components;
-  @tailwind utilities;
-
+@layer base {
   :root {
-    /* TSUKO PREMIUM PALETTE */
+    /* TSUKO PREMIUM PALETTE (HEX) */
+
     /* Backgrounds & Neutrals */
     --background: #FAFAFA;
     /* Soft Porcelain */
@@ -22,18 +16,14 @@
     /* Warm Stone */
     --muted-foreground: #6B6B70;
 
-    /* Brand */
+    /* Brand Colors */
     --primary: #E07A5F;
-    /* Clay Accent (CTA) */
+    /* Clay Accent */
     --primary-foreground: #FFFFFF;
 
     --secondary: #C7A4E0;
     /* Dusty Mauve */
     --secondary-foreground: #1F1F23;
-
-    --accent: #E6E3DF;
-    /* Warm Stone */
-    --accent-foreground: #1F1F23;
 
     /* Borders & Inputs */
     --border: #E6E3DF;
@@ -42,88 +32,104 @@
 
     /* Radius */
     --radius: 1rem;
-    /* 16px */
+
+    /* Legacy Map */
+    --color-alabaster: #FAFAFA;
+    --color-charcoal: #1F1F23;
+    --color-sage: #84A98C;
+    --color-rose: #C9A9A6;
+    --color-clay: #E07A5F;
+    --color-mauve: #C7A4E0;
+    --color-stone: #E6E3DF;
+    --color-porcelain: #FAFAFA;
   }
 
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: 'Inter', sans-serif;
+    /* font-family handled by next/font in layout.tsx */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-
-  /* Premium Reveal Animation */
-  @keyframes reveal {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-reveal {
-    animation: reveal 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  }
-
-  /* Smooth scrolling native behavior */
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 
   h1,
   h2,
   h3,
   h4,
-  k5,
+  h5,
   h6 {
-    font-family: var(--font-heading);
-    /* Remove uppercase for more editorial look */
-    letter-spacing: -0.01em;
-    font-weight: 500;
-    /* Lighter weight for elegance */
+    letter-spacing: -0.025em;
+    /* tracking-tight */
+    font-weight: 300;
+    /* font-light */
+  }
+}
+
+@layer components {
+  .animate-reveal {
+    animation: reveal 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   }
 
-  /* Luxury selection color */
-  ::selection {
-    background-color: var(--color-clay);
-    color: white;
+  .animate-fade-in {
+    animation: fadeInUp 0.5s ease-out forwards;
   }
 
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+  }
+}
 
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+/* Animations */
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
 
-  /* Custom scrollbar for premium feel */
-  ::-webkit-scrollbar {
-    width: 8px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
 
-  ::-webkit-scrollbar-track {
-    background: var(--color-alabaster);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
+}
 
-  ::-webkit-scrollbar-thumb {
-    background: #ddd;
-    border-radius: 4px;
-  }
+/* Selection */
+::selection {
+  background-color: rgb(224 122 95);
+  /* Clay */
+  color: white;
+}
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: #ccc;
-  }
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
 
-  .perspective-1000 {
-    perspective: 1000px;
-  }
+::-webkit-scrollbar-track {
+  background: #FAFAFA;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E6E3DF;
+  /* Stone */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #C7C5C2;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
