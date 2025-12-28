@@ -6,6 +6,9 @@ import FAQ from '@/components/faq';
 import Newsletter from '@/components/newsletter';
 import Footer from '@/components/footer';
 import NewsletterPopup from '@/components/newsletter-popup';
+import ExitIntentPopup from '@/components/exit-intent-popup';
+import ShopTheLook from '@/components/shop-the-look';
+import LiveSales from '@/components/live-sales';
 import { prisma } from "@/lib/prisma";
 
 // Revalidate data every hour
@@ -126,6 +129,8 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-background text-foreground selection:bg-mauve selection:text-charcoal">
       <NewsletterPopup />
+      <ExitIntentPopup />
+      <LiveSales />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -145,6 +150,8 @@ export default async function Home() {
 
       {/* Pass real database products to Collection */}
       <Collection products={products} />
+
+      <ShopTheLook />
 
       <FAQ />
       <Newsletter />

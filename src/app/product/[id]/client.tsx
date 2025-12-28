@@ -14,6 +14,7 @@ import StockNotifyForm from '@/components/stock-notify-form';
 import VariantSelector from '@/components/variant-selector';
 import { useRecentProducts } from '@/hooks/use-recent-products';
 import ProductGallery from '@/components/product-gallery';
+import RecentlyViewed from '@/components/recently-viewed';
 import { cn } from '@/lib/utils';
 
 interface ProductData {
@@ -137,9 +138,9 @@ export default function ProductPageClient({ product }: { product: ProductData })
 
             <div className="pt-32 pb-24 container mx-auto px-6">
                 <Breadcrumbs items={[
-                    { label: 'Koleksiyon', href: '/#collection' },
-                    { label: product.category, href: `/#collection` },
-                    { label: product.name, href: '#' }
+                    { label: 'Koleksiyon', href: '/collection' },
+                    { label: product.category, href: `/collection?category=${product.category.toLowerCase()}` },
+                    { label: product.name }
                 ]} />
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-20 mt-8">
@@ -287,6 +288,10 @@ export default function ProductPageClient({ product }: { product: ProductData })
 
                 <div className="mt-32 max-w-5xl mx-auto border-t border-gray-100 pt-16">
                     <ReviewSection productId={product.id} />
+                </div>
+
+                <div className="mt-32">
+                    <RecentlyViewed />
                 </div>
             </div>
         </div>

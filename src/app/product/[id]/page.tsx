@@ -7,6 +7,7 @@ import Link from 'next/link';
 import CouponValidation from '@/components/coupon-validation';
 import BundleSuggester from '@/components/bundle-suggester';
 import { prisma } from '@/lib/prisma';
+import Breadcrumbs from '@/components/breadcrumbs';
 import ProductPageClient from './client';
 
 // SSR with revalidation

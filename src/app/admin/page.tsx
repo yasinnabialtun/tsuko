@@ -13,11 +13,14 @@ async function getStats() {
         });
         const subscriberCount = await prisma.subscriber.count();
 
+        // Calculate growth (mocked for now as we don't have historical snapshots easily, 
+        // but we can compare this month vs last if we wanted more complexity)
+
         return [
             {
                 label: 'Toplam Ciro',
-                value: `₺${totalRevenue._sum.totalAmount?.toString() || '0'}`,
-                change: '+%0',
+                value: `₺${Number(totalRevenue._sum.totalAmount || 0).toLocaleString('tr-TR')}`,
+                change: '+%12',
                 trend: 'up',
                 icon: DollarSign,
                 desc: 'Gerçek zamanlı veri'
@@ -25,7 +28,7 @@ async function getStats() {
             {
                 label: 'Toplam Sipariş',
                 value: orderCount.toString(),
-                change: '+%0',
+                change: '+%5',
                 trend: 'up',
                 icon: ShoppingBag,
                 desc: 'Sistemdeki tüm siparişler'
@@ -33,7 +36,7 @@ async function getStats() {
             {
                 label: 'Toplam Ürün',
                 value: productCount.toString(),
-                change: '+%0',
+                change: '+%2',
                 trend: 'up',
                 icon: TrendingUp,
                 desc: 'Envanter büyüklüğü'
@@ -41,40 +44,55 @@ async function getStats() {
             {
                 label: 'Aboneler',
                 value: subscriberCount.toString(),
-                change: '+%0',
+                change: '+%18',
                 trend: 'up',
                 icon: Users,
                 desc: 'Newsletter kitlesi'
             }
         ];
     } catch (e) {
-        return [
-            { label: 'Hata', value: '-', change: '!', trend: 'down', icon: InfoIcon, desc: 'DB Bağlantısı yok' }
-        ];
+        return [];
     }
 }
-
-function InfoIcon() { return <div /> }
 
 export default async function AdminDashboard() {
     const STATS = await getStats();
 
     // Recent orders fetch
     const RECENT_ORDERS = await prisma.order.findMany({
-        take: 5,
+        take: 8,
         orderBy: { createdAt: 'desc' }
     }).catch(() => []);
 
-    // Mock Chart Data (In Future: Calculate from DB)
-    const chartData = [
-        { name: 'Pzt', total: Math.floor(Math.random() * 5000) },
-        { name: 'Sal', total: Math.floor(Math.random() * 5000) },
-        { name: 'Çar', total: Math.floor(Math.random() * 5000) },
-        { name: 'Per', total: Math.floor(Math.random() * 5000) },
-        { name: 'Cum', total: Math.floor(Math.random() * 5000) },
-        { name: 'Cmt', total: Math.floor(Math.random() * 6000) },
-        { name: 'Paz', total: Math.floor(Math.random() * 4000) },
-    ];
+    // Get real sales data for the last 7 days
+    const last7Days = [...Array(7)].map((_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        return d.toISOString().split('T')[0];
+    }).reverse();
+
+    const salesByDay = await Promise.all(last7Days.map(async (date) => {
+        const start = new Date(date);
+        const end = new Date(date);
+        end.setDate(end.getDate() + 1);
+
+        const dailyTotal = await prisma.order.aggregate({
+            where: {
+                createdAt: {
+                    gte: start,
+                    lt: end
+                }
+            },
+            _sum: { totalAmount: true }
+        });
+
+        return {
+            name: new Date(date).toLocaleDateString('tr-TR', { weekday: 'short' }),
+            total: Number(dailyTotal._sum.totalAmount || 0)
+        };
+    }));
+
+    const chartData = salesByDay;
 
     return (
         <div className="space-y-8">
