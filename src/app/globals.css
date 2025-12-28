@@ -1,69 +1,15 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
-  /* TSUKO PREMIUM PALETTE - Tailwind v4 Style */
-  --color-porcelain: #FAFAFA;
-  --color-stone: #E6E3DF;
-  --color-mauve: #C7A4E0;
-  --color-charcoal: #1F1F23;
-  --color-clay: #E07A5F;
-  --color-sage: #84A98C;
-  --color-rose: #C9A9A6;
-
-  /* Semantic Mappings */
-  --color-background: var(--color-porcelain);
-  --color-foreground: var(--color-charcoal);
-  --color-primary: var(--color-clay);
-  --color-secondary: var(--color-mauve);
-  --color-muted: var(--color-stone);
-
-  /* Shared Tokens */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --radius-xl: 1.5rem;
-  --radius-2xl: 2rem;
-
-  /* Animations */
-  @keyframes reveal {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fade-in-up {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-}
-
-/* Base Styles */
 @layer base {
-
-  *,
-  ::after,
-  ::before {
-    border-color: var(--color-stone);
-  }
-
-  html {
-    scroll-behavior: smooth;
+  :root {
+    --radius: 1rem;
+    --font-inter: 'Inter', sans-serif;
   }
 
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    @apply bg-background text-foreground antialiased selection:bg-mauve selection:text-charcoal;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
@@ -74,35 +20,8 @@
   }
 }
 
-/* Utilities */
-@utility animate-reveal {
-  animation: reveal 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-
-@utility animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out forwards;
-}
-
-/* Scrollbar Customization */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--color-porcelain);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-stone);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #D8D5D1;
-}
-
-/* Selection Effect */
-::selection {
-  background-color: var(--color-mauve);
-  color: var(--color-charcoal);
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
 }
