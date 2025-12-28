@@ -65,6 +65,12 @@
     color: var(--color-foreground);
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+
+  /* Elite UX: Tactile Feedback */
+  button,
+  a {
+    @apply transition-transform duration-200 ease-out active:scale-95 active:duration-100;
+  }
 }
 
 /* Utilities */
