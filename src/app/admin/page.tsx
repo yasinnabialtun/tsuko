@@ -1,6 +1,8 @@
+
 import { TrendingUp, Users, ShoppingBag, DollarSign, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
+import SalesChart from '@/components/admin/sales-chart';
 
 async function getStats() {
     try {
@@ -62,6 +64,18 @@ export default async function AdminDashboard() {
         take: 5,
         orderBy: { createdAt: 'desc' }
     }).catch(() => []);
+
+    // Mock Chart Data (In Future: Calculate from DB)
+    const chartData = [
+        { name: 'Pzt', total: Math.floor(Math.random() * 5000) },
+        { name: 'Sal', total: Math.floor(Math.random() * 5000) },
+        { name: 'Çar', total: Math.floor(Math.random() * 5000) },
+        { name: 'Per', total: Math.floor(Math.random() * 5000) },
+        { name: 'Cum', total: Math.floor(Math.random() * 5000) },
+        { name: 'Cmt', total: Math.floor(Math.random() * 6000) },
+        { name: 'Paz', total: Math.floor(Math.random() * 4000) },
+    ];
+
     return (
         <div className="space-y-8">
 
@@ -101,6 +115,9 @@ export default async function AdminDashboard() {
                 ))}
             </div>
 
+            {/* Chart Area */}
+            <SalesChart data={chartData} />
+
             {/* Charts & Recent Orders Area */}
             <div className="grid lg:grid-cols-3 gap-8">
 
@@ -117,7 +134,6 @@ export default async function AdminDashboard() {
                                 <tr className="text-left text-xs font-bold text-charcoal/40 uppercase tracking-wider border-b border-[#F0F0F0]">
                                     <th className="pb-4">Sipariş No</th>
                                     <th className="pb-4">Müşteri</th>
-                                    <th className="pb-4">Ürün</th>
                                     <th className="pb-4">Tutar</th>
                                     <th className="pb-4">Durum</th>
                                     <th className="pb-4 text-right">Zaman</th>
@@ -128,7 +144,6 @@ export default async function AdminDashboard() {
                                     <tr key={order.id} className="border-b border-[#F0F0F0] last:border-0 hover:bg-alabaster transition-colors">
                                         <td className="py-4 font-bold text-charcoal">{order.orderNumber}</td>
                                         <td className="py-4 text-charcoal/80">{order.customerName}</td>
-                                        <td className="py-4 text-charcoal/60">Sipariş #{order.orderNumber}</td>
                                         <td className="py-4 font-bold text-charcoal">₺{order.totalAmount?.toString()}</td>
                                         <td className="py-4 text-center">
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-700' :
@@ -172,3 +187,4 @@ export default async function AdminDashboard() {
         </div>
     );
 }
+
