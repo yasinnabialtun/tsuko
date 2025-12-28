@@ -7,11 +7,52 @@ import { useState } from 'react';
 
 export default function ContactPage() {
     const [status, setStatus] = useState<'idle' | 'success'>('idle');
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    // Default values
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        subject: 'Genel Bilgi',
+        message: ''
+    });
+
+    const handleChange = (e: any) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setStatus('success');
-        setTimeout(() => setStatus('idle'), 5000);
+        setLoading(true);
+        setStatus('idle');
+
+        try {
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            if (res.ok) {
+                setStatus('success');
+                // Reset form
+                setFormData({
+                    firstName: '',
+                    lastName: '',
+                    email: '',
+                    subject: 'Genel Bilgi',
+                    message: ''
+                });
+                setTimeout(() => setStatus('idle'), 5000);
+            } else {
+                alert('Mesaj gönderilemedi. Lütfen tekrar deneyin.');
+            }
+        } catch {
+            alert('Bir hata oluştu.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -75,20 +116,20 @@ export default function ContactPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold uppercase tracking-widest text-charcoal/50">İsim</label>
-                                        <input type="text" className="w-full bg-white border-none rounded-xl p-4 focus:ring-2 focus:ring-clay/20 outline-none transition-all placeholder:text-black/10 text-charcoal" placeholder="Adınız" />
+                                        <input required name="firstName" value={formData.firstName} onChange={handleChange} type="text" className="w-full bg-white border-none rounded-xl p-4 focus:ring-2 focus:ring-clay/20 outline-none transition-all placeholder:text-black/10 text-charcoal" placeholder="Adınız" />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold uppercase tracking-widest text-charcoal/50">Soyisim</label>
-                                        <input type="text" className="w-full bg-white border-none rounded-xl p-4 focus:ring-2 focus:ring-clay/20 outline-none transition-all placeholder:text-black/10 text-charcoal" placeholder="Soyadınız" />
+                                        <input required name="lastName" value={formData.lastName} onChange={handleChange} type="text" className="w-full bg-white border-none rounded-xl p-4 focus:ring-2 focus:ring-clay/20 outline-none transition-all placeholder:text-black/10 text-charcoal" placeholder="Soyadınız" />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold uppercase tracking-widest text-charcoal/50">E-Posta</label>
-                                    <input type="email" className="w-full bg-white border-none rounded-xl p-4 focus:ring-2 focus:ring-clay/20 outline-none transition-all placeholder:text-black/10 text-charcoal" placeholder="ornek@email.com" />
+                                    <input required name="email" value={formData.email} onChange={handleChange} type="email" className="w-full bg-white border-none rounded-xl p-4 focus:ring-2 focus:ring-clay/20 outline-none transition-all placeholder:text-black/10 text-charcoal" placeholder="ornek@email.com" />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold uppercase tracking-widest text-charcoal/50">Konu</label>
-                                    <select className="w-full bg-white border-none rounded-xl p-4 focus:ring-2 focus:ring-clay/20 outline-none transition-all text-charcoal/80">
+                                    <select name="subject" value={formData.subject} onChange={handleChange} className="w-full bg-white border-none rounded-xl p-4 focus:ring-2 focus:ring-clay/20 outline-none transition-all text-charcoal/80">
                                         <option>Genel Bilgi</option>
                                         <option>Sipariş Durumu</option>
                                         <option>Özel Tasarım / İş Birliği</option>
@@ -97,10 +138,10 @@ export default function ContactPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold uppercase tracking-widest text-charcoal/50">Mesajınız</label>
-                                    <textarea rows={4} className="w-full bg-white border-none rounded-xl p-4 focus:ring-2 focus:ring-clay/20 outline-none transition-all placeholder:text-black/10 text-charcoal" placeholder="Size nasıl yardımcı olabiliriz?"></textarea>
+                                    <textarea required name="message" value={formData.message} onChange={handleChange} rows={4} className="w-full bg-white border-none rounded-xl p-4 focus:ring-2 focus:ring-clay/20 outline-none transition-all placeholder:text-black/10 text-charcoal" placeholder="Size nasıl yardımcı olabiliriz?"></textarea>
                                 </div>
-                                <button type="submit" className="w-full bg-charcoal text-white font-bold py-5 rounded-xl hover:bg-black transition-all shadow-lg shadow-charcoal/10 uppercase tracking-widest text-sm">
-                                    Gönder
+                                <button disabled={loading} type="submit" className="w-full bg-charcoal text-white font-bold py-5 rounded-xl hover:bg-black transition-all shadow-lg shadow-charcoal/10 uppercase tracking-widest text-sm disabled:opacity-70">
+                                    {loading ? 'Gönderiliyor...' : 'Gönder'}
                                 </button>
 
                                 {status === 'success' && (
