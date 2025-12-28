@@ -1,7 +1,9 @@
-
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendOrderConfirmationEmail } from '@/lib/email';
+import { restoreStock } from '@/lib/stock';
+
+// ... (other imports)
 
 export async function POST(req: Request) {
     try {
@@ -21,10 +23,10 @@ export async function POST(req: Request) {
         if (error) {
             console.warn(`Payment failed for order ${orderId}: ${error}`);
 
-            // Optional: Restore stock here if payment failed
-            // await restoreStock(orderId);
+            // Restore stock immediately
+            await restoreStock(orderId);
 
-            return NextResponse.json({ message: 'Payment failed logged' });
+            return NextResponse.json({ message: 'Payment failed handled, stock restored' });
         }
 
         const order = await prisma.order.findUnique({
