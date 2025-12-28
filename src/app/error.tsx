@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
-import { RefreshCcw, AlertTriangle } from 'lucide-react';
+import Navbar from '@/components/navbar';
+import Footer from '@/components/footer';
+import Link from 'next/link';
 
 export default function Error({
     error,
@@ -11,47 +13,35 @@ export default function Error({
     reset: () => void;
 }) {
     useEffect(() => {
-        // Log error to an error reporting service
-        console.error('Application Error:', error);
+        // Log the error to an error reporting service
+        console.error('App Error:', error);
     }, [error]);
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-alabaster px-6 text-center">
-            <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-6">
-                <AlertTriangle size={40} />
-            </div>
-
-            <h2 className="text-3xl font-black text-charcoal mb-4">
-                Oops! Bir şeyler ters gitti.
-            </h2>
-
-            <p className="text-charcoal/60 max-w-md mb-8">
-                Merak etmeyin, bu sizin hatanız değil. Mühendislerimiz durumu inceliyor. Lütfen sayfayı yenilemeyi deneyin.
-            </p>
-
-            <div className="flex gap-4">
-                <button
-                    onClick={() => reset()}
-                    className="flex items-center gap-2 bg-charcoal text-white px-8 py-4 rounded-xl font-bold hover:bg-black transition-colors shadow-lg shadow-charcoal/20"
-                >
-                    <RefreshCcw size={18} />
-                    Tekrar Dene
-                </button>
-                <button
-                    onClick={() => window.location.href = '/'}
-                    className="px-8 py-4 rounded-xl font-bold text-charcoal border border-black/10 hover:bg-white transition-colors"
-                >
-                    Ana Sayfa
-                </button>
-            </div>
-
-            {/* Dev Info (Only visible in dev or if needed) */}
-            {process.env.NODE_ENV === 'development' && (
-                <div className="mt-12 p-4 bg-red-100/50 text-red-800 rounded-lg text-xs font-mono max-w-2xl text-left overflow-auto">
-                    {error.message}
-                    {error.digest && <div className="mt-2 text-red-600">Digest: {error.digest}</div>}
+        <main className="min-h-screen bg-white">
+            <Navbar />
+            <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-6">
+                <h1 className="text-9xl font-black text-charcoal/5 mb-4 select-none">OOPS</h1>
+                <h2 className="text-3xl font-bold text-charcoal mb-4">Bir şeyler ters gitti.</h2>
+                <p className="text-charcoal/60 max-w-md mb-8">
+                    Sistemimizde beklenmedik bir hata oluştu. Mühendislerimiz durumu inceliyor. Lütfen sayfayı yenilemeyi deneyin.
+                </p>
+                <div className="flex gap-4">
+                    <button
+                        onClick={reset}
+                        className="bg-charcoal text-white px-8 py-3 rounded-full font-bold hover:bg-clay transition-colors"
+                    >
+                        Tekrar Dene
+                    </button>
+                    <Link
+                        href="/"
+                        className="bg-alabaster text-charcoal px-8 py-3 rounded-full font-bold hover:bg-black/5 transition-colors"
+                    >
+                        Anasayfa
+                    </Link>
                 </div>
-            )}
-        </div>
+            </div>
+            <Footer />
+        </main>
     );
 }
