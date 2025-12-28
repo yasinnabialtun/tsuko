@@ -1,15 +1,14 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ShoppingBag, ShieldCheck, Clock, Star, Minus, Plus, ChevronDown, Share2, Truck, Box } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import CouponValidation from '@/components/coupon-validation';
 import BundleSuggester from '@/components/bundle-suggester';
 import { useCart } from '@/context/cart-context';
-import Breadcrumb from '@/components/breadcrumb';
+import Breadcrumbs from '@/components/breadcrumbs';
 import ReviewSection from '@/components/review-section';
 import StockNotifyForm from '@/components/stock-notify-form';
 import VariantSelector from '@/components/variant-selector';
@@ -34,6 +33,7 @@ interface ProductData {
 const getRandomViewers = () => Math.floor(Math.random() * (8 - 3 + 1)) + 3;
 
 export default function ProductPageClient({ product }: { product: ProductData }) {
+    const { scrollY } = useScroll();
     const [viewers] = useState(getRandomViewers());
     const [showSticky, setShowSticky] = useState(false);
     const [selectedImage, setSelectedImage] = useState(0);
@@ -43,12 +43,10 @@ export default function ProductPageClient({ product }: { product: ProductData })
     const { addToCart } = useCart();
 
     useEffect(() => {
-        const handleScroll = () => {
-            setShowSticky(window.scrollY > 800);
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+        return scrollY.onChange((latest) => {
+            setShowSticky(latest > 600);
+        });
+    }, [scrollY]);
 
     const currentPrice = selectedVariant ? selectedVariant.price : product.priceNumber;
     const currentStock = selectedVariant ? selectedVariant.stock : product.stock;
@@ -98,32 +96,25 @@ export default function ProductPageClient({ product }: { product: ProductData })
 
     return (
         <div className="bg-white min-h-screen">
-            {/* Sticky Bar - Minimal & Efficient */}
+            {/* Sticky Mobile Add-to-Cart */}
             <AnimatePresence>
-                {showSticky && (
+                {showSticky && !isOutOfStock && (
                     <motion.div
                         initial={{ y: 100 }}
                         animate={{ y: 0 }}
                         exit={{ y: 100 }}
-                        className="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-stone/20 p-4 z-[60] shadow-[0_-5px_30px_rgba(0,0,0,0.05)] md:px-12"
+                        className="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-black/5 p-4 z-50 md:hidden shadow-[0_-10px_40px_rgba(0,0,0,0.1)]"
                     >
-                        <div className="container mx-auto flex items-center justify-between">
-                            <div className="hidden md:flex items-center gap-4">
-                                <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-stone/20">
-                                    <Image src={product.image} alt={product.name} fill className="object-cover" />
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-charcoal text-sm">{product.name}</h4>
-                                    <p className="text-xs text-charcoal/60">{currentPrice.toFixed(2)} ₺</p>
-                                </div>
+                        <div className="flex items-center gap-4">
+                            <div className="flex-1">
+                                <h4 className="font-bold text-charcoal text-sm truncate">{product.name}</h4>
+                                <p className="text-sm font-medium text-clay">{currentPrice.toFixed(2)} ₺</p>
                             </div>
                             <button
                                 onClick={handleAddToCart}
-                                disabled={isOutOfStock}
-                                className="w-full md:w-auto px-8 py-3 bg-charcoal text-white rounded-xl font-medium hover:bg-clay transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-6 py-3 bg-charcoal text-white rounded-xl font-bold text-sm shadow-lg shadow-charcoal/20"
                             >
-                                <ShoppingBag size={18} />
-                                {isOutOfStock ? 'Stokta Yok' : 'Sepete Ekle'}
+                                Sepete Ekle
                             </button>
                         </div>
                     </motion.div>
@@ -131,16 +122,16 @@ export default function ProductPageClient({ product }: { product: ProductData })
             </AnimatePresence>
 
             <div className="pt-32 pb-24 container mx-auto px-6">
-                <Breadcrumb items={[
+                <Breadcrumbs items={[
                     { label: 'Koleksiyon', href: '/#collection' },
                     { label: product.category, href: `/#collection` },
-                    { label: product.name }
+                    { label: product.name, href: '#' }
                 ]} />
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-20 mt-8">
                     {/* Gallery Section */}
                     <div className="lg:col-span-7 space-y-6">
-                        <div className="relative aspect-[4/5] bg-stone/10 rounded-[2rem] overflow-hidden group">
+                        <div className="relative aspect-[4/5] bg-stone-100/50 rounded-[2rem] overflow-hidden group">
                             <Image
                                 src={product.images[selectedImage] || product.image}
                                 alt={product.name}
@@ -192,14 +183,14 @@ export default function ProductPageClient({ product }: { product: ProductData })
                                     {product.name}
                                 </h1>
 
-                                <div className="flex items-end gap-4 border-b border-stone/30 pb-8">
+                                <div className="flex items-end gap-4 border-b border-gray-100 pb-8">
                                     <p className="text-3xl font-medium text-charcoal">{currentPrice.toFixed(2)} ₺</p>
                                 </div>
                             </div>
 
                             {/* Urgency & Social Proof */}
                             {!isOutOfStock && (
-                                <div className="flex items-center gap-3 text-sm text-charcoal/70 bg-stone/10 p-4 rounded-xl">
+                                <div className="flex items-center gap-3 text-sm text-charcoal/70 bg-gray-50 p-4 rounded-xl">
                                     <div className="relative">
                                         <div className="w-2 h-2 bg-clay rounded-full animate-ping absolute inset-0"></div>
                                         <div className="w-2 h-2 bg-clay rounded-full relative"></div>
@@ -236,11 +227,11 @@ export default function ProductPageClient({ product }: { product: ProductData })
                                 )}
 
                                 <div className="grid grid-cols-2 gap-4 text-[11px] font-bold tracking-wider text-charcoal/50 uppercase text-center">
-                                    <div className="flex items-center justify-center gap-2 bg-stone/5 py-3 rounded-lg border border-stone/20">
+                                    <div className="flex items-center justify-center gap-2 bg-gray-50 py-3 rounded-lg border border-gray-100">
                                         <ShieldCheck size={14} />
                                         <span className="mt-0.5">%100 Kırılma Garantisi</span>
                                     </div>
-                                    <div className="flex items-center justify-center gap-2 bg-stone/5 py-3 rounded-lg border border-stone/20">
+                                    <div className="flex items-center justify-center gap-2 bg-gray-50 py-3 rounded-lg border border-gray-100">
                                         <Truck size={14} />
                                         <span className="mt-0.5">Hızlı Teslimat</span>
                                     </div>
@@ -250,18 +241,18 @@ export default function ProductPageClient({ product }: { product: ProductData })
                             {/* Collapsible Info Tabs - Elite UX */}
                             <div className="space-y-2 pt-8">
                                 {sections.map((section) => (
-                                    <div key={section.id} className="border border-stone/20 rounded-xl overflow-hidden">
+                                    <div key={section.id} className="border border-gray-100 rounded-xl overflow-hidden">
                                         <button
                                             onClick={() => setActiveTab(activeTab === section.id ? '' : section.id)}
-                                            className="w-full flex items-center justify-between p-4 bg-white hover:bg-stone/5 transition-colors text-left"
+                                            className="w-full flex items-center justify-between p-4 bg-white hover:bg-gray-50 transition-colors text-left"
                                         >
                                             <div className="flex items-center gap-3">
-                                                <section.icon size={18} className="text-mauve" />
+                                                <section.icon size={18} className="text-gray-400" />
                                                 <span className="font-bold text-sm text-charcoal uppercase tracking-wide">{section.title}</span>
                                             </div>
                                             <ChevronDown
                                                 size={16}
-                                                className={cn("text-stone transition-transform duration-300", activeTab === section.id && "rotate-180")}
+                                                className={cn("text-gray-300 transition-transform duration-300", activeTab === section.id && "rotate-180")}
                                             />
                                         </button>
                                         <AnimatePresence>
@@ -272,7 +263,7 @@ export default function ProductPageClient({ product }: { product: ProductData })
                                                     exit={{ height: 0, opacity: 0 }}
                                                     transition={{ duration: 0.3 }}
                                                 >
-                                                    <div className="p-4 pt-0 text-charcoal/70 leading-relaxed text-sm border-t border-stone/10 bg-stone/5">
+                                                    <div className="p-4 pt-0 text-charcoal/70 leading-relaxed text-sm border-t border-gray-100 bg-gray-50">
                                                         {section.content}
                                                     </div>
                                                 </motion.div>
@@ -283,7 +274,7 @@ export default function ProductPageClient({ product }: { product: ProductData })
                             </div>
 
                             {/* Bundle / Cross Sell */}
-                            <div className="pt-8 border-t border-stone/30">
+                            <div className="pt-8 border-t border-gray-100">
                                 <h3 className="font-bold text-sm uppercase tracking-widest text-charcoal mb-4">Birlikte Harika Durur</h3>
                                 <BundleSuggester products={product.similarProducts} />
                             </div>
@@ -291,7 +282,7 @@ export default function ProductPageClient({ product }: { product: ProductData })
                     </div>
                 </div>
 
-                <div className="mt-32 max-w-5xl mx-auto border-t border-stone/20 pt-16">
+                <div className="mt-32 max-w-5xl mx-auto border-t border-gray-100 pt-16">
                     <ReviewSection productId={product.id} />
                 </div>
             </div>
