@@ -1,11 +1,7 @@
 import Navbar from '@/components/navbar';
-import Stories from '@/components/stories';
 import Hero from '@/components/hero';
 import Philosophy from '@/components/philosophy';
-import Process from '@/components/process';
 import Collection from '@/components/collection';
-import ShopTheLook from '@/components/shop-the-look';
-import LightingSection from '@/components/lighting-section';
 import FAQ from '@/components/faq';
 import Newsletter from '@/components/newsletter';
 import Footer from '@/components/footer';
@@ -127,7 +123,7 @@ export default async function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-alabaster">
+    <main className="min-h-screen bg-background text-foreground selection:bg-mauve selection:text-charcoal">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -143,11 +139,11 @@ export default async function Home() {
 
       <Navbar />
       <Hero />
-      <ShopTheLook />
       <Philosophy />
+
       {/* Pass real database products to Collection */}
       <Collection products={products} />
-      <LightingSection />
+
       <FAQ />
       <Newsletter />
       <Footer />

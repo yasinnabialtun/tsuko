@@ -4,107 +4,90 @@ import Image from 'next/image';
 
 export default function Footer() {
     return (
-        <footer className="bg-charcoal text-white">
-            {/* Trust Bar */}
-            <div className="border-b border-white/10 py-8">
-                <div className="container mx-auto px-6">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-                        <div className="flex flex-col items-center gap-2">
-                            <Truck size={28} className="text-clay" />
-                            <p className="font-bold text-sm">Ücretsiz Kargo</p>
-                            <p className="text-xs text-white/50">Türkiye Geneli</p>
+        <footer className="bg-charcoal text-white pt-20">
+            {/* Trust Bar - Integrated */}
+            <div className="container mx-auto px-6 mb-20">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                    {[
+                        { icon: Truck, title: "Ücretsiz Kargo", desc: "Tüm siparişlerde" },
+                        { icon: ShieldCheck, title: "Kırılma Garantisi", desc: "%100 değişim hakkı" },
+                        { icon: CreditCard, title: "Güvenli Ödeme", desc: "Shopier güvencesi" },
+                        { icon: null, emoji: "🌱", title: "Doğa Dostu", desc: "PLA biyo-polimer" }
+                    ].map((item, i) => (
+                        <div key={i} className="flex items-start gap-4 p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                            <div className="text-mauve mt-1">
+                                {item.icon ? <item.icon size={24} strokeWidth={1.5} /> : <span className="text-xl">{item.emoji}</span>}
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-sm mb-1">{item.title}</h4>
+                                <p className="text-xs text-stone/60">{item.desc}</p>
+                            </div>
                         </div>
-                        <div className="flex flex-col items-center gap-2">
-                            <ShieldCheck size={28} className="text-clay" />
-                            <p className="font-bold text-sm">Kırılma Garantisi</p>
-                            <p className="text-xs text-white/50">%100 Koruma</p>
+                    ))}
+                </div>
+            </div>
+
+            {/* Main Footer Content */}
+            <div className="border-t border-white/10">
+                <div className="container mx-auto px-6 py-20">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-16">
+                        {/* Brand Column */}
+                        <div className="md:col-span-5 space-y-8">
+                            <div className="relative w-36 h-10 opacity-90">
+                                <Image src="/logo.png" alt="Tsuko Design Logo" fill className="object-contain object-left brightness-0 invert" />
+                            </div>
+                            <p className="text-stone/60 max-w-sm leading-relaxed font-light">
+                                Modern yaşam alanları için parametrik tasarım ve 3D baskı teknolojisini birleştiriyoruz.
+                                Sürdürülebilir, estetik ve fonksiyonel.
+                            </p>
+                            <div className="flex gap-4 pt-4">
+                                <a href="https://instagram.com/tsukodesign" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-charcoal hover:border-white transition-all">
+                                    <Instagram size={18} />
+                                </a>
+                                <a href="mailto:info@tsukodesign.com" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-charcoal hover:border-white transition-all">
+                                    <Mail size={18} />
+                                </a>
+                            </div>
                         </div>
-                        <div className="flex flex-col items-center gap-2">
-                            <CreditCard size={28} className="text-clay" />
-                            <p className="font-bold text-sm">Güvenli Ödeme</p>
-                            <p className="text-xs text-white/50">256-bit SSL</p>
+
+                        {/* Navigation Columns */}
+                        <div className="md:col-span-2 md:col-start-7 space-y-6">
+                            <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-mauve">Keşfet</h4>
+                            <ul className="space-y-4 text-stone/60 text-sm font-medium">
+                                <li><a href="/#collection" className="hover:text-white transition-colors">Koleksiyon</a></li>
+                                <li><Link href="/blog" className="hover:text-white transition-colors">Journal</Link></li>
+                                <li><Link href="/about" className="hover:text-white transition-colors">Hikayemiz</Link></li>
+                            </ul>
                         </div>
-                        <div className="flex flex-col items-center gap-2">
-                            <div className="text-2xl">🌱</div>
-                            <p className="font-bold text-sm">Eko Dostu</p>
-                            <p className="text-xs text-white/50">Biyo-Polimer</p>
+
+                        <div className="md:col-span-2 space-y-6">
+                            <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-mauve">Destek</h4>
+                            <ul className="space-y-4 text-stone/60 text-sm font-medium">
+                                <li><Link href="/contact" className="hover:text-white transition-colors">İletişim</Link></li>
+                                <li><Link href="/shipping" className="hover:text-white transition-colors">Teslimat</Link></li>
+                                <li><Link href="/returns" className="hover:text-white transition-colors">İade</Link></li>
+                            </ul>
+                        </div>
+
+                        <div className="md:col-span-2 space-y-6">
+                            <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-mauve">Yasal</h4>
+                            <ul className="space-y-4 text-stone/60 text-sm font-medium">
+                                <li><Link href="/privacy" className="hover:text-white transition-colors">Gizlilik</Link></li>
+                                <li><Link href="/terms" className="hover:text-white transition-colors">Mesafeli Satış</Link></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Main Footer */}
-            <div className="container mx-auto px-6 py-16">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-                    {/* Brand */}
-                    <div className="md:col-span-2 space-y-6">
-                        <div className="relative w-40 h-12">
-                            <Image src="/logo.png" alt="Tsuko Design Logo" fill className="object-contain object-left brightness-0 invert" />
-                        </div>
-                        <p className="text-white/60 max-w-md leading-relaxed">
-                            Türkiye&apos;nin ilk 3D baskı ev dekorasyon markası. Mimari estetik ve sürdürülebilir üretimi bir araya getiriyoruz.
-                        </p>
-                        <div className="flex gap-4">
-                            <a href="https://instagram.com/tsukodesign" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-clay transition-colors">
-                                <Instagram size={20} />
-                            </a>
-                            <a href="https://twitter.com/tsukodesign" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-clay transition-colors">
-                                <Twitter size={20} />
-                            </a>
-                            <a href="mailto:info@tsukodesign.com" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-clay transition-colors">
-                                <Mail size={20} />
-                            </a>
-                        </div>
-                    </div>
-
-                    {/* Quick Links */}
-                    <div className="space-y-6">
-                        <h4 className="font-bold uppercase tracking-widest text-clay text-sm">Alışveriş</h4>
-                        <ul className="space-y-3 text-white/70">
-                            <li><a href="/#collection" className="hover:text-white transition-colors">Koleksiyon</a></li>
-                            <li><a href="/#lighting-demo" className="hover:text-white transition-colors">Aydınlatma</a></li>
-                            <li><Link href="/blog" className="hover:text-white transition-colors">Blog</Link></li>
-                            <li><a href="https://shopier.com/tsukodesign" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Shopier Mağaza</a></li>
-                        </ul>
-                    </div>
-
-                    {/* Support & Legal */}
-                    <div className="space-y-6">
-                        <h4 className="font-bold uppercase tracking-widest text-clay text-sm">Destek</h4>
-                        <ul className="space-y-3 text-white/70">
-                            <li><Link href="/order-tracking" className="hover:text-white transition-colors">Sipariş Takibi</Link></li>
-                            <li><Link href="/contact" className="hover:text-white transition-colors">İletişim</Link></li>
-                            <li><Link href="/shipping" className="hover:text-white transition-colors">Kargo & Teslimat</Link></li>
-                            <li><Link href="/returns" className="hover:text-white transition-colors">İade & Değişim</Link></li>
-                            <li><Link href="/privacy" className="hover:text-white transition-colors">Gizlilik Politikası</Link></li>
-                            <li><Link href="/terms" className="hover:text-white transition-colors">Kullanım Koşulları</Link></li>
-                        </ul>
-                    </div>
-                </div>
-
-                {/* Contact Info */}
-                <div className="flex flex-col md:flex-row justify-between items-center gap-6 py-8 border-t border-white/10 text-sm text-white/50">
-                    <div className="flex flex-col md:flex-row items-center gap-6">
-                        <div className="flex items-center gap-2">
-                            <Mail size={16} />
-                            <a href="mailto:info@tsukodesign.com" className="hover:text-white transition-colors">info@tsukodesign.com</a>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Phone size={16} />
-                            <a href="tel:+905551234567" className="hover:text-white transition-colors">+90 555 123 45 67</a>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <MapPin size={16} />
-                            <span>İstanbul, Türkiye</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Copyright */}
-                <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/30 uppercase tracking-widest font-bold">
-                    <p>© 2025 Tsuko Design. Tüm hakları saklıdır.</p>
-                    <div className="flex items-center gap-4">
-                        <span>🇹🇷 Türkiye&apos;de Tasarlandı & Üretildi</span>
+            {/* Bottom Bar */}
+            <div className="border-t border-white/5 bg-black/20">
+                <div className="container mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p className="text-xs text-stone/40 font-medium">© 2025 Tsuko Design. All rights reserved.</p>
+                    <div className="flex items-center gap-6 text-xs text-stone/40">
+                        <span className="flex items-center gap-2"><MapPin size={12} /> İstanbul</span>
+                        <span className="hidden md:inline">|</span>
+                        <span>Designed by Tsuko Studio</span>
                     </div>
                 </div>
             </div>

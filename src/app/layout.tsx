@@ -17,22 +17,15 @@ const inter = Inter({
   display: "swap",
 });
 
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-  display: "swap",
-  weight: ["400", "500", "600", "700", "800", "900"],
-});
-
 export const metadata: Metadata = {
   title: {
-    default: "Tsuko Design | Mitolojinin Modern Yüzü",
+    default: "Tsuko Design | 3D Baskı Dekorasyon",
     template: "%s | Tsuko Design"
   },
-  description: "Evinizin ruhunu yansıtan zamansız parçalar. Mitolojik formların modern 3D baskı teknolojisiyle buluştuğu, doğa dostu ve sofistike tasarım objeleri.",
+  description: "Modern ev dekorasyonu için parametrik 3D baskı tasarım objeleri. Minimalist ve sürdürülebilir dekorasyon fikirleri.",
   keywords: [
-    "sanatsal vazo", "modern dekorasyon", "mitolojik tasarım", "3d baskı sanat",
-    "sürdürülebilir lüks", "minimalist ev", "Tsuko Design", "iç mimari obje"
+    "3d baskı dekorasyon", "parametrik tasarım", "modern vazo", "duvar saati",
+    "minimalist ev", "tsuko design", "pla malzeme", "kişiye özel baskı"
   ],
   authors: [{ name: "Tsuko Design Studio" }],
   creator: "Tsuko Design",
@@ -48,8 +41,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "tr_TR",
     url: "https://tsukodesign.com",
-    title: "Tsuko Design | Mitolojinin Modern Yüzü",
-    description: "Geçmişin estetiği, geleceğin teknolojisiyle buluştu.",
+    title: "Tsuko Design | Özgün 3D Dekorasyon",
+    description: "Evinizin havasını değiştirecek modern tasarım objeleri. 3D baskı teknolojisi sanatla buluşuyor.",
     siteName: "Tsuko Design",
     images: [
       {
@@ -71,11 +64,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="tr" className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="tr" className={`${inter.variable}`}>
       <head>
         <AnalyticsScripts />
       </head>
-      <body className="font-sans bg-alabaster text-charcoal antialiased selection:bg-clay selection:text-white">
+      <body className="font-sans bg-background text-foreground antialiased selection:bg-mauve selection:text-charcoal">
         <PromoBanner />
         <noscript>
           <iframe
@@ -88,7 +81,7 @@ export default function RootLayout({
 
         <CartProvider>
           <WishlistProvider>
-            <Toaster position="top-center" richColors />
+            <Toaster position="top-center" richColors theme="light" />
             <CartDrawer />
             {children}
             <MarketingWrapper />

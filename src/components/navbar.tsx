@@ -20,7 +20,7 @@ export default function Navbar() {
 
     useEffect(() => {
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 50);
+            setIsScrolled(window.scrollY > 20);
         };
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
@@ -31,13 +31,13 @@ export default function Navbar() {
             <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
 
             <nav className={cn(
-                "fixed top-0 left-0 w-full z-50 transition-all duration-500 py-6",
-                isScrolled ? "bg-white/80 backdrop-blur-md py-4 shadow-sm" : "bg-transparent"
+                "fixed top-0 left-0 w-full z-50 transition-all duration-500 border-b border-transparent",
+                isScrolled ? "bg-porcelain/90 backdrop-blur-xl py-4 border-stone/50" : "bg-transparent py-6"
             )}>
                 <div className="container mx-auto px-6 flex justify-between items-center">
-                    {/* Logo */}
-                    <Link href="/" className="relative z-50">
-                        <div className="relative w-32 h-10">
+                    {/* Logo - Minimal text fallback if image fails, but prioritizing image */}
+                    <Link href="/" className="relative z-50 group">
+                        <div className="relative w-36 h-10 transition-transform duration-300 group-hover:scale-105">
                             <Image
                                 src="/logo.png"
                                 alt="Tsuko Logo"
@@ -48,46 +48,45 @@ export default function Navbar() {
                         </div>
                     </Link>
 
-                    {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-widest text-charcoal/60">
-                        <div className="flex items-center gap-8 mr-4">
-                            <a href="/#collection" className="hover:text-charcoal transition-colors">Koleksiyon</a>
-                            <Link href="/blog" className="hover:text-charcoal transition-colors">Blog</Link>
-                            <a href="/#philosophy" className="hover:text-charcoal transition-colors">Felsefe</a>
+                    {/* Desktop Navigation - Elite & Minimal */}
+                    <div className="hidden md:flex items-center gap-10 text-sm font-semibold tracking-wide text-charcoal/80">
+                        <div className="flex items-center gap-8">
+                            <Link href="/#collection" className="hover:text-mauve transition-colors duration-300">Koleksiyon</Link>
+                            <Link href="/blog" className="hover:text-mauve transition-colors duration-300">Journal</Link>
+                            <Link href="/about" className="hover:text-mauve transition-colors duration-300">Atölye</Link>
                         </div>
 
-                        <div className="h-6 w-px bg-charcoal/10 mx-2"></div>
+                        <div className="h-4 w-px bg-stone mx-2"></div>
 
                         <div className="flex items-center gap-6">
                             <button
                                 onClick={() => setSearchOpen(true)}
-                                className="hover:text-charcoal transition-colors"
+                                className="hover:text-mauve transition-colors duration-300"
+                                aria-label="Ara"
                             >
-                                <Search size={22} />
+                                <Search size={20} strokeWidth={1.5} />
                             </button>
 
-                            <Link href="/wishlist" className="hover:text-charcoal transition-colors relative">
-                                <Heart size={22} className={cn("transition-colors", wishlistItems.length > 0 && "fill-rose text-rose")} />
+                            <Link href="/wishlist" className="hover:text-mauve transition-colors duration-300 relative group">
+                                <Heart size={20} strokeWidth={1.5} className={cn("transition-colors", wishlistItems.length > 0 && "fill-mauve text-mauve")} />
                                 {wishlistItems.length > 0 && (
-                                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-rose rounded-full animate-pulse" />
+                                    <span className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-mauve rounded-full animate-pulse" />
                                 )}
                             </Link>
 
-                            <Link href="/admin" className="hover:text-charcoal transition-colors">
-                                <User size={22} />
+                            <Link href="/admin" className="hover:text-mauve transition-colors duration-300">
+                                <User size={20} strokeWidth={1.5} />
                             </Link>
 
                             <button
                                 onClick={toggleCart}
-                                className="flex items-center gap-2 bg-charcoal text-white px-5 py-2.5 rounded-full hover:bg-black transition-all relative ml-2 shadow-lg shadow-charcoal/10"
+                                className="group flex items-center gap-2 bg-charcoal text-white px-6 py-2.5 rounded-full hover:bg-clay transition-all duration-300 relative ml-2"
                             >
-                                <ShoppingBag size={18} />
-                                <span className="hidden lg:inline">Sepet</span>
-                                {cartCount > 0 && (
-                                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-clay text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white">
-                                        {cartCount}
-                                    </span>
-                                )}
+                                <span className="font-medium tracking-wide">Sepet</span>
+                                <div className="border-l border-white/20 pl-2 ml-1 flex items-center gap-1">
+                                    <ShoppingBag size={16} />
+                                    <span className="text-xs font-bold">{cartCount}</span>
+                                </div>
                             </button>
                         </div>
                     </div>
@@ -98,7 +97,7 @@ export default function Navbar() {
                             onClick={toggleCart}
                             className="text-charcoal relative"
                         >
-                            <ShoppingBag size={24} />
+                            <ShoppingBag size={24} strokeWidth={1.5} />
                             {cartCount > 0 && (
                                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-clay text-white text-[10px] flex items-center justify-center rounded-full">
                                     {cartCount}
@@ -106,45 +105,67 @@ export default function Navbar() {
                             )}
                         </button>
                         <button
-                            className="text-charcoal"
+                            className="text-charcoal hover:text-mauve transition-colors"
                             onClick={() => setMobileMenuOpen(true)}
                         >
-                            <Menu size={24} />
+                            <Menu size={28} strokeWidth={1.5} />
                         </button>
                     </div>
                 </div>
 
-                {/* Mobile Menu Overlay */}
+                {/* Mobile Menu Overlay - Full Screen Elite */}
                 <AnimatePresence>
                     {mobileMenuOpen && (
                         <motion.div
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            className="fixed inset-0 bg-white z-[60] p-8 flex flex-col items-center justify-center gap-12"
+                            initial={{ opacity: 0, scale: 0.98 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.98 }}
+                            transition={{ duration: 0.3 }}
+                            className="fixed inset-0 bg-porcelain z-[60] flex flex-col"
                         >
-                            <button
-                                className="absolute top-8 right-8 text-charcoal"
-                                onClick={() => setMobileMenuOpen(false)}
-                            >
-                                <X size={32} />
-                            </button>
-                            <div className="relative w-40 h-12 mb-8">
-                                <Image src="/logo.png" alt="Tsuko Logo" fill className="object-contain" />
+                            <div className="p-6 flex justify-between items-center border-b border-stone/50">
+                                <div className="relative w-32 h-10">
+                                    <Image src="/logo.png" alt="Tsuko" fill className="object-contain object-left" />
+                                </div>
+                                <button
+                                    className="p-2 bg-stone/20 rounded-full text-charcoal hover:bg-stone/40"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    <X size={24} />
+                                </button>
                             </div>
-                            <div className="flex flex-col items-center gap-8 text-3xl font-bold text-charcoal uppercase tracking-tighter">
-                                <a href="#collection" onClick={() => setMobileMenuOpen(false)}>Koleksiyon</a>
-                                <Link href="/blog" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
-                                <a href="#philosophy" onClick={() => setMobileMenuOpen(false)}>Felsefe</a>
-                                <Link href="/admin" onClick={() => setMobileMenuOpen(false)}>Yönetim</Link>
+
+                            <div className="flex-1 flex flex-col justify-center items-center gap-10 p-8">
+                                <nav className="flex flex-col items-center gap-8 text-3xl font-light text-charcoal">
+                                    <Link href="/#collection" onClick={() => setMobileMenuOpen(false)} className="hover:text-mauve transition-colors">Koleksiyon</Link>
+                                    <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="hover:text-mauve transition-colors">Journal</Link>
+                                    <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-mauve transition-colors">Atölye</Link>
+                                    <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="hover:text-mauve transition-colors">İletişim</Link>
+                                </nav>
+
+                                <div className="w-16 h-px bg-stone"></div>
+
+                                <div className="flex gap-8">
+                                    <Link href="/wishlist" onClick={() => setMobileMenuOpen(false)} className="flex flex-col items-center gap-2 text-charcoal/60 hover:text-mauve">
+                                        <Heart size={24} />
+                                        <span className="text-xs uppercase tracking-widest">Favoriler</span>
+                                    </Link>
+                                    <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="flex flex-col items-center gap-2 text-charcoal/60 hover:text-mauve">
+                                        <User size={24} />
+                                        <span className="text-xs uppercase tracking-widest">Hesap</span>
+                                    </Link>
+                                </div>
                             </div>
-                            <button
-                                onClick={() => { setMobileMenuOpen(false); toggleCart(); }}
-                                className="w-full max-w-xs flex items-center justify-center gap-3 bg-charcoal text-white py-6 rounded-2xl text-xl font-bold"
-                            >
-                                <ShoppingBag size={24} />
-                                Sepeti Görüntüle ({cartCount})
-                            </button>
+
+                            <div className="p-8 border-t border-stone/50 bg-white">
+                                <button
+                                    onClick={() => { setMobileMenuOpen(false); toggleCart(); }}
+                                    className="w-full flex items-center justify-center gap-3 bg-charcoal text-white py-5 rounded-2xl text-lg font-medium hover:bg-clay transition-colors"
+                                >
+                                    <ShoppingBag size={20} />
+                                    Sepetim ({cartCount})
+                                </button>
+                            </div>
                         </motion.div>
                     )}
                 </AnimatePresence>

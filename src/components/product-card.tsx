@@ -4,9 +4,10 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingBag, Eye, Heart } from 'lucide-react';
+import { ShoppingBag, Eye, Heart, Plus } from 'lucide-react';
 import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
+import { cn } from '@/lib/utils';
 
 export default function ProductCard({ product, index }: { product: any; index: number }) {
     const { addToCart } = useCart();
@@ -36,9 +37,9 @@ export default function ProductCard({ product, index }: { product: any; index: n
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: index * 0.1 }}
-            className="group"
+            className="group block"
         >
-            <div className="relative aspect-[3/4] bg-[#F5F5F0] rounded-[24px] overflow-hidden mb-6 cursor-pointer">
+            <div className="relative aspect-[3/4] bg-stone/20 rounded-[1.5rem] overflow-hidden mb-6 cursor-pointer">
                 {/* Main Image */}
                 <Link href={`/product/${product.slug}`} className="block w-full h-full">
                     <Image
@@ -50,46 +51,56 @@ export default function ProductCard({ product, index }: { product: any; index: n
                 </Link>
 
                 {/* Overlay Gradient (Subtle) */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+                {/* Tags / Badge */}
+                {index === 0 && (
+                    <div className="absolute top-4 left-4 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-[10px] font-bold tracking-widest uppercase text-charcoal border border-stone/50 z-20">
+                        Yeni
+                    </div>
+                )}
 
                 {/* Wishlist Button (Top Right) */}
                 <button
                     onClick={handleToggleWishlist}
-                    className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-md rounded-full text-charcoal hover:bg-white transition-all shadow-sm z-20"
+                    className="absolute top-4 right-4 p-2.5 bg-white/10 backdrop-blur-md rounded-full text-white hover:bg-white hover:text-mauve transition-all z-20 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-300"
                     aria-label="İstek listesine ekle"
                 >
-                    <Heart size={18} fill={isWishlisted ? "#C8553D" : "none"} className={isWishlisted ? "text-[#C8553D]" : "text-charcoal"} />
+                    <Heart size={18} fill={isWishlisted ? "#C7A4E0" : "none"} className={isWishlisted ? "text-mauve" : "text-white"} />
                 </button>
 
-                {/* Hover Actions (Bottom) */}
-                <div className="absolute inset-x-0 bottom-0 p-4 translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out z-20">
-                    <div className="flex gap-2">
-                        <button
-                            onClick={handleAddToCart}
-                            className="flex-1 bg-charcoal/90 backdrop-blur text-white py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-medium shadow-lg hover:bg-black transition-colors"
-                        >
-                            <ShoppingBag size={16} />
-                            <span>Koleksiyona Kat</span>
-                        </button>
-                        <Link href={`/product/${product.slug}`} className="p-3 bg-white text-charcoal rounded-xl shadow-lg hover:bg-gray-50 transition-colors">
-                            <Eye size={18} />
-                        </Link>
-                    </div>
+                {/* Hover Actions (Center) - Elite Style */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 pointer-events-none">
+                    <Link
+                        href={`/product/${product.slug}`}
+                        className="px-6 py-3 bg-white/90 backdrop-blur text-charcoal rounded-full text-xs font-bold tracking-widest uppercase hover:bg-white hover:text-mauve transition-colors pointer-events-auto transform translate-y-4 group-hover:translate-y-0 duration-300"
+                    >
+                        İncele
+                    </Link>
                 </div>
+
+                {/* Quick Add Button (Bottom Right) */}
+                <button
+                    onClick={handleAddToCart}
+                    className="absolute bottom-4 right-4 p-3 bg-white text-charcoal rounded-full shadow-lg hover:bg-clay hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 z-20"
+                    aria-label="Sepete Ekle"
+                >
+                    <Plus size={20} />
+                </button>
             </div>
 
-            {/* Info */}
+            {/* Info - Minimal */}
             <Link href={`/product/${product.slug}`} className="block px-1">
-                <div className="flex justify-between items-start">
-                    <div>
-                        <h3 className="text-xl font-heading text-charcoal mb-1 group-hover:text-clay transition-colors leading-tight">
+                <div className="flex justify-between items-baseline gap-4">
+                    <div className="flex-1">
+                        <h3 className="text-lg font-medium text-charcoal mb-1 group-hover:text-mauve transition-colors">
                             {product.name}
                         </h3>
-                        <p className="text-xs font-heading tracking-widest text-charcoal/50 uppercase">
+                        <p className="text-xs font-semibold tracking-widest text-charcoal/40 uppercase">
                             {product.category || 'Tasarım Obje'}
                         </p>
                     </div>
-                    <div className="text-lg font-medium text-charcoal font-sans">
+                    <div className="text-lg font-light text-charcoal tabular-nums">
                         {product.price}
                     </div>
                 </div>
