@@ -81,7 +81,10 @@ export default async function RootLayout({
   }
 
   return (
-    <ClerkProvider localization={trTR}>
+    <ClerkProvider
+      localization={trTR}
+      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+    >
       <html lang="tr">
         <head>
           <link rel="icon" href="/favicon.ico" sizes="any" />
