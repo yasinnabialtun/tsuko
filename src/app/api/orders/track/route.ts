@@ -1,64 +1,50 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export const dynamic = 'force-dynamic';
-
 export async function GET(request: Request) {
+    const { searchParams } = new URL(request.url);
+    const orderNumber = searchParams.get('orderNumber');
+
+    if (!orderNumber) {
+        return NextResponse.json({ error: 'Sipariş numarası gerekli' }, { status: 400 });
+    }
+
     try {
-        const { searchParams } = new URL(request.url);
-        const orderNumber = searchParams.get('orderNumber');
-
-        if (!orderNumber) {
-            return NextResponse.json(
-                { error: 'Sipariş numarası gereklidir.' },
-                { status: 400 }
-            );
-        }
-
         const order = await prisma.order.findUnique({
-            where: { orderNumber },
-            include: {
+            where: { orderNumber: orderNumber.toUpperCase() },
+            select: {
+                orderNumber: true,
+                status: true,
+                paymentStatus: true,
+                createdAt: true,
+                trackingNumber: true,
+                customerName: true,
                 items: {
-                    include: {
+                    select: {
                         product: {
-                            select: {
-                                name: true,
-                                images: true
-                            }
-                        }
+                            select: { name: true }
+                        },
+                        quantity: true
                     }
                 }
             }
         });
 
         if (!order) {
-            return NextResponse.json(
-                { error: 'Sipariş bulunamadı. Lütfen sipariş numaranızı kontrol edin.' },
-                { status: 404 }
-            );
+            return NextResponse.json({ error: 'Sipariş bulunamadı' }, { status: 404 });
         }
 
-        // Format order for response (hide sensitive data)
-        const formattedOrder = {
-            orderNumber: order.orderNumber,
-            status: order.status,
-            customerName: order.customerName.split(' ')[0] + ' ' + order.customerName.split(' ').slice(1).map((n: string) => n[0] + '***').join(' '),
-            createdAt: order.createdAt.toISOString(),
-            totalAmount: order.totalAmount.toString(),
-            trackingNumber: order.trackingNumber,
-            items: order.items.map((item: any) => ({
-                name: item.product?.name || 'Ürün',
-                quantity: item.quantity,
-                price: item.price.toString()
-            }))
+        // Mask customer name for privacy (e.g. Y**** A****)
+        const maskName = (name: string) => {
+            return name.split(' ').map(part => part[0] + '*'.repeat(part.length - 1)).join(' ');
         };
 
-        return NextResponse.json({ order: formattedOrder });
+        return NextResponse.json({
+            ...order,
+            customerName: maskName(order.customerName)
+        });
     } catch (error) {
-        console.error('Order tracking error:', error);
-        return NextResponse.json(
-            { error: 'Bir hata oluştu. Lütfen tekrar deneyin.' },
-            { status: 500 }
-        );
+        console.error('Tracking API error:', error);
+        return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 });
     }
 }

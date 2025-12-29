@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendOrderConfirmationEmail } from '@/lib/email';
 import { restoreStock } from '@/lib/stock';
-import { sendDiscordNotification } from '@/lib/notifications';
+import { sendDiscordNotification, sendTelegramNotification } from '@/lib/notifications';
 
 // ... (other imports)
 
@@ -61,6 +61,14 @@ export async function POST(req: Request) {
                 orderNumber: updatedOrder.orderNumber,
                 totalAmount: updatedOrder.totalAmount.toString(),
                 customerName: updatedOrder.customerName
+            });
+
+            const itemsString = updatedOrder.items.map(item => `- ${item.product.name} (x${item.quantity})`).join('\n');
+            await sendTelegramNotification({
+                orderNumber: updatedOrder.orderNumber,
+                totalAmount: updatedOrder.totalAmount.toString(),
+                customerName: updatedOrder.customerName,
+                items: itemsString
             });
         } catch (emailErr) {
             console.error('Notification failed but order is paid:', emailErr);

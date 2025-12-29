@@ -2,7 +2,7 @@ import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendOrderConfirmationEmail } from '@/lib/email';
-import { sendDiscordNotification } from '@/lib/notifications';
+import { sendDiscordNotification, sendTelegramNotification } from '@/lib/notifications';
 
 // Shopier Credentials
 const SHOPIER_API_KEY = process.env.SHOPIER_API_KEY;
@@ -184,6 +184,14 @@ export async function POST(request: Request) {
                 orderNumber: updatedOrder.orderNumber,
                 totalAmount: updatedOrder.totalAmount.toString(),
                 customerName: updatedOrder.customerName
+            });
+
+            const itemsString = updatedOrder.items.map(item => `- ${item.product.name} (x${item.quantity})`).join('\n');
+            await sendTelegramNotification({
+                orderNumber: updatedOrder.orderNumber,
+                totalAmount: updatedOrder.totalAmount.toString(),
+                customerName: updatedOrder.customerName,
+                items: itemsString
             });
 
             // Mock response for dev

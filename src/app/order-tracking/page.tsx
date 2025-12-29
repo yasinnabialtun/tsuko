@@ -8,19 +8,41 @@ import { Search, Package, ArrowRight, Loader2 } from 'lucide-react';
 export default function OrderTrackingPage() {
     const [orderNumber, setOrderNumber] = useState('');
     const [loading, setLoading] = useState(false);
-    // const [result, setResult] = useState(null); 
+    const [result, setResult] = useState<any>(null);
+    const [error, setError] = useState('');
 
-    const handleSearch = (e: React.FormEvent) => {
+    const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!orderNumber) return;
 
         setLoading(true);
-        // Simulation for now
-        setTimeout(() => {
+        setError('');
+        setResult(null);
+
+        try {
+            const res = await fetch(`/api/orders/track?orderNumber=${orderNumber}`);
+            const data = await res.json();
+
+            if (res.ok) {
+                setResult(data);
+            } else {
+                setError(data.error || 'Sipariş bulunamadı.');
+            }
+        } catch (err) {
+            setError('Bir hata oluştu. Lütfen tekrar deneyin.');
+        } finally {
             setLoading(false);
-            alert("Sipariş takibi özelliği yakında aktif olacak. Lütfen profil sayfanızdan siparişlerimi kontrol ediniz.");
-        }, 1000);
+        }
     };
+
+    const statusSteps = [
+        { key: 'PENDING', label: 'Alındı', desc: 'Siparişiniz sistemimize ulaştı.' },
+        { key: 'PREPARING', label: 'Hazırlanıyor', desc: 'Ürünleriniz özenle paketleniyor.' },
+        { key: 'SHIPPED', label: 'Kargoda', desc: 'Siparişiniz yola çıktı.' },
+        { key: 'DELIVERED', label: 'Teslim Edildi', desc: 'Paketiniz size ulaştı.' },
+    ];
+
+    const currentStepIndex = statusSteps.findIndex(s => s.key === result?.status);
 
     return (
         <main className="min-h-screen bg-porcelain">
@@ -40,7 +62,7 @@ export default function OrderTrackingPage() {
                         <input
                             type="text"
                             className="w-full h-16 pl-6 pr-16 rounded-2xl bg-white border border-white shadow-xl shadow-stone/10 focus:ring-2 focus:ring-clay/20 outline-none transition-all text-lg font-mono uppercase placeholder:normal-case placeholder:font-sans"
-                            placeholder="Sipariş No (Örn: TS-123...)"
+                            placeholder="Sipariş No (Örn: TS-1024)"
                             value={orderNumber}
                             onChange={(e) => setOrderNumber(e.target.value)}
                         />
@@ -52,6 +74,79 @@ export default function OrderTrackingPage() {
                             {loading ? <Loader2 className="animate-spin" /> : <ArrowRight />}
                         </button>
                     </form>
+
+                    {error && (
+                        <div className="mt-6 p-4 bg-rose/10 text-rose text-sm font-bold rounded-xl text-center">
+                            {error}
+                        </div>
+                    )}
+
+                    {result && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-12 bg-white rounded-3xl border border-white shadow-2xl p-8 md:p-12"
+                        >
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+                                <div>
+                                    <p className="text-[10px] font-black text-charcoal/20 uppercase tracking-widest mb-1">Sipariş Sahibi</p>
+                                    <p className="text-xl font-bold text-charcoal">{result.customerName}</p>
+                                </div>
+                                <div className="text-left md:text-right">
+                                    <p className="text-[10px] font-black text-charcoal/20 uppercase tracking-widest mb-1">Tahmini Teslimat</p>
+                                    <p className="text-xl font-bold text-clay">2-3 İş Günü</p>
+                                </div>
+                            </div>
+
+                            {/* Tracking Timeline */}
+                            <div className="space-y-8 relative">
+                                <div className="absolute left-4 top-2 bottom-2 w-0.5 bg-alabaster z-0" />
+                                {statusSteps.map((step, index) => {
+                                    const isCompleted = index <= currentStepIndex;
+                                    const isCurrent = index === currentStepIndex;
+
+                                    return (
+                                        <div key={step.key} className="flex gap-6 relative z-10">
+                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500 ${isCompleted ? 'bg-clay text-white shadow-lg shadow-clay/20' : 'bg-alabaster text-charcoal/20'}`}>
+                                                {isCompleted ? <Check size={16} /> : <div className="w-2 h-2 rounded-full bg-current" />}
+                                            </div>
+                                            <div>
+                                                <h4 className={`font-bold ${isCompleted ? 'text-charcoal' : 'text-charcoal/20'}`}>{step.label}</h4>
+                                                <p className={`text-xs ${isCompleted ? 'text-charcoal/60' : 'text-charcoal/10'}`}>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {result.trackingNumber && (
+                                <div className="mt-12 p-6 bg-alabaster rounded-2xl flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-charcoal">
+                                            <Truck size={20} />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black text-charcoal/20 uppercase tracking-widest">Kargo Takip No</p>
+                                            <p className="font-mono font-bold">{result.trackingNumber}</p>
+                                        </div>
+                                    </div>
+                                    <button className="text-xs font-black text-clay uppercase tracking-widest hover:underline">Sorgula</button>
+                                </div>
+                            )}
+
+                            <div className="mt-12 pt-8 border-t border-alabaster">
+                                <h4 className="text-xs font-black text-charcoal/20 uppercase tracking-widest mb-4">Sipariş İçeriği</h4>
+                                <div className="space-y-4">
+                                    {result.items.map((item: any, i: number) => (
+                                        <div key={i} className="flex justify-between items-center text-sm">
+                                            <span className="text-charcoal/60 font-medium">{item.product.name}</span>
+                                            <span className="font-bold">x{item.quantity}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
 
                     <div className="mt-12 grid grid-cols-2 gap-4">
                         <div className="bg-white p-6 rounded-2xl border border-white/50 flex flex-col items-center text-center gap-3">
@@ -82,3 +177,7 @@ export default function OrderTrackingPage() {
         </main>
     );
 }
+
+import { motion } from 'framer-motion';
+import { Check, Truck } from 'lucide-react';
+
