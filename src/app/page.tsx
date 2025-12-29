@@ -16,7 +16,6 @@ import { prisma } from "@/lib/prisma";
 export const revalidate = 3600;
 
 async function getProducts() {
-  // If database fails (during build or no connection), return empty array or fallback
   try {
     const products = await prisma.product.findMany({
       where: { isActive: true, isFeatured: true },
@@ -25,14 +24,13 @@ async function getProducts() {
       include: { category: true }
     });
 
-    // Transform Prisma objects to plain JS objects for the frontend
     return products.map((p: any) => ({
       ...p,
       id: p.id,
       name: p.name,
-      price: `${p.price.toString()} ₺`, // Match mock format
+      price: `${p.price.toString()} ₺`,
       image: p.images[0] || '/images/hero.png',
-      category: p.category?.name || 'Tasarım', // Convert object to string name
+      category: p.category?.name || 'Tasarım',
       description: p.description
     }));
   } catch (e) {
@@ -44,13 +42,12 @@ async function getProducts() {
 export default async function Home() {
   const products = await getProducts();
 
-  // Schema.org Structured Data
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Tsuko Design',
     url: 'https://tsukodesign.com',
-    logo: 'https://tsukodesign.com/images/hero.png', // Using hero as placeholder logo
+    logo: 'https://tsukodesign.com/images/hero.png',
     sameAs: [
       'https://www.instagram.com/tsukodesign',
       'https://twitter.com/tsukodesign'
@@ -68,7 +65,7 @@ export default async function Home() {
         '@type': 'Product',
         name: product.name,
         description: product.description || '',
-        image: `https://tsukodesign.com${product.image}`,
+        image: product.image.startsWith('http') ? product.image : `https://tsukodesign.com${product.image}`,
         offers: {
           '@type': 'Offer',
           priceCurrency: 'TRY',
@@ -148,12 +145,8 @@ export default async function Home() {
       <Navbar />
       <Hero />
       <Philosophy />
-
-      {/* Pass real database products to Collection */}
       <Collection products={products} />
-
       <ShopTheLook />
-
       <FAQ />
       <Newsletter />
       <InstagramFeed />

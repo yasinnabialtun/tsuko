@@ -122,12 +122,12 @@ export default async function RootLayout({
               />
               {!isAdmin && <TopBanner />}
               {children}
-              {!isAdmin && <AnalyticsTracker />}
-              {!isAdmin && <Analytics />}
-              {!isAdmin && <FloatingWidgets />}
               <SessionTracker />
             </WishlistProvider>
           </CartProvider>
+          {!isAdmin && <AnalyticsTracker />}
+          {!isAdmin && <Analytics />}
+          {!isAdmin && <FloatingWidgets />}
         </body>
       </html>
     </ClerkProvider>
