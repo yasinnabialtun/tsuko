@@ -13,18 +13,32 @@ export async function POST(request: Request) {
         const chatId = message.chat.id;
         const text = message.text.trim();
 
-        const botToken = process.env.TELEGRAM_BOT_TOKEN;
+        // Use token from ENV or provided token as fallback for testing
+        const botToken = process.env.TELEGRAM_BOT_TOKEN || '8206491767:AAG1ZhANCcvIoclFC9ClrY9wCtK7W6DaTGc';
+
+        if (!botToken) {
+            console.error('Telegram Bot Token is missing!');
+            return NextResponse.json({ ok: true });
+        }
 
         async function sendReply(replyText: string) {
-            await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: chatId,
-                    text: replyText,
-                    parse_mode: 'Markdown'
-                })
-            });
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: replyText,
+                        parse_mode: 'Markdown'
+                    })
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Telegram API Error:', errorData);
+                }
+            } catch (err) {
+                console.error('Failed to call Telegram API:', err);
+            }
         }
 
         if (text === '/start') {
@@ -32,8 +46,12 @@ export async function POST(request: Request) {
             return NextResponse.json({ ok: true });
         }
 
-        // Search for order number (Case insensitive check might be needed or assuming they copy paste TS-...)
-        const orderNumber = text.toUpperCase();
+        // Search for order number (Case insensitive and handle missing dash)
+        let orderNumber = text.toUpperCase().replace(/\s/g, '');
+        if (!orderNumber.startsWith('TS-') && orderNumber.startsWith('TS')) {
+            orderNumber = 'TS-' + orderNumber.substring(2);
+        }
+
         const order = await prisma.order.findUnique({
             where: { orderNumber: orderNumber },
             include: { items: { include: { product: true } } }
