@@ -12,8 +12,15 @@ export async function GET() {
             orderBy: { createdAt: 'desc' },
             include: { category: true } // Kategori adını da getir
         });
-        return NextResponse.json(products);
+
+        const safeProducts = products.map(p => ({
+            ...p,
+            price: Number(p.price)
+        }));
+
+        return NextResponse.json(safeProducts);
     } catch (error) {
+        console.error('Products API Error:', error);
         return NextResponse.json({ error: 'Error fetching products' }, { status: 500 });
     }
 }

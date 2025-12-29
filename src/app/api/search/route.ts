@@ -53,6 +53,7 @@ export async function GET(request: Request) {
         return NextResponse.json({
             products: products.map(p => ({
                 ...p,
+                price: Number(p.price), // Explicitly cast Decimal to Number for JSON safety
                 image: p.images[0] || '/images/hero.png',
                 category: p.category?.name
             })),

@@ -15,6 +15,8 @@ import FloatingWidgets from '@/components/floating-widgets';
 import ScrollProgress from '@/components/scroll-progress';
 import CursorOrnament from '@/components/cursor-ornament';
 import SessionTracker from '@/components/session-tracker';
+import SafeHydrate from '@/components/safe-hydrate';
+import GlobalErrorBoundary from '@/components/error-boundary';
 
 import { ClerkProvider } from '@clerk/nextjs';
 import { trTR } from '@clerk/localizations';
@@ -26,7 +28,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   const siteName = settings?.siteName || 'Tsuko Design';
   const siteDescription = settings?.siteDescription || 'Minimalist 3D Baskı Ev Dekorasyonu';
-  const siteUrl = settings?.siteUrl || 'https://tsukodesign.com';
+  const siteUrl = settings?.siteUrl || process.env.NEXT_PUBLIC_SITE_URL || 'https://tsukodesign.com';
+  let metadataBase: URL;
+  try {
+    metadataBase = new URL(siteUrl);
+  } catch {
+    metadataBase = new URL('https://tsukodesign.com');
+  }
 
   return {
     title: {
@@ -34,7 +42,7 @@ export async function generateMetadata(): Promise<Metadata> {
       default: `${siteName} | Minimalist 3D Baskı`,
     },
     description: siteDescription,
-    metadataBase: new URL(siteUrl),
+    metadataBase,
     twitter: {
       card: 'summary_large_image',
       title: siteName,
@@ -59,11 +67,14 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+import { validateEnv } from '@/lib/env-check';
+
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  validateEnv();
   const settings = await getSiteSettings();
   const headerList = await headers();
   const pathname = headerList.get('x-pathname') || '';
@@ -73,6 +84,9 @@ export default async function RootLayout({
   if (settings?.maintenanceMode && !isAdmin) {
     return (
       <html lang="tr">
+        <head>
+          <link rel="icon" href="/favicon.ico" sizes="any" />
+        </head>
         <body className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-white`}>
           <MaintenanceMode />
         </body>
@@ -95,39 +109,49 @@ export default async function RootLayout({
           />
         </head>
         <body className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-white scroll-smooth`}>
-          {!isAdmin && <ScrollProgress />}
-          {!isAdmin && <CursorOrnament />}
-          <CartProvider>
-            <WishlistProvider>
-              <Toaster
-                position="top-center"
-                toastOptions={{
-                  duration: 4000,
-                  style: {
-                    background: 'var(--charcoal)',
-                    color: '#fff',
-                    borderRadius: '16px',
-                    padding: '16px 24px',
-                    boxShadow: '0 20px 40px -10px rgba(0,0,0,0.3)',
-                    fontSize: '14px',
-                    fontWeight: 500,
-                  },
-                  success: {
-                    iconTheme: {
-                      primary: 'var(--clay)',
-                      secondary: '#fff',
+          <GlobalErrorBoundary>
+            {!isAdmin && (
+              <SafeHydrate>
+                <ScrollProgress />
+                <CursorOrnament />
+              </SafeHydrate>
+            )}
+            <CartProvider>
+              <WishlistProvider>
+                <Toaster
+                  position="top-center"
+                  toastOptions={{
+                    duration: 4000,
+                    style: {
+                      background: 'var(--charcoal)',
+                      color: '#fff',
+                      borderRadius: '16px',
+                      padding: '16px 24px',
+                      boxShadow: '0 20px 40px -10px rgba(0,0,0,0.3)',
+                      fontSize: '14px',
+                      fontWeight: 500,
                     },
-                  },
-                }}
-              />
-              {!isAdmin && <TopBanner />}
-              {children}
-              <SessionTracker />
-            </WishlistProvider>
-          </CartProvider>
-          {!isAdmin && <AnalyticsTracker />}
-          {!isAdmin && <Analytics />}
-          {!isAdmin && <FloatingWidgets />}
+                    success: {
+                      iconTheme: {
+                        primary: 'var(--clay)',
+                        secondary: '#fff',
+                      },
+                    },
+                  }}
+                />
+                {!isAdmin && <TopBanner />}
+                {children}
+                <SessionTracker />
+              </WishlistProvider>
+            </CartProvider>
+            {!isAdmin && (
+              <SafeHydrate>
+                <AnalyticsTracker />
+                <Analytics />
+                <FloatingWidgets />
+              </SafeHydrate>
+            )}
+          </GlobalErrorBoundary>
         </body>
       </html>
     </ClerkProvider>

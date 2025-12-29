@@ -3,30 +3,54 @@ import { prisma } from '@/lib/prisma';
 import { sendOrderConfirmationEmail } from '@/lib/email';
 import { restoreStock } from '@/lib/stock';
 import { sendDiscordNotification, sendTelegramNotification } from '@/lib/notifications';
-
-// ... (other imports)
+import crypto from 'crypto';
 
 export async function POST(req: Request) {
     try {
         const formData = await req.formData();
+        const payload = Object.fromEntries(formData);
 
-        // Log webhook payload for debug
-        console.log('Shopier Webhook Received:', Object.fromEntries(formData));
+        // 🟢 Shopier Security Verification
+        const shopierSignature = formData.get('signature') as string;
+        const randomNr = formData.get('random_nr') as string;
+        const platformOrderId = formData.get('platform_order_id') as string;
+        const totalAmount = formData.get('total_amount') as string;
+        const apiSecret = process.env.SHOPIER_API_SECRET;
 
-        const orderId = formData.get('platform_order_id') as string;
-        const error = formData.get('error'); // Shopier sends error if failed
+        if (!shopierSignature || !apiSecret) {
+            console.error('Missing Shopier signature or secret');
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // Verify Hash: base64(hmac_sha256(random_nr + order_id + amount, secret))
+        const expectedData = randomNr + platformOrderId + totalAmount;
+        const expectedHash = crypto
+            .createHmac('sha256', apiSecret)
+            .update(expectedData)
+            .digest('base64');
+
+        if (shopierSignature !== expectedHash) {
+            console.error('Invalid Shopier signature detected!', {
+                received: shopierSignature,
+                expected: expectedHash
+            });
+            return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+        }
+
+        console.log('Shopier Webhook Verified Authenticity:', platformOrderId);
+
+        const orderId = platformOrderId;
+        const error = formData.get('res_code'); // Shopier sends res_code 0 for success
+        const status = formData.get('status') as string; // 'success' or 'fail'
 
         if (!orderId) {
             return NextResponse.json({ error: 'No Order ID' }, { status: 400 });
         }
 
-        // If error param exists and is not empty, payment failed
-        if (error) {
-            console.warn(`Payment failed for order ${orderId}: ${error}`);
-
-            // Restore stock immediately
+        // If status is not success
+        if (status !== 'success') {
+            console.warn(`Payment failed for order ${orderId}: ${status}`);
             await restoreStock(orderId);
-
             return NextResponse.json({ message: 'Payment failed handled, stock restored' });
         }
 

@@ -54,11 +54,11 @@ export default function LiveSalesNotification() {
         return () => clearTimeout(initTimer);
     }, []);
 
-    const saleData = sales[currentSale ?? -1];
+    const saleData = currentSale !== null ? sales[currentSale] : null;
 
     return (
         <AnimatePresence>
-            {currentSale !== null && (
+            {saleData && (
                 <motion.div
                     initial={{ opacity: 0, x: -50, y: 0 }}
                     animate={{ opacity: 1, x: 0, y: 0 }}

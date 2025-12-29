@@ -65,6 +65,8 @@ export default function CheckoutPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (loading) return; // Guard against double submission
+
         setLoading(true);
         setError('');
 

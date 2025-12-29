@@ -54,10 +54,16 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
                     if (res.ok) {
                         const data = await res.json();
-                        setResults(data);
+                        setResults({
+                            products: Array.isArray(data?.products) ? data.products : [],
+                            posts: Array.isArray(data?.posts) ? data.posts : []
+                        });
+                    } else {
+                        setResults({ products: [], posts: [] });
                     }
                 } catch (error) {
                     console.error("Search error", error);
+                    setResults({ products: [], posts: [] });
                 } finally {
                     setLoading(false);
                 }
