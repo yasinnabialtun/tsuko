@@ -4,11 +4,12 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ShoppingBag, Search, Heart, User } from 'lucide-react';
+import { Menu, X, ShoppingBag, Search, Heart, User, LayoutDashboard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import SearchModal from './search-modal';
 import { useWishlist } from '@/context/wishlist-context';
 import { useCart } from '@/context/cart-context';
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -74,9 +75,22 @@ export default function Navbar() {
                                 )}
                             </Link>
 
-                            <Link href="/admin" className="hover:text-mauve transition-colors duration-300">
-                                <User size={20} strokeWidth={1.5} />
-                            </Link>
+                            <div className="flex items-center gap-4">
+                                <SignedOut>
+                                    <Link href="/profile" className="hover:text-mauve transition-colors duration-300">
+                                        <User size={20} strokeWidth={1.5} />
+                                    </Link>
+                                </SignedOut>
+                                <SignedIn>
+                                    <div className="flex items-center gap-4">
+                                        <UserButton afterSignOutUrl="/" userProfileMode="navigation" userProfileUrl="/profile" />
+                                    </div>
+                                </SignedIn>
+
+                                <Link href="/admin" className="text-charcoal/40 hover:text-mauve transition-colors duration-300 ml-2" title="Panel">
+                                    <LayoutDashboard size={18} strokeWidth={1.5} />
+                                </Link>
+                            </div>
 
                             <button
                                 onClick={toggleCart}
@@ -145,15 +159,23 @@ export default function Navbar() {
 
                                 <div className="w-16 h-px bg-stone"></div>
 
-                                <div className="flex gap-8">
+                                <div className="flex gap-10">
                                     <Link href="/wishlist" onClick={() => setMobileMenuOpen(false)} className="flex flex-col items-center gap-2 text-charcoal/60 hover:text-mauve">
                                         <Heart size={24} />
-                                        <span className="text-xs uppercase tracking-widest">Favoriler</span>
+                                        <span className="text-xs uppercase tracking-widest font-bold">Favoriler</span>
                                     </Link>
-                                    <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="flex flex-col items-center gap-2 text-charcoal/60 hover:text-mauve">
-                                        <User size={24} />
-                                        <span className="text-xs uppercase tracking-widest">Hesap</span>
-                                    </Link>
+                                    <SignedIn>
+                                        <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="flex flex-col items-center gap-2 text-charcoal/60 hover:text-mauve">
+                                            <User size={24} />
+                                            <span className="text-xs uppercase tracking-widest font-bold">Hesabım</span>
+                                        </Link>
+                                    </SignedIn>
+                                    <SignedOut>
+                                        <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="flex flex-col items-center gap-2 text-charcoal/60 hover:text-mauve">
+                                            <User size={24} />
+                                            <span className="text-xs uppercase tracking-widest font-bold">Giriş Yap</span>
+                                        </Link>
+                                    </SignedOut>
                                 </div>
                             </div>
 

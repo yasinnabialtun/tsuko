@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { verifyToken } from './auth-utils';
 
 // Admin Password from environment
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'tsuko123';
@@ -20,8 +21,11 @@ export async function validateAdminRequest(request: Request): Promise<NextRespon
     const cookieStore = await cookies();
     const adminSession = cookieStore.get('admin_session');
 
-    if (adminSession && adminSession.value === ADMIN_PASSWORD) {
-        return null; // Valid Session
+    if (adminSession) {
+        const payload = verifyToken(adminSession.value);
+        if (payload && payload.role === 'admin') {
+            return null; // Valid Session
+        }
     }
 
     // 3. Development Bypass (Optional - can be risky in prod)

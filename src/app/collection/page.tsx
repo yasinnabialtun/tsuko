@@ -6,16 +6,32 @@ import { Metadata } from 'next';
 import RecentlyViewed from '@/components/recently-viewed';
 import ProductCard from '@/components/product-card';
 import Breadcrumbs from '@/components/breadcrumbs';
+import CollectionFilters from '@/components/collection-filters';
 
 // Force dynamic because we read searchParams and query DB
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-    title: 'Koleksiyon | Tsuko Design',
-    description: 'Tsuko Design özel tasarım 3D baskı vazo, saksı ve aydınlatma ürünlerini keşfedin.',
-};
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ category?: string }> }): Promise<Metadata> {
+    const sp = await searchParams;
+    const categorySlug = sp.category;
 
-async function getProducts(categorySlug?: string, sort?: string, minPrice?: number, maxPrice?: number) {
+    if (categorySlug && categorySlug !== 'all') {
+        const category = await prisma.category.findUnique({ where: { slug: categorySlug } });
+        if (category) {
+            return {
+                title: `${category.name} Koleksiyonu | Tsuko Design`,
+                description: `${category.name} kategorisindeki özel tasarım 3D baskı ürünlerimizi keşfedin.`
+            };
+        }
+    }
+
+    return {
+        title: 'Tüm Koleksiyon | Tsuko Design',
+        description: 'Tsuko Design özel tasarım 3D baskı vazo, saksı ve aydınlatma ürünlerini keşfedin.',
+    };
+}
+
+async function getProducts(categorySlug?: string, sort?: string, minPrice?: number, maxPrice?: number, material?: string, inStock?: boolean) {
     const whereClause: any = { isActive: true };
 
     if (categorySlug && categorySlug !== 'all') {
@@ -31,6 +47,17 @@ async function getProducts(categorySlug?: string, sort?: string, minPrice?: numb
         if (maxPrice !== undefined) whereClause.price.lte = maxPrice;
     }
 
+    if (material) {
+        whereClause.attributes = {
+            path: ['material'],
+            string_contains: material
+        };
+    }
+
+    if (inStock) {
+        whereClause.stock = { gt: 0 };
+    }
+
     let orderBy: any = { createdAt: 'desc' };
     if (sort === 'price_asc') orderBy = { price: 'asc' };
     if (sort === 'price_desc') orderBy = { price: 'desc' };
@@ -39,13 +66,28 @@ async function getProducts(categorySlug?: string, sort?: string, minPrice?: numb
         const products = await prisma.product.findMany({
             where: whereClause,
             orderBy: orderBy,
-            include: { category: true }
+            include: {
+                category: true,
+                reviews: {
+                    select: { rating: true }
+                }
+            }
         });
-        // Transform Decimal to number/string for client component
-        return products.map(p => ({
-            ...p,
-            price: p.price.toString()
-        }));
+
+        // Transform Decimal and calculate rating stats
+        return products.map(p => {
+            const reviewCount = p.reviews.length;
+            const avgRating = reviewCount > 0
+                ? p.reviews.reduce((acc, r) => acc + r.rating, 0) / reviewCount
+                : 0;
+
+            return {
+                ...p,
+                price: p.price.toString(),
+                avgRating,
+                reviewCount
+            };
+        });
     } catch (e) {
         return [];
     }
@@ -59,14 +101,25 @@ async function getCategories() {
     }
 }
 
-export default async function CollectionPage({ searchParams }: { searchParams: Promise<{ category?: string, sort?: string, minPrice?: string, maxPrice?: string }> }) {
+export default async function CollectionPage({ searchParams }: {
+    searchParams: Promise<{
+        category?: string,
+        sort?: string,
+        minPrice?: string,
+        maxPrice?: string,
+        material?: string,
+        inStock?: string
+    }>
+}) {
     const sp = await searchParams;
     const selectedCategory = sp.category || 'all';
     const currentSort = sp.sort || 'newest';
     const minPrice = sp.minPrice ? parseFloat(sp.minPrice) : undefined;
     const maxPrice = sp.maxPrice ? parseFloat(sp.maxPrice) : undefined;
+    const material = sp.material;
+    const inStock = sp.inStock === 'true';
 
-    const products = await getProducts(selectedCategory, currentSort, minPrice, maxPrice);
+    const products = await getProducts(selectedCategory, currentSort, minPrice, maxPrice, material, inStock);
     const categories = await getCategories();
 
     return (
@@ -116,52 +169,7 @@ export default async function CollectionPage({ searchParams }: { searchParams: P
 
                             {/* Sort Dropdown */}
                             <div className="flex items-center gap-6">
-                                <span className="text-[10px] font-bold text-charcoal/40 uppercase tracking-widest">Sırala:</span>
-                                <div className="flex gap-6">
-                                    {[
-                                        { label: 'En Yeni', value: 'newest' },
-                                        { label: 'Fiyat (Artan)', value: 'price_asc' },
-                                        { label: 'Fiyat (Azalan)', value: 'price_desc' }
-                                    ].map((opt) => (
-                                        <Link
-                                            key={opt.value}
-                                            href={`/collection?${selectedCategory !== 'all' ? `category=${selectedCategory}&` : ''}sort=${opt.value}`}
-                                            className={`text-xs font-bold transition-colors ${currentSort === opt.value ? 'text-clay' : 'text-charcoal/60 hover:text-charcoal'}`}
-                                        >
-                                            {opt.label}
-                                        </Link>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Price Ranges Row */}
-                        <div className="flex flex-wrap justify-center lg:justify-start items-center gap-6">
-                            <span className="text-[10px] font-bold text-charcoal/40 uppercase tracking-widest">Fiyat Aralığı:</span>
-                            <div className="flex flex-wrap gap-4">
-                                <Link
-                                    href={`/collection?${selectedCategory !== 'all' ? `category=${selectedCategory}&` : ''}sort=${currentSort}`}
-                                    className={`text-xs font-bold px-3 py-1 rounded-md transition-colors ${!sp.minPrice && !sp.maxPrice ? 'text-clay bg-clay/5' : 'text-charcoal/60 hover:text-charcoal'}`}
-                                >
-                                    Hepsini Gör
-                                </Link>
-                                {[
-                                    { label: '0₺ - 500₺', min: 0, max: 500 },
-                                    { label: '500₺ - 1000₺', min: 500, max: 1000 },
-                                    { label: '1000₺ - 2500₺', min: 1000, max: 2500 },
-                                    { label: '2500₺+', min: 2500, max: 100000 }
-                                ].map((range) => {
-                                    const isActive = sp.minPrice === range.min.toString() && sp.maxPrice === range.max.toString();
-                                    return (
-                                        <Link
-                                            key={range.label}
-                                            href={`/collection?${selectedCategory !== 'all' ? `category=${selectedCategory}&` : ''}sort=${currentSort}&minPrice=${range.min}&maxPrice=${range.max}`}
-                                            className={`text-xs font-bold px-3 py-1 rounded-md transition-colors ${isActive ? 'text-clay bg-clay/5' : 'text-charcoal/60 hover:text-charcoal'}`}
-                                        >
-                                            {range.label}
-                                        </Link>
-                                    );
-                                })}
+                                <CollectionFilters />
                             </div>
                         </div>
                     </div>

@@ -1,19 +1,20 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useCart } from '@/context/cart-context';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
 import Image from 'next/image';
 import { Loader2, Lock, ShieldCheck } from 'lucide-react';
-
-
+import { useUser } from '@clerk/nextjs';
 
 export default function CheckoutPage() {
     const { items, cartTotal, cartSubtotal, discountAmount, activeCoupon } = useCart();
     const router = useRouter();
+    const { user, isLoaded: isUserLoaded } = useUser();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -27,6 +28,36 @@ export default function CheckoutPage() {
         district: '',
         zipCode: ''
     });
+
+    useEffect(() => {
+        if (isUserLoaded && user) {
+            // Pre-fill basic info
+            setFormData(prev => ({
+                ...prev,
+                firstName: prev.firstName || user.firstName || '',
+                lastName: prev.lastName || user.lastName || '',
+                email: prev.email || user.primaryEmailAddress?.emailAddress || ''
+            }));
+
+            // Fetch saved addresses
+            fetch('/api/profile/addresses')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.addresses && data.addresses.length > 0) {
+                        const defaultAddress = data.addresses.find((a: any) => a.isDefault) || data.addresses[0];
+                        setFormData(prev => ({
+                            ...prev,
+                            phone: prev.phone || defaultAddress.phone || '',
+                            address: prev.address || defaultAddress.address || '',
+                            city: prev.city || defaultAddress.city || '',
+                            district: prev.district || defaultAddress.district || '',
+                            zipCode: prev.zipCode || defaultAddress.zipCode || ''
+                        }));
+                    }
+                })
+                .catch(err => console.error('Failed to fetch addresses', err));
+        }
+    }, [isUserLoaded, user]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -180,6 +211,21 @@ export default function CheckoutPage() {
                                     <label className="block text-sm font-bold text-gray-700 mb-2">Posta Kodu</label>
                                     <input type="text" name="zipCode" value={formData.zipCode} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay outline-none" />
                                 </div>
+                            </div>
+
+                            <div className="pt-6 space-y-4">
+                                <label className="flex items-start gap-3 cursor-pointer group">
+                                    <input required type="checkbox" className="mt-1 w-4 h-4 rounded border-gray-300 text-clay focus:ring-clay" />
+                                    <span className="text-xs text-gray-500 leading-relaxed group-hover:text-charcoal transition-colors">
+                                        <Link href="/terms" className="underline hover:text-clay">Mesafeli Satış Sözleşmesi</Link> ve <Link href="/privacy" className="underline hover:text-clay">KVKK Aydınlatma Metni</Link>'ni okudum, onaylıyorum.
+                                    </span>
+                                </label>
+                                <label className="flex items-start gap-3 cursor-pointer group">
+                                    <input type="checkbox" className="mt-1 w-4 h-4 rounded border-gray-300 text-clay focus:ring-clay" />
+                                    <span className="text-xs text-gray-500 leading-relaxed group-hover:text-charcoal transition-colors">
+                                        Kampanya ve duyurulardan haberdar olmak için e-posta almayı kabul ediyorum. (Opsiyonel)
+                                    </span>
+                                </label>
                             </div>
 
                             {error && (

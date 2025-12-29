@@ -14,30 +14,57 @@ const SALES_DATA = [
 ];
 
 export default function LiveSalesNotification() {
+    const [sales, setSales] = useState<any[]>([]);
     const [currentSale, setCurrentSale] = useState<number | null>(null);
 
     useEffect(() => {
+        const fetchSales = async () => {
+            try {
+                const res = await fetch('/api/orders/public/recent');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.length > 0) {
+                        setSales(data);
+                    } else {
+                        setSales(SALES_DATA); // Fallback to mock
+                    }
+                }
+            } catch (e) {
+                setSales(SALES_DATA);
+            }
+        };
+
+        fetchSales();
+
         // Initial delay
         const initTimer = setTimeout(() => {
             triggerNotification();
         }, 5000);
 
         const triggerNotification = () => {
-            const randomIdx = Math.floor(Math.random() * SALES_DATA.length);
-            setCurrentSale(randomIdx);
+            setSales(currentSales => {
+                if (currentSales.length === 0) return currentSales;
 
-            // Hide after 5 seconds
-            setTimeout(() => {
-                setCurrentSale(null);
-            }, 5000);
+                const randomIdx = Math.floor(Math.random() * currentSales.length);
+                setCurrentSale(randomIdx);
 
-            // Schedule next one (randomly between 15-30 seconds)
-            const nextTime = Math.random() * (30000 - 15000) + 15000;
+                // Hide after 6 seconds
+                setTimeout(() => {
+                    setCurrentSale(null);
+                }, 6000);
+
+                return currentSales;
+            });
+
+            // Schedule next one (randomly between 20-40 seconds)
+            const nextTime = Math.random() * (40000 - 20000) + 20000;
             setTimeout(triggerNotification, nextTime);
         };
 
         return () => clearTimeout(initTimer);
     }, []);
+
+    const saleData = sales[currentSale ?? -1];
 
     return (
         <AnimatePresence>
@@ -50,8 +77,8 @@ export default function LiveSalesNotification() {
                 >
                     <div className="relative w-12 h-12 bg-alabaster rounded-lg overflow-hidden flex-shrink-0">
                         <Image
-                            src={SALES_DATA[currentSale].image}
-                            alt={SALES_DATA[currentSale].product}
+                            src={saleData.image}
+                            alt={saleData.product}
                             fill
                             className="object-cover"
                         />
@@ -59,14 +86,14 @@ export default function LiveSalesNotification() {
 
                     <div className="flex-grow">
                         <h4 className="text-xs font-bold text-charcoal">
-                            {SALES_DATA[currentSale].name}, <span className="text-charcoal/60 font-medium">{SALES_DATA[currentSale].location}</span>
+                            {saleData.name}, <span className="text-charcoal/60 font-medium">{saleData.location}</span>
                         </h4>
                         <p className="text-xs text-charcoal/80 mt-0.5">
-                            <span className="font-bold text-clay">{SALES_DATA[currentSale].product}</span> satın aldı.
+                            <span className="font-bold text-clay">{saleData.product}</span> satın aldı.
                         </p>
                         <div className="flex items-center gap-1 mt-1 text-[10px] text-charcoal/40 font-medium">
                             <CheckCircle size={10} className="text-green-500" />
-                            Doğrulanmış Sipariş • {SALES_DATA[currentSale].time}
+                            Doğrulanmış Sipariş • {saleData.time}
                         </div>
                     </div>
                 </motion.div>

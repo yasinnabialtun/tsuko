@@ -28,8 +28,9 @@ Bu özellikler şu an kodlanmamıştır:
 3.  **Üyelik Sistemi (Müşteri):** Sadece Admin girişi vardır. Müşteriler üye olmadan ("Misafir") alışveriş yapar.
 
 ## ✅ 5. YAPILAN DÜZELTMELER (FIX LOG)
-- **Product Page:** Artık veri tabanından canlı çekiliyor.
-- **Cart System:** Sıfırdan Sepet ve Drawer eklendi.
-- **Checkout:** Shopier öncesi "Adres Formu" sayfası eklendi.
-- **Güvenlik:** Admin API'leri şifrelendi.
-- **Stok:** Ödeme sonrası otomatik stok düşümü eklendi.
+- **Product Page:** Artık veri tabanından canlı çekiliyor ve SEO uyumlu metadata içeriyor.
+- **Cart & Wishlist:** Gelişmiş sepet ve performanslı favoriler sistemi (Batch Fetching) eklendi.
+- **Checkout:** Shopier öncesi "Adres Formu" sayfası ve Konfeti animasyonlu başarı sayfası eklendi.
+- **Güvenlik:** Admin API'leri ve ayarlar şifrelendi.
+- **Stok:** Ödeme sonrası otomatik stok düşümü ve **Stok Alarmı (Email)** özelliği eklendi.
+- **SEO Master:** Dinamik Sitemap, Robots ve Global Site Ayarları (MetaData) tamamlandı.

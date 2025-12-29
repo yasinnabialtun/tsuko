@@ -1,43 +1,41 @@
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
 
-export default function PrivacyPolicy() {
+export default function PrivacyPage() {
     return (
         <main className="min-h-screen bg-white">
             <Navbar />
 
-            <section className="pt-40 pb-24 px-6 md:px-0">
-                <div className="container mx-auto max-w-3xl">
-                    <h1 className="text-4xl font-bold text-charcoal mb-8">Gizlilik Politikası</h1>
+            <div className="pt-40 pb-20 container mx-auto px-6 max-w-4xl">
+                <h1 className="text-3xl font-bold text-charcoal mb-8">Gizlilik Politikası ve KVKK</h1>
 
-                    <div className="prose prose-lg text-charcoal/70">
-                        <p className="lead">
-                            Tsuko Design ("Şirket") olarak, kişisel verilerinizin güvenliği hususuna azami hassasiyet göstermekteyiz.
-                        </p>
+                <div className="prose prose-stone max-w-none text-sm">
+                    <p><strong>Son Güncelleme:</strong> 28.12.2025</p>
 
-                        <h3>1. Veri Toplama</h3>
-                        <p>
-                            Sitemizi ziyaret ettiğinizde, deneyiminizi iyileştirmek adına bazı anonim veriler (çerezler vb.) toplanabilir.
-                            İletişim formları aracılığıyla paylaştığınız isim ve e-posta adresleri sadece size geri dönüş yapmak amacıyla saklanır.
-                        </p>
+                    <h3>1. Veri Sorumlusu</h3>
+                    <p>Tsuko Design olarak, kişisel verilerinizin güvenliğine önem veriyoruz. 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında veri sorumlusu sıfatıyla hareket etmekteyiz.</p>
 
-                        <h3>2. Üçüncü Taraflar</h3>
-                        <p>
-                            Ödeme işlemleri için Shopier platformu kullanılmaktadır. Ödeme sayfalarında girdiğiniz kredi kartı bilgileri
-                            doğrudan Shopier altyapısında işlenir ve şirketimiz tarafından saklanmaz.
-                        </p>
+                    <h3>2. Toplanan Kişisel Veriler</h3>
+                    <p>Sitemiz üzerinden alışveriş yaparken veya üye olurken şu bilgileri toplamaktayız:</p>
+                    <ul>
+                        <li>Kimlik Bilgileri (Ad, Soyad)</li>
+                        <li>İletişim Bilgileri (Adres, Telefon, E-posta)</li>
+                        <li>İşlem Güvenliği Bilgileri (IP Adresi, Çerez Kayıtları)</li>
+                    </ul>
 
-                        <h3>3. Veri Güvenliği</h3>
-                        <p>
-                            Verileriniz, endüstri standardı güvenlik önlemleriyle (SSL şifreleme vb.) korunmaktadır.
-                        </p>
+                    <h3>3. Verilerin Kullanım Amacı</h3>
+                    <p>Toplanan verileriniz;</p>
+                    <ul>
+                        <li>Siparişlerinizin teslim edilmesi,</li>
+                        <li>Fatura düzenlenmesi,</li>
+                        <li>Müşteri destek hizmetlerinin sağlanması,</li>
+                        <li>Yasal yükümlülüklerin yerine getirilmesi amacıyla işlenmektedir.</li>
+                    </ul>
 
-                        <p className="text-sm border-t border-black/10 pt-4 mt-8">
-                            Son güncelleme: 27 Aralık 2025
-                        </p>
-                    </div>
+                    <h3>4. Çerezler (Cookies)</h3>
+                    <p>Sitemizde kullanıcı deneyimini iyileştirmek için çerezler kullanılmaktadır. Tarayıcı ayarlarınızdan çerezleri dilediğiniz zaman silebilirsiniz.</p>
                 </div>
-            </section>
+            </div>
 
             <Footer />
         </main>

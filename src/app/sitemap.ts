@@ -2,74 +2,36 @@ import { MetadataRoute } from 'next';
 import { prisma } from '@/lib/prisma';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tsukodesign.com';
+    const baseUrl = 'https://tsukodesign.com';
 
-    // Static Pages
-    const staticRoutes = [
-        '',
-        '/blog',
-        '/about',
-        '/contact',
-        '/privacy',
-        '/terms',
-        '/shipping',
-        '/returns',
-    ].map((route) => ({
-        url: `${baseUrl}${route}`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly' as const,
-        priority: route === '' ? 1 : 0.8,
+    // Get all products
+    const products = await prisma.product.findMany({
+        where: { isActive: true },
+        select: { slug: true, updatedAt: true },
+    });
+
+    // Get all blog posts
+    const posts = await prisma.blogPost.findMany({
+        select: { slug: true, createdAt: true },
+    });
+
+    const productUrls = products.map((p) => ({
+        url: `${baseUrl}/product/${p.slug}`,
+        lastModified: p.updatedAt,
     }));
 
-    // Dynamic Products
-    let products: MetadataRoute.Sitemap = [];
-    try {
-        const productData = await prisma.product.findMany({
-            where: { isActive: true },
-            select: { slug: true, updatedAt: true }
-        });
-        products = productData.map((p) => ({
-            url: `${baseUrl}/product/${p.slug}`,
-            lastModified: p.updatedAt,
-            changeFrequency: 'daily' as const,
-            priority: 0.9,
-        }));
-    } catch (e) {
-        console.error('Sitemap product fetch error', e);
-    }
+    const postUrls = posts.map((p) => ({
+        url: `${baseUrl}/blog/${p.slug}`,
+        lastModified: p.createdAt,
+    }));
 
-    // Dynamic Categories
-    let categories: MetadataRoute.Sitemap = [];
-    try {
-        const categoryData = await prisma.category.findMany({ // Assuming Category model exists
-            select: { slug: true }
-        });
-        categories = categoryData.map((c) => ({
-            url: `${baseUrl}/category/${c.slug}`,
-            lastModified: new Date(),
-            changeFrequency: 'weekly' as const,
-            priority: 0.8,
-        }));
-    } catch (e) {
-        console.error('Sitemap category fetch error', e);
-    }
-
-    // Dynamic Blog Posts
-    let posts: MetadataRoute.Sitemap = [];
-    try {
-        const postData = await prisma.blogPost.findMany({
-            where: { published: true },
-            select: { slug: true, updatedAt: true }
-        });
-        posts = postData.map((p) => ({
-            url: `${baseUrl}/blog/${p.slug}`,
-            lastModified: p.updatedAt,
-            changeFrequency: 'weekly' as const,
-            priority: 0.7,
-        }));
-    } catch (e) {
-        console.error('Sitemap blog fetch error', e);
-    }
-
-    return [...staticRoutes, ...products, ...categories, ...posts];
+    return [
+        { url: baseUrl, lastModified: new Date() },
+        { url: `${baseUrl}/collection`, lastModified: new Date() },
+        { url: `${baseUrl}/about`, lastModified: new Date() },
+        { url: `${baseUrl}/contact`, lastModified: new Date() },
+        { url: `${baseUrl}/blog`, lastModified: new Date() },
+        ...productUrls,
+        ...postUrls,
+    ];
 }

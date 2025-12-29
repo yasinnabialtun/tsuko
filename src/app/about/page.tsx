@@ -2,81 +2,61 @@ import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
 import Image from 'next/image';
 
-export const metadata = {
-    title: 'Hakkımızda | Tsuko Design',
-    description: 'Tsuko Design, parametrik tasarım ve 3D baskı teknolojisini birleştirerek modern ev dekorasyon ürünleri üreten İstanbul merkezli bir tasarım stüdyosudur.',
-};
-
 export default function AboutPage() {
     return (
-        <main className="bg-white min-h-screen text-charcoal">
+        <main className="min-h-screen bg-white">
             <Navbar />
 
-            {/* Hero Section */}
-            <section className="pt-40 pb-20 px-6">
-                <div className="container mx-auto max-w-4xl text-center">
-                    <span className="text-clay text-xs font-bold tracking-[0.3em] uppercase mb-6 block">Biz Kimiz?</span>
-                    <h1 className="text-5xl md:text-7xl font-sans font-light tracking-tight leading-[1.1] mb-8 text-charcoal">
-                        Teknolojinin <span className="italic font-serif text-mauve">Şiirsel</span> Hali.
-                    </h1>
-                    <p className="text-xl text-charcoal/60 font-light leading-relaxed max-w-2xl mx-auto">
-                        Tsuko Design, kodlarla yazılan formların, doğa dostu materyallerle hayata geçtiği yerdir.
-                    </p>
-                </div>
-            </section>
-
-            {/* Visual Break */}
-            <section className="w-full h-[60vh] relative bg-stone/20 overflow-hidden">
+            {/* Hero */}
+            <div className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden">
                 <Image
                     src="/images/hero.png"
-                    alt="Tsuko Design Atölye"
+                    alt="Tsuko Atölye"
                     fill
-                    className="object-cover opacity-90"
+                    className="object-cover"
                 />
-                <div className="absolute inset-0 bg-black/10"></div>
-            </section>
-
-            {/* Philosophy Grid */}
-            <section className="py-24 px-6 bg-porcelain">
-                <div className="container mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                        <div className="space-y-4">
-                            <span className="text-6xl font-serif text-stone/40 block">01</span>
-                            <h3 className="text-xl font-bold uppercase tracking-widest text-charcoal">Parametrik</h3>
-                            <p className="text-charcoal/60 leading-relaxed">
-                                Tasarımlarımız elle çizilmez; algoritmalarla hesaplanır. Doğadaki formların matematiksel kusursuzluğunu evlerinize taşıyoruz.
-                            </p>
-                        </div>
-                        <div className="space-y-4">
-                            <span className="text-6xl font-serif text-stone/40 block">02</span>
-                            <h3 className="text-xl font-bold uppercase tracking-widest text-charcoal">Sürdürülebilir</h3>
-                            <p className="text-charcoal/60 leading-relaxed">
-                                Petrol türevi plastikleri reddediyoruz. Ürünlerimizde kullandığımız PLA, mısır nişastası ve şeker kamışından elde edilen %100 biyo-bozunur bir polimerdir.
-                            </p>
-                        </div>
-                        <div className="space-y-4">
-                            <span className="text-6xl font-serif text-stone/40 block">03</span>
-                            <h3 className="text-xl font-bold uppercase tracking-widest text-charcoal">Butik</h3>
-                            <p className="text-charcoal/60 leading-relaxed">
-                                Stok yığınları yok. Her sipariş, sizin için özel olarak, katman katman üretilir ve elle sonlandırılır. Bu yüzden her parça eşsizdir.
-                            </p>
-                        </div>
-                    </div>
+                <div className="absolute inset-0 bg-charcoal/40" />
+                <div className="relative z-10 text-center text-white px-6">
+                    <span className="block text-xs font-bold tracking-[0.3em] uppercase mb-4 text-stone">Hikayemiz</span>
+                    <h1 className="text-5xl md:text-7xl font-light mb-6">Doğadan İlham,<br /><span className="font-serif italic text-mauve">Teknolojiyle</span> Şekillendi.</h1>
                 </div>
-            </section>
+            </div>
 
-            {/* Founder Note */}
-            <section className="py-32 px-6 bg-white">
-                <div className="container mx-auto max-w-3xl text-center">
-                    <p className="text-2xl md:text-3xl font-light italic text-charcoal/80 leading-normal mb-8">
-                        "Amacımız sadece vazo veya lamba satmak değil; mekanın enerjisini değiştiren, ışıkla etkileşime giren ve sohbet başlatan objeler tasarlamak."
+            <div className="max-w-4xl mx-auto px-6 py-24 space-y-16">
+                <section className="text-center space-y-6">
+                    <h2 className="text-3xl font-bold text-charcoal">Parametrik Tasarımın Öncüsü</h2>
+                    <p className="text-lg text-charcoal/70 leading-relaxed font-light">
+                        Tsuko Design, geleneksel el işçiliğini modern algoritmik tasarım yöntemleriyle birleştiren yeni nesil bir tasarım stüdyosudur.
+                        İstanbul'daki atölyemizde, doğadaki karmaşık formları analiz ediyor ve parametrik tasarım araçlarıyla ev dekorasyon objelerine dönüştürüyoruz.
                     </p>
-                    <div className="flex flex-col items-center gap-2">
-                        <cite className="not-italic font-bold tracking-widest uppercase text-sm">Tsuko Studio Ekibi</cite>
-                        <span className="text-xs text-stone">İstanbul, 2024</span>
+                </section>
+
+                <div className="grid md:grid-cols-2 gap-12 items-center">
+                    <div className="relative aspect-square rounded-[2rem] overflow-hidden bg-porcelain">
+                        <div className="absolute inset-0 flex items-center justify-center text-charcoal/20 font-bold">Görsel Alanı</div>
+                    </div>
+                    <div className="space-y-6">
+                        <h3 className="text-2xl font-bold text-charcoal">Sürdürülebilir Üretim</h3>
+                        <p className="text-charcoal/70 leading-relaxed">
+                            Ürünlerimizin hiçbiri petrol türevi plastik içermez. Tamamen yenilenebilir kaynaklardan (mısır nişastası, şeker kamışı) elde edilen
+                            ve doğada çözünebilen biyo-polimerler (PLA+) kullanıyoruz. Sıfır atık prensibiyle, sadece sipariş üzerine üretim yapıyor ve stok fazlası oluşumunun önüne geçiyoruz.
+                        </p>
                     </div>
                 </div>
-            </section>
+
+                <div className="grid md:grid-cols-2 gap-12 items-center md:flex-row-reverse">
+                    <div className="space-y-6">
+                        <h3 className="text-2xl font-bold text-charcoal">Teknoloji ve Zanaat</h3>
+                        <p className="text-charcoal/70 leading-relaxed">
+                            Her bir Tsuko ürünü, mikron hassasiyetindeki 3D yazıcılarımızda katman katman işlenir.
+                            Ancak son dokunuş her zaman insan elidir. Zımparalama, boyama ve paketleme süreçleri, atölyemizdeki zanaatkarlar tarafından titizlikle gerçekleştirilir.
+                        </p>
+                    </div>
+                    <div className="relative aspect-square rounded-[2rem] overflow-hidden bg-porcelain">
+                        <div className="absolute inset-0 flex items-center justify-center text-charcoal/20 font-bold">Görsel Alanı</div>
+                    </div>
+                </div>
+            </div>
 
             <Footer />
         </main>

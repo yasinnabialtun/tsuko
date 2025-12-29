@@ -84,27 +84,55 @@ export async function POST(request: Request) {
     }
 }
 
-// GET - List subscribers (admin only - add auth later)
+// GET - List subscribers (admin only)
 export async function GET() {
     try {
-        const subscribers = await Promise.race([
-            prisma.subscriber.findMany({
-                orderBy: { createdAt: 'desc' },
-                take: 100
-            }),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('DB Timeout')), 5000))
-        ]) as any[];
-
-        return NextResponse.json({
-            total: subscribers?.length || 0,
-            subscribers: subscribers || []
+        const subscribers = await prisma.subscriber.findMany({
+            orderBy: { createdAt: 'desc' },
+            take: 200
         });
+
+        // The client expects an array based on fetchSubscribers usage
+        return NextResponse.json(subscribers);
     } catch (error) {
         console.error('Subscribers fetch error:', error);
-        return NextResponse.json({
-            total: 0,
-            subscribers: [],
-            error: 'Database connection failed'
+        return NextResponse.json([], { status: 500 });
+    }
+}
+
+// PATCH - Update subscriber status
+export async function PATCH(request: Request) {
+    try {
+        const body = await request.json();
+        const { id, isActive } = body;
+
+        if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
+
+        const subscriber = await prisma.subscriber.update({
+            where: { id },
+            data: { isActive }
         });
+
+        return NextResponse.json(subscriber);
+    } catch (error) {
+        return NextResponse.json({ error: 'Update failed' }, { status: 500 });
+    }
+}
+
+// DELETE - Remove subscriber
+export async function DELETE(request: Request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get('id');
+
+        if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
+
+        await prisma.subscriber.delete({
+            where: { id }
+        });
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        return NextResponse.json({ error: 'Delete failed' }, { status: 500 });
     }
 }

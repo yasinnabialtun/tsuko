@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { validateAdminRequest } from '@/lib/admin-auth';
+import { sendStockNotificationEmail } from '@/lib/email';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,6 +35,7 @@ export async function GET(request: Request, { params }: RouteParams) {
     }
 }
 
+
 // PUT /api/products/[id] - Update product
 export async function PUT(request: Request, { params }: RouteParams) {
     // 🔒 Admin Check
@@ -52,15 +54,8 @@ export async function PUT(request: Request, { params }: RouteParams) {
             return NextResponse.json({ error: 'Ürün bulunamadı.' }, { status: 404 });
         }
 
-        // If slug is changing, check for duplicates
-        if (body.slug && body.slug !== existingProduct.slug) {
-            const slugExists = await prisma.product.findUnique({
-                where: { slug: body.slug }
-            });
-            if (slugExists) {
-                return NextResponse.json({ error: 'Bu slug zaten kullanılıyor.' }, { status: 400 });
-            }
-        }
+        // Check for stock transition
+        const stockBecameAvailable = existingProduct.stock === 0 && (body.stock > 0);
 
         const updatedProduct = await prisma.product.update({
             where: { id },
@@ -79,6 +74,30 @@ export async function PUT(request: Request, { params }: RouteParams) {
             },
             include: { category: true }
         });
+
+        // Trigger notifications if stock became available
+        if (stockBecameAvailable) {
+            const notifications = await prisma.stockNotification.findMany({
+                where: { productId: id, isNotified: false }
+            });
+
+            if (notifications.length > 0) {
+                // Send emails in a loop (better in background but this works for few)
+                for (const notify of notifications) {
+                    await sendStockNotificationEmail(notify.email, {
+                        name: updatedProduct.name,
+                        image: updatedProduct.images[0] || '/images/hero.png',
+                        slug: updatedProduct.slug
+                    });
+
+                    // Mark as notified
+                    await prisma.stockNotification.update({
+                        where: { id: notify.id },
+                        data: { isNotified: true }
+                    });
+                }
+            }
+        }
 
         return NextResponse.json({
             message: 'Ürün başarıyla güncellendi.',

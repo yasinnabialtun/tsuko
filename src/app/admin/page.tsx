@@ -1,42 +1,71 @@
 
-import { TrendingUp, Users, ShoppingBag, DollarSign, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { TrendingUp, Users, ShoppingBag, DollarSign, ArrowUpRight, ArrowDownRight, Activity } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import SalesChart from '@/components/admin/sales-chart';
+import LiveVisitorGlobe from '@/components/admin/live-visitor-globe';
+import SystemPulse from '@/components/admin/system-pulse';
 
 async function getStats() {
     try {
-        const productCount = await prisma.product.count();
-        const orderCount = await prisma.order.count();
-        const totalRevenue = await prisma.order.aggregate({
-            _sum: { totalAmount: true }
-        });
-        const subscriberCount = await prisma.subscriber.count();
+        const now = new Date();
+        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
 
-        // Calculate growth (mocked for now as we don't have historical snapshots easily, 
-        // but we can compare this month vs last if we wanted more complexity)
+        const [
+            productCount,
+            orderCount,
+            prevOrderCount,
+            revenueData,
+            prevRevenueData,
+            subscriberCount,
+            prevSubscriberCount
+        ] = await Promise.all([
+            prisma.product.count(),
+            prisma.order.count(),
+            prisma.order.count({ where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } } }),
+            prisma.order.aggregate({ _sum: { totalAmount: true } }),
+            prisma.order.aggregate({
+                where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } },
+                _sum: { totalAmount: true }
+            }),
+            prisma.subscriber.count(),
+            prisma.subscriber.count({ where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } } })
+        ]);
+
+        const currentRevenue = Number(revenueData._sum.totalAmount || 0);
+        const prevRevenue = Number(prevRevenueData._sum.totalAmount || 0);
+
+        const calculateGrowth = (current: number, previous: number) => {
+            if (previous === 0) return current > 0 ? 100 : 0;
+            return ((current - previous) / previous) * 100;
+        };
+
+        const revGrowth = calculateGrowth(currentRevenue, prevRevenue);
+        const orderGrowth = calculateGrowth(orderCount, prevOrderCount);
+        const subGrowth = calculateGrowth(subscriberCount, prevSubscriberCount);
 
         return [
             {
                 label: 'Toplam Ciro',
-                value: `₺${Number(totalRevenue._sum.totalAmount || 0).toLocaleString('tr-TR')}`,
-                change: '+%12',
-                trend: 'up',
+                value: `₺${currentRevenue.toLocaleString('tr-TR')}`,
+                change: `${revGrowth >= 0 ? '+' : ''}%${revGrowth.toFixed(1)}`,
+                trend: revGrowth >= 0 ? 'up' : 'down',
                 icon: DollarSign,
-                desc: 'Gerçek zamanlı veri'
+                desc: 'Tüm zamanlar'
             },
             {
                 label: 'Toplam Sipariş',
                 value: orderCount.toString(),
-                change: '+%5',
-                trend: 'up',
+                change: `${orderGrowth >= 0 ? '+' : ''}%${orderGrowth.toFixed(1)}`,
+                trend: orderGrowth >= 0 ? 'up' : 'down',
                 icon: ShoppingBag,
                 desc: 'Sistemdeki tüm siparişler'
             },
             {
                 label: 'Toplam Ürün',
                 value: productCount.toString(),
-                change: '+%2',
+                change: '+%0',
                 trend: 'up',
                 icon: TrendingUp,
                 desc: 'Envanter büyüklüğü'
@@ -44,13 +73,14 @@ async function getStats() {
             {
                 label: 'Aboneler',
                 value: subscriberCount.toString(),
-                change: '+%18',
-                trend: 'up',
+                change: `${subGrowth >= 0 ? '+' : ''}%${subGrowth.toFixed(1)}`,
+                trend: subGrowth >= 0 ? 'up' : 'down',
                 icon: Users,
                 desc: 'Newsletter kitlesi'
             }
         ];
     } catch (e) {
+        console.error('Stats error:', e);
         return [];
     }
 }
@@ -98,17 +128,18 @@ export default async function AdminDashboard() {
         <div className="space-y-8">
 
             {/* Header */}
-            <div className="flex justify-between items-end">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                 <div>
-                    <h1 className="text-4xl font-black text-charcoal mb-2">Genel Bakış</h1>
-                    <p className="text-charcoal/60">İşletmenizin anlık performans metrikleri.</p>
+                    <h1 className="text-5xl font-black text-charcoal mb-3 tracking-tighter">Panel</h1>
+                    <p className="text-charcoal/40 font-medium">Hoş geldiniz, her şey yolunda görünüyor. ✨</p>
                 </div>
-                <div className="flex gap-3">
-                    <Link href="/admin/orders" className="bg-white border border-[#E6E8E6] px-4 py-2 rounded-xl text-sm font-bold text-charcoal hover:bg-alabaster transition-colors">
-                        Siparişler
+                <div className="flex flex-wrap gap-3">
+                    <Link href="/admin/live" className="flex items-center gap-2 bg-red-500 text-white px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-red-500/20 hover:scale-105 transition-all">
+                        <Activity size={16} />
+                        CANLI YAYIN
                     </Link>
-                    <Link href="/admin/products/new" className="bg-charcoal text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-charcoal/20 hover:bg-black transition-colors">
-                        + Yeni Ürün
+                    <Link href="/admin/products/new" className="bg-charcoal text-white px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-charcoal/20 hover:bg-black transition-all">
+                        + YENİ ÜRÜN
                     </Link>
                 </div>
             </div>
@@ -181,24 +212,10 @@ export default async function AdminDashboard() {
                     </div>
                 </div>
 
-                {/* Quick Actions / Marketing Side */}
-                <div className="bg-charcoal text-white rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-                    <div className="relative z-10">
-                        <h3 className="text-2xl font-bold mb-2">Growth İpuçları 🚀</h3>
-                        <p className="text-white/60 mb-8 text-sm leading-relaxed">
-                            Sepet terk oranı %4 arttı. Exit-Intent pop-up teklifini güncellemeyi düşünün.
-                        </p>
-
-                        <div className="space-y-3">
-                            <div className="p-4 bg-white/10 rounded-xl border border-white/10">
-                                <span className="text-xs font-bold text-clay block mb-1">BİLGİ</span>
-                                <div className="font-bold text-sm">Satış yapıldıkça burada otomatik analizler görünecek.</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Background Blob */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-clay rounded-full blur-[80px] opacity-20 translate-x-1/2 -translate-y-1/2" />
+                {/* Sidebar Widgets */}
+                <div className="space-y-8">
+                    <SystemPulse />
+                    <LiveVisitorGlobe />
                 </div>
 
             </div>

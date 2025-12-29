@@ -98,6 +98,17 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         fetchOrder();
     }, [orderId]);
 
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                handleSave();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [formData, orderId]);
+
     const handleSave = async () => {
         setSaving(true);
         setError('');
@@ -118,6 +129,52 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 setTimeout(() => setSuccess(''), 3000);
             } else {
                 setError(data.error || 'Güncelleme başarısız.');
+            }
+        } catch (err) {
+            setError('Bağlantı hatası.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleCopyShipping = () => {
+        if (!order) return;
+        const text = `Alıcı: ${order.customerName}\nTel: ${order.customerPhone}\nAdres: ${order.shippingAddress}`;
+        navigator.clipboard.writeText(text);
+        setSuccess('Kargo bilgileri kopyalandı!');
+        setTimeout(() => setSuccess(''), 2000);
+    };
+
+    const handleCreateShippingLabel = async () => {
+        if (!order) return;
+        setSaving(true);
+
+        // Mock API Call Delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        const mockTracking = `TR-${Math.floor(Math.random() * 1000000000)}`;
+        const newData = {
+            status: 'SHIPPED',
+            paymentStatus: formData.paymentStatus, // Keep existing
+            trackingNumber: mockTracking
+        };
+
+        setFormData(newData);
+
+        // Perform Save
+        try {
+            const response = await fetch(`/api/orders/${orderId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newData)
+            });
+
+            if (response.ok) {
+                setSuccess('Kargo etiketi oluşturuldu ve sipariş güncellendi!');
+                setOrder(prev => prev ? { ...prev, ...newData } : null);
+                setTimeout(() => setSuccess(''), 3000);
+            } else {
+                setError('Etiket oluşturma başarısız.');
             }
         } catch (err) {
             setError('Bağlantı hatası.');
@@ -214,7 +271,38 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
                     {/* Customer Info */}
                     <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                        <h3 className="font-bold text-charcoal mb-4">Müşteri Bilgileri</h3>
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="font-bold text-charcoal">Müşteri Bilgileri</h3>
+                            <button
+                                onClick={handleCopyShipping}
+                                className="text-xs bg-clay/10 text-clay px-3 py-1.5 rounded-lg font-bold hover:bg-clay hover:text-white transition-all flex items-center gap-2"
+                            >
+                                <Save size={14} />
+                                Kargo İçin Kopyala
+                            </button>
+                        </div>
+
+                        {!formData.trackingNumber && (
+                            <div className="mb-6 p-4 bg-purple-50 rounded-xl border border-purple-100 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600">
+                                        <Truck size={20} />
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-charcoal text-sm">Canlı Kargo Entegrasyonu</p>
+                                        <p className="text-xs text-purple-600">Tek tıkla barkod oluştur</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={handleCreateShippingLabel}
+                                    disabled={saving}
+                                    className="bg-purple-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-purple-700 transition-all shadow-lg shadow-purple-600/20 disabled:opacity-50"
+                                >
+                                    {saving ? 'Oluşturuluyor...' : 'Etiket Oluştur'}
+                                </button>
+                            </div>
+                        )}
+
                         <div className="grid grid-cols-2 gap-4">
                             <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                                 <User size={18} className="text-gray-400" />

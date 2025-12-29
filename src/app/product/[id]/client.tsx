@@ -31,6 +31,9 @@ interface ProductData {
     shopierUrl: string;
     similarProducts: any[];
     variants?: any[];
+    avgRating?: number;
+    reviewCount?: number;
+    modelUrl?: string | null;
 }
 
 const getRandomViewers = () => Math.floor(Math.random() * (8 - 3 + 1)) + 3;
@@ -118,16 +121,19 @@ export default function ProductPageClient({ product }: { product: ProductData })
                         initial={{ y: 100 }}
                         animate={{ y: 0 }}
                         exit={{ y: 100 }}
-                        className="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-black/5 p-4 z-50 md:hidden shadow-[0_-10px_40px_rgba(0,0,0,0.1)]"
+                        className="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-black/5 p-4 z-50 md:hidden shadow-[0_-10px_40px_rgba(0,0,0,0.15)]"
                     >
-                        <div className="flex items-center gap-4">
-                            <div className="flex-1">
-                                <h4 className="font-bold text-charcoal text-sm truncate">{product.name}</h4>
-                                <p className="text-sm font-medium text-clay">{currentPrice.toFixed(2)} ₺</p>
+                        <div className="flex items-center gap-4 max-w-lg mx-auto">
+                            <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gray-50 border border-black/5">
+                                <Image src={product.image} alt={product.name} fill className="object-cover" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <h4 className="font-bold text-charcoal text-xs truncate uppercase tracking-tighter">{product.name}</h4>
+                                <p className="text-sm font-black text-clay">{currentPrice.toFixed(2)} ₺</p>
                             </div>
                             <button
                                 onClick={handleAddToCart}
-                                className="px-6 py-3 bg-charcoal text-white rounded-xl font-bold text-sm shadow-lg shadow-charcoal/20"
+                                className="px-6 py-3 bg-charcoal text-white rounded-xl font-bold text-sm shadow-xl shadow-charcoal/20 active:scale-95 transition-transform"
                             >
                                 Sepete Ekle
                             </button>
@@ -146,7 +152,7 @@ export default function ProductPageClient({ product }: { product: ProductData })
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-20 mt-8">
                     {/* Gallery Section */}
                     <div className="lg:col-span-7">
-                        <ProductGallery images={product.images} name={product.name} />
+                        <ProductGallery images={product.images} name={product.name} modelUrl={product.modelUrl} />
                         {isOutOfStock && (
                             <div className="mt-4 bg-charcoal text-white px-6 py-3 rounded-xl font-bold tracking-widest uppercase text-center">
                                 Tükendi
@@ -160,10 +166,19 @@ export default function ProductPageClient({ product }: { product: ProductData })
                             {/* Header */}
                             <div>
                                 <div className="flex items-center gap-3 mb-4">
-                                    <div className="flex text-clay">
-                                        {[1, 2, 3, 4, 5].map(i => <Star key={i} size={14} fill="currentColor" />)}
+                                    <div className="flex text-orange-400">
+                                        {[1, 2, 3, 4, 5].map(i => (
+                                            <Star
+                                                key={i}
+                                                size={14}
+                                                fill={i <= Math.round(product.avgRating || 0) ? "currentColor" : "none"}
+                                                className={i <= Math.round(product.avgRating || 0) ? "" : "text-gray-300"}
+                                            />
+                                        ))}
                                     </div>
-                                    <span className="text-xs font-bold tracking-widest text-charcoal/40 uppercase">Elite Collection</span>
+                                    <span className="text-xs font-bold tracking-widest text-charcoal/40 uppercase">
+                                        {product.reviewCount || 0} DEĞERLENDİRME
+                                    </span>
                                 </div>
 
                                 <h1 className="text-4xl md:text-5xl font-light text-charcoal mb-4 tracking-tight leading-tight">
@@ -171,7 +186,15 @@ export default function ProductPageClient({ product }: { product: ProductData })
                                 </h1>
 
                                 <div className="flex items-end justify-between border-b border-gray-100 pb-8">
-                                    <p className="text-3xl font-medium text-charcoal">{currentPrice.toFixed(2)} ₺</p>
+                                    <div className="space-y-2">
+                                        <p className="text-3xl font-medium text-charcoal">{currentPrice.toFixed(2)} ₺</p>
+                                        {!isOutOfStock && (
+                                            <div className="flex items-center gap-2 text-emerald-600 text-xs font-bold uppercase tracking-widest">
+                                                <Clock size={14} />
+                                                <span>Aynı Gün Kargo</span>
+                                            </div>
+                                        )}
+                                    </div>
                                     <button
                                         onClick={() => {
                                             if (navigator.share) {

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, ArrowRight, FileText, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 interface SearchModalProps {
     isOpen: boolean;
@@ -12,22 +13,37 @@ interface SearchModalProps {
 }
 
 export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
+    const router = useRouter();
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<{ products: any[], posts: any[] }>({ products: [], posts: [] });
     const [loading, setLoading] = useState(false);
 
-    // Lock body scroll when open
+    const handleSearch = () => {
+        if (query.trim()) {
+            onClose();
+            router.push(`/search?q=${encodeURIComponent(query)}`);
+        }
+    };
+
+    // Lock body scroll and listen for Escape
     useEffect(() => {
+        const handleEsc = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onClose();
+        };
+
         if (isOpen) {
             document.body.style.overflow = 'hidden';
-            // Focus input logic can be handled by autoFocus prop
+            window.addEventListener('keydown', handleEsc);
         } else {
             document.body.style.overflow = 'unset';
             setQuery('');
             setResults({ products: [], posts: [] });
         }
-        return () => { document.body.style.overflow = 'unset'; };
-    }, [isOpen]);
+        return () => {
+            document.body.style.overflow = 'unset';
+            window.removeEventListener('keydown', handleEsc);
+        };
+    }, [isOpen, onClose]);
 
     // Debounced Search
     useEffect(() => {
@@ -83,9 +99,18 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                 placeholder="Ürün veya yazı ara..."
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                                 className="flex-grow text-xl font-medium text-charcoal outline-none placeholder:text-charcoal/20 bg-transparent"
                                 autoFocus
                             />
+                            {query && (
+                                <button
+                                    onClick={handleSearch}
+                                    className="hidden md:flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-clay hover:text-charcoal transition-colors px-3 py-1 bg-clay/5 rounded-lg"
+                                >
+                                    Tümünü Gör <ArrowRight size={12} />
+                                </button>
+                            )}
                             {loading ? (
                                 <Loader2 className="animate-spin text-clay" size={24} />
                             ) : (
@@ -101,9 +126,23 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         {/* Results Area */}
                         <div className="flex-grow overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-gray-200">
                             {!query && (
-                                <div className="h-full flex flex-col items-center justify-center text-charcoal/30">
-                                    <Search size={48} className="mb-4 opacity-20" />
-                                    <p className="text-sm font-medium uppercase tracking-widest">Aramaya Başla</p>
+                                <div className="p-8">
+                                    <h3 className="text-xs font-bold text-charcoal/40 uppercase tracking-widest mb-6 px-2">Popüler Aramalar</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {['Vazo', 'Saksı', 'Aydınlatma', 'Spiral', 'Dalga'].map(pop => (
+                                            <button
+                                                key={pop}
+                                                onClick={() => setQuery(pop)}
+                                                className="px-4 py-2 bg-alabaster hover:bg-clay/10 hover:text-clay rounded-full text-sm font-medium transition-all"
+                                            >
+                                                {pop}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <div className="mt-12 flex flex-col items-center justify-center text-charcoal/10">
+                                        <Search size={64} />
+                                    </div>
                                 </div>
                             )}
 

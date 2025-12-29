@@ -6,9 +6,6 @@ const nextConfig: NextConfig = {
     // Allow production builds even with type errors (for rapid deployment)
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: {
     remotePatterns: [
       {

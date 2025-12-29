@@ -1,8 +1,14 @@
-import { Instagram, Twitter, Mail, MapPin, Phone, ShieldCheck, Truck, CreditCard } from 'lucide-react';
+import { Instagram, Mail, MapPin, Phone, ShieldCheck, Truck, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getSiteSettings } from '@/lib/settings';
 
-export default function Footer() {
+export default async function Footer() {
+    const settings = await getSiteSettings();
+    const siteName = settings?.siteName || 'Tsuko Design';
+    const email = settings?.email || 'info@tsukodesign.com';
+    const instagram = settings?.instagram || 'tsukodesign';
+
     return (
         <footer className="bg-charcoal text-white pt-20">
             {/* Trust Bar - Integrated */}
@@ -41,12 +47,17 @@ export default function Footer() {
                                 Sürdürülebilir, estetik ve fonksiyonel.
                             </p>
                             <div className="flex gap-4 pt-4">
-                                <a href="https://instagram.com/tsukodesign" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-charcoal hover:border-white transition-all">
+                                <a href={`https://instagram.com/${instagram}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-charcoal hover:border-white transition-all">
                                     <Instagram size={18} />
                                 </a>
-                                <a href="mailto:info@tsukodesign.com" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-charcoal hover:border-white transition-all">
+                                <a href={`mailto:${email}`} className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-charcoal hover:border-white transition-all">
                                     <Mail size={18} />
                                 </a>
+                                {settings?.whatsapp && (
+                                    <a href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-charcoal hover:border-white transition-all">
+                                        <Phone size={18} />
+                                    </a>
+                                )}
                             </div>
                         </div>
 
@@ -64,6 +75,7 @@ export default function Footer() {
                             <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-mauve">Destek</h4>
                             <ul className="space-y-4 text-stone/60 text-sm font-medium">
                                 <li><Link href="/contact" className="hover:text-white transition-colors">İletişim</Link></li>
+                                <li><Link href="/order-tracking" className="hover:text-white transition-colors">Sipariş Takibi</Link></li>
                                 <li><Link href="/shipping" className="hover:text-white transition-colors">Teslimat</Link></li>
                                 <li><Link href="/returns" className="hover:text-white transition-colors">İade</Link></li>
                             </ul>
@@ -83,9 +95,9 @@ export default function Footer() {
             {/* Bottom Bar */}
             <div className="border-t border-white/5 bg-black/20">
                 <div className="container mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-xs text-stone/40 font-medium">© 2025 Tsuko Design. All rights reserved.</p>
+                    <p className="text-xs text-stone/40 font-medium">© 2025 {siteName}. All rights reserved.</p>
                     <div className="flex items-center gap-6 text-xs text-stone/40">
-                        <span className="flex items-center gap-2"><MapPin size={12} /> İstanbul</span>
+                        <span className="flex items-center gap-2"><MapPin size={12} /> {settings?.address || 'İstanbul'}</span>
                         <span className="hidden md:inline">|</span>
                         <span>Designed by Tsuko Studio</span>
                     </div>

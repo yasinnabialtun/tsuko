@@ -1,7 +1,8 @@
-
+import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendOrderConfirmationEmail } from '@/lib/email';
+import { sendDiscordNotification } from '@/lib/notifications';
 
 // Shopier Credentials
 const SHOPIER_API_KEY = process.env.SHOPIER_API_KEY;
@@ -24,6 +25,7 @@ function generateOrderNumber() {
 // POST /api/checkout
 export async function POST(request: Request) {
     try {
+        const { userId } = await auth();
         const body = await request.json();
         const { items, customer, couponCode } = body;
 
@@ -128,6 +130,7 @@ export async function POST(request: Request) {
                 totalAmount: finalAmount,
                 discountAmount: discountAmount,
                 couponCode: discountAmount > 0 ? couponCode.toUpperCase() : null,
+                userId: userId || null,
                 status: 'PENDING',        // Waiting for payment
                 paymentStatus: 'UNPAID',  // Waiting for payment
                 items: {
@@ -175,6 +178,13 @@ export async function POST(request: Request) {
 
             // Send Email
             await sendOrderConfirmationEmail(updatedOrder);
+
+            // Send Discord Notification
+            await sendDiscordNotification({
+                orderNumber: updatedOrder.orderNumber,
+                totalAmount: updatedOrder.totalAmount.toString(),
+                customerName: updatedOrder.customerName
+            });
 
             // Mock response for dev
             return NextResponse.json({

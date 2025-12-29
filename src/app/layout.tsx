@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { CartProvider } from '@/context/cart-context';
@@ -6,76 +7,126 @@ import { WishlistProvider } from '@/context/wishlist-context';
 import { Toaster } from 'react-hot-toast';
 import TopBanner from '@/components/top-banner';
 import Analytics from '@/components/analytics';
+import AnalyticsTracker from '@/components/analytics-tracker';
+import { getSiteSettings } from '@/lib/settings';
+import { headers } from 'next/headers';
+import MaintenanceMode from '@/components/maintenance-mode';
+import FloatingWidgets from '@/components/floating-widgets';
+import ScrollProgress from '@/components/scroll-progress';
+import CursorOrnament from '@/components/cursor-ornament';
+import SessionTracker from '@/components/session-tracker';
+
+import { ClerkProvider } from '@clerk/nextjs';
+import { trTR } from '@clerk/localizations';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' });
 
-export const metadata: Metadata = {
-  title: 'Tsuko Design | Minimalist 3D Baskı Ev Dekorasyonu',
-  description: 'Doğa dostu, minimalist ve parametrik tasarım ürünleriyle evinize modern bir dokunuş katın.',
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Tsuko Design',
-    description: 'Minimalist 3D Baskı Ev Dekorasyonu',
-    images: ['https://tsukodesign.com/images/hero.png'],
-  },
-  openGraph: {
-    title: 'Tsuko Design',
-    description: 'Minimalist 3D Baskı Ev Dekorasyonu',
-    url: 'https://tsukodesign.com',
-    siteName: 'Tsuko Design',
-    images: [
-      {
-        url: 'https://tsukodesign.com/images/hero.png',
-        width: 1200,
-        height: 630,
-      },
-    ],
-    locale: 'tr_TR',
-    type: 'website',
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const siteName = settings?.siteName || 'Tsuko Design';
+  const siteDescription = settings?.siteDescription || 'Minimalist 3D Baskı Ev Dekorasyonu';
+  const siteUrl = settings?.siteUrl || 'https://tsukodesign.com';
 
-export default function RootLayout({
+  return {
+    title: {
+      template: `%s | ${siteName}`,
+      default: `${siteName} | Minimalist 3D Baskı`,
+    },
+    description: siteDescription,
+    metadataBase: new URL(siteUrl),
+    twitter: {
+      card: 'summary_large_image',
+      title: siteName,
+      description: siteDescription,
+      images: ['/images/hero.png'],
+    },
+    openGraph: {
+      title: siteName,
+      description: siteDescription,
+      url: siteUrl,
+      siteName: siteName,
+      images: [
+        {
+          url: '/images/hero.png',
+          width: 1200,
+          height: 630,
+        },
+      ],
+      locale: 'tr_TR',
+      type: 'website',
+    },
+  };
+}
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const settings = await getSiteSettings();
+  const headerList = await headers();
+  const pathname = headerList.get('x-pathname') || '';
+  const isAdmin = pathname.startsWith('/admin') || pathname.startsWith('/api/admin');
+
+  // If maintenance mode is ON and we are NOT on an admin page, show maintenance UI
+  if (settings?.maintenanceMode && !isAdmin) {
+    return (
+      <html lang="tr">
+        <body className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-white`}>
+          <MaintenanceMode />
+        </body>
+      </html>
+    );
+  }
+
   return (
-    <html lang="tr">
-      <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-      </head>
-      <body className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-white`}>
-        <CartProvider>
-          <WishlistProvider>
-            <Toaster
-              position="top-center"
-              toastOptions={{
-                duration: 4000,
-                style: {
-                  background: 'var(--charcoal)',
-                  color: '#fff',
-                  borderRadius: '16px',
-                  padding: '16px 24px',
-                  boxShadow: '0 20px 40px -10px rgba(0,0,0,0.3)',
-                  fontSize: '14px',
-                  fontWeight: 500,
-                },
-                success: {
-                  iconTheme: {
-                    primary: 'var(--clay)',
-                    secondary: '#fff',
+    <ClerkProvider localization={trTR}>
+      <html lang="tr">
+        <head>
+          <link rel="icon" href="/favicon.ico" sizes="any" />
+          <Script
+            type="module"
+            src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"
+            strategy="lazyOnload"
+          />
+        </head>
+        <body className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-white scroll-smooth`}>
+          {!isAdmin && <ScrollProgress />}
+          {!isAdmin && <CursorOrnament />}
+          <CartProvider>
+            <WishlistProvider>
+              <Toaster
+                position="top-center"
+                toastOptions={{
+                  duration: 4000,
+                  style: {
+                    background: 'var(--charcoal)',
+                    color: '#fff',
+                    borderRadius: '16px',
+                    padding: '16px 24px',
+                    boxShadow: '0 20px 40px -10px rgba(0,0,0,0.3)',
+                    fontSize: '14px',
+                    fontWeight: 500,
                   },
-                },
-              }}
-            />
-            <TopBanner />
-            {children}
-            <Analytics />
-          </WishlistProvider>
-        </CartProvider>
-      </body>
-    </html>
+                  success: {
+                    iconTheme: {
+                      primary: 'var(--clay)',
+                      secondary: '#fff',
+                    },
+                  },
+                }}
+              />
+              {!isAdmin && <TopBanner />}
+              {children}
+              {!isAdmin && <AnalyticsTracker />}
+              {!isAdmin && <Analytics />}
+              {!isAdmin && <FloatingWidgets />}
+              <SessionTracker />
+            </WishlistProvider>
+          </CartProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

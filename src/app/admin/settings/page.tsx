@@ -1,44 +1,56 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Save, Loader2, Check, Globe, Mail, Phone, Palette, Bell, Shield, AlertTriangle, Package, RefreshCcw } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function AdminSettingsPage() {
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
     const [seeding, setSeeding] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [seedSuccess, setSeedSuccess] = useState('');
-    const [maintenanceMode, setMaintenanceMode] = useState(false);
 
     const [settings, setSettings] = useState({
-        // Site Info
-        siteName: 'Tsuko Design',
-        siteDescription: 'Mimari Estetik, Evinize Taşındı',
-        siteUrl: 'https://tsukodesign.com',
-
-        // Contact
-        email: 'info@tsukodesign.com',
+        siteName: '',
+        siteDescription: '',
+        siteUrl: '',
+        email: '',
         phone: '',
-        whatsapp: '905xxxxxxxxx',
-        address: 'İstanbul, Türkiye',
-
-        // Social
-        instagram: 'tsukodesign',
+        whatsapp: '',
+        address: '',
+        instagram: '',
         pinterest: '',
-
-        // E-commerce
-        shopierUrl: 'https://shopier.com/tsukodesign',
-        freeShippingThreshold: '500',
-
-        // Notifications
+        shopierUrl: '',
+        freeShippingThreshold: '0',
+        maintenanceMode: false,
         orderNotifications: true,
         stockAlerts: true,
         newsletterNotifications: true
     });
 
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const res = await fetch('/api/admin/settings');
+                if (res.ok) {
+                    const data = await res.json();
+                    setSettings({
+                        ...data,
+                        freeShippingThreshold: data.freeShippingThreshold?.toString() || '0'
+                    });
+                }
+            } catch (e) {
+                toast.error('Ayarlar yüklenemedi.');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSettings();
+    }, []);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
-
         if (type === 'checkbox') {
             const checked = (e.target as HTMLInputElement).checked;
             setSettings(prev => ({ ...prev, [name]: checked }));
@@ -49,33 +61,53 @@ export default function AdminSettingsPage() {
 
     const handleSave = async () => {
         setSaving(true);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setSaving(false);
-        setSaved(true);
-        setTimeout(() => setSaved(false), 3000);
+        try {
+            const res = await fetch('/api/admin/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(settings)
+            });
+            if (res.ok) {
+                setSaved(true);
+                toast.success('Ayarlar kaydedildi.');
+                setTimeout(() => setSaved(false), 3000);
+            } else {
+                toast.error('Kaydedilemedi.');
+            }
+        } catch (e) {
+            toast.error('Bir hata oluştu.');
+        } finally {
+            setSaving(false);
+        }
     };
 
     const handleSeed = async () => {
         if (!confirm('Tüm kategoriler ve örnek blog yazıları oluşturulacak. Devam etmek istiyor musunuz?')) return;
-
         setSeeding(true);
         setSeedSuccess('');
-
         try {
             const res = await fetch('/api/admin/seed', { method: 'POST' });
             if (res.ok) {
                 setSeedSuccess('Veritabanı başarıyla başlatıldı!');
+                toast.success('Başlatma tamamlandı.');
                 setTimeout(() => setSeedSuccess(''), 5000);
             } else {
-                alert('Seed işlemi başarısız oldu.');
+                toast.error('İşlem başarısız.');
             }
         } catch (error) {
-            console.error(error);
-            alert('Bağlantı hatası.');
+            toast.error('Bağlantı hatası.');
         } finally {
             setSeeding(false);
         }
     };
+
+    if (loading) {
+        return (
+            <div className="flex h-96 items-center justify-center">
+                <Loader2 className="animate-spin text-clay" size={48} />
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-4xl mx-auto space-y-8">
@@ -375,10 +407,10 @@ export default function AdminSettingsPage() {
                         <p className="text-sm text-orange-700">Aktif edildiğinde site ziyaretçilere kapatılır.</p>
                     </div>
                     <button
-                        onClick={() => setMaintenanceMode(!maintenanceMode)}
-                        className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${maintenanceMode ? 'bg-orange-500' : 'bg-gray-300'}`}
+                        onClick={() => handleChange({ target: { name: 'maintenanceMode', value: !settings.maintenanceMode, type: 'checkbox', checked: !settings.maintenanceMode } } as any)}
+                        className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${settings.maintenanceMode ? 'bg-orange-500' : 'bg-gray-300'}`}
                     >
-                        <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${maintenanceMode ? 'translate-x-7' : 'translate-x-1'}`} />
+                        <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${settings.maintenanceMode ? 'translate-x-7' : 'translate-x-1'}`} />
                     </button>
                 </div>
 

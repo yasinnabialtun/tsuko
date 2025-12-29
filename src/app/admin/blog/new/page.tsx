@@ -29,7 +29,9 @@ export default function NewBlogPostPage() {
         coverImage: '',
         category: 'Dekorasyon Fikirleri',
         author: 'Tsuko Design',
-        published: false
+        published: false,
+        seoTitle: '',
+        seoDesc: ''
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -230,6 +232,35 @@ export default function NewBlogPostPage() {
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay focus:ring-2 focus:ring-clay/20 outline-none transition-all resize-none font-mono text-sm leading-relaxed"
                     />
                     <p className="mt-2 text-xs text-gray-400">Markdown formatı desteklenir. **kalın**, *italik*, [link](url)</p>
+                </div>
+
+                {/* SEO Settings */}
+                <div className="bg-white rounded-2xl border border-gray-100 p-8">
+                    <h2 className="text-xl font-bold text-charcoal mb-6">SEO Ayarları</h2>
+                    <div className="space-y-6">
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-2">Meta Başlık (SEO Title)</label>
+                            <input
+                                type="text"
+                                name="seoTitle"
+                                value={formData.seoTitle}
+                                onChange={handleChange}
+                                placeholder="Google sonuçlarında görünecek başlık..."
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay outline-none transition-all"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-2">Meta Açıklama (SEO Description)</label>
+                            <textarea
+                                name="seoDesc"
+                                value={formData.seoDesc}
+                                onChange={handleChange}
+                                rows={3}
+                                placeholder="Yazının arama motoru açıklaması..."
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay outline-none transition-all resize-none"
+                            />
+                        </div>
+                    </div>
                 </div>
 
                 {/* Author & Status */}

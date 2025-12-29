@@ -9,6 +9,7 @@ import NewsletterPopup from '@/components/newsletter-popup';
 import ExitIntentPopup from '@/components/exit-intent-popup';
 import ShopTheLook from '@/components/shop-the-look';
 import LiveSales from '@/components/live-sales';
+import InstagramFeed from '@/components/instagram-feed';
 import { prisma } from "@/lib/prisma";
 
 // Revalidate data every hour
@@ -155,6 +156,7 @@ export default async function Home() {
 
       <FAQ />
       <Newsletter />
+      <InstagramFeed />
       <Footer />
     </main>
   );

@@ -7,8 +7,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Product {
@@ -19,6 +20,7 @@ model Product {
   price       Decimal  @db.Decimal(10, 2) // Base Price or Default Variant Price
   stock       Int      @default(0)        // Total stock or default variant stock
   images      String[] // Array of image URLs
+  modelUrl    String?  // Optional 3D Model (.glb)
   
   categoryId  String
   category    Category @relation(fields: [categoryId], references: [id])
@@ -42,6 +44,7 @@ model Product {
   OrderItem   OrderItem[]
   reviews     Review[]
   notifications StockNotification[]
+  Wishlist    Wishlist[]
 
   @@index([slug])
   @@index([categoryId])
@@ -119,6 +122,8 @@ model Order {
   city            String      @default("")
   trackingNumber  String?
   
+  userId          String?     // Optional Clerk User ID
+  
   items         OrderItem[]
   totalAmount   Decimal     @db.Decimal(10, 2)
   
@@ -130,6 +135,8 @@ model Order {
   
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+
+  @@index([userId])
 }
 
 model OrderItem {
@@ -222,4 +229,61 @@ model Coupon {
   usedCount     Int      @default(0)
   isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
+}
+
+model Settings {
+  id                    String   @id @default("singleton")
+  siteName              String   @default("Tsuko Design")
+  siteDescription       String   @default("Mimari Estetik, Evinize Taşındı")
+  siteUrl              String   @default("https://tsukodesign.com")
+  
+  // SEO
+  seoKeywords          String[] @default([])
+  
+  // Contact
+  email                 String   @default("info@tsukodesign.com")
+  phone                 String   @default("")
+  whatsapp              String   @default("")
+  address               String   @default("")
+  
+  // Social
+  instagram             String   @default("tsukodesign")
+  pinterest             String   @default("")
+  
+  // Shopier
+  shopierUrl            String   @default("")
+  freeShippingThreshold Decimal  @default(500) @db.Decimal(10, 2)
+  
+  // Notifications
+  orderNotifications    Boolean  @default(true)
+  stockAlerts           Boolean  @default(true)
+  newsletterNotifications Boolean @default(true)
+  
+  // UI / Maintenance
+  maintenanceMode       Boolean  @default(false)
+  
+  updatedAt             DateTime @updatedAt
+}
+
+model VisitorSession {
+  id        String   @id @default(cuid())
+  country   String?  @default("Turkey")
+  city      String?
+  lat       Float?
+  lng       Float?
+  lastSeen  DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  @@index([lastSeen])
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String   // Clerk User ID
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId]) // Prevent duplicate likes
+  @@index([userId])
 }

@@ -51,7 +51,10 @@ async function getProduct(idOrSlug: string) {
             where: { slug: idOrSlug },
             include: {
                 category: true,
-                variants: true
+                variants: true,
+                reviews: {
+                    select: { rating: true }
+                }
             }
         });
 
@@ -60,7 +63,10 @@ async function getProduct(idOrSlug: string) {
                 where: { id: idOrSlug },
                 include: {
                     category: true,
-                    variants: true
+                    variants: true,
+                    reviews: {
+                        select: { rating: true }
+                    }
                 }
             });
         }
@@ -132,6 +138,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
     const similarProducts = await getSimilarProducts(product.id, product.categoryId);
 
+    const reviewCount = product.reviews.length;
+    const avgRating = reviewCount > 0
+        ? product.reviews.reduce((acc, r) => acc + r.rating, 0) / reviewCount
+        : 5; // Default 5 if no reviews for aesthetic
+
     // Transform to frontend format
     const productData = {
         id: product.id,
@@ -144,6 +155,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         images: product.images,
         description: product.description,
         stock: product.stock,
+        avgRating,
+        reviewCount,
+        variants: product.variants,
+        modelUrl: (product as any).modelUrl,
         // Generate Shopier URL from product data or use placeholder
         shopierUrl: `https://www.shopier.com/tsukodesign/${product.slug}`,
         similarProducts: similarProducts
@@ -155,6 +170,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         '@type': 'Product',
         name: product.name,
         description: product.description,
+        aggregateRating: reviewCount > 0 ? {
+            '@type': 'AggregateRating',
+            ratingValue: avgRating,
+            reviewCount: reviewCount
+        } : undefined,
         image: product.images[0]?.startsWith('http')
             ? product.images[0]
             : (product.images[0] ? `https://tsukodesign.com${product.images[0]}` : undefined),
@@ -182,8 +202,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
             <Navbar />
 
-            {/* Client component for interactive elements */}
-            <ProductPageClient product={productData} />
+            <ProductPageClient product={productData as any} />
 
             <Footer />
         </main>

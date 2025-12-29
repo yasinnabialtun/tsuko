@@ -1,11 +1,28 @@
 
 import { Resend } from 'resend';
-import { getWelcomeEmailHtml, getOrderConfirmationEmailHtml, getOrderShippedEmailHtml } from './email-templates';
+import { getWelcomeEmailHtml, getOrderConfirmationEmailHtml, getOrderShippedEmailHtml, getStockNotificationEmailHtml } from './email-templates';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+export const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Domain verified in Resend dashboard must match this
 const SENDER_EMAIL = process.env.RESEND_SENDER_EMAIL || 'Tsuko Design <info@tsukodesign.com>';
+
+// ... (previous functions)
+
+export async function sendStockNotificationEmail(email: string, product: { name: string; image: string; slug: string }) {
+    if (!process.env.RESEND_API_KEY) return;
+
+    try {
+        await resend.emails.send({
+            from: SENDER_EMAIL,
+            to: email,
+            subject: `${product.name} Tekrar Stokta! | Tsuko Design`,
+            html: getStockNotificationEmailHtml(product)
+        });
+    } catch (error) {
+        console.error('Stock notification email error:', error);
+    }
+}
 
 export async function sendWelcomeEmail(email: string) {
     if (!process.env.RESEND_API_KEY) {

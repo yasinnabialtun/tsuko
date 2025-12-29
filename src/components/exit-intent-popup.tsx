@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Gift, Copy, Check } from 'lucide-react';
+import { X, Gift, Copy, Check, ShoppingBag } from 'lucide-react';
+import { useCart } from '@/context/cart-context';
 
 export default function ExitIntentPopup() {
+    const { cartCount } = useCart();
     const [isVisible, setIsVisible] = useState(false);
     const [hasShown, setHasShown] = useState(false);
     const [copied, setCopied] = useState(false);
@@ -73,14 +75,16 @@ export default function ExitIntentPopup() {
                             </button>
 
                             <div className="w-16 h-16 bg-clay/10 rounded-full flex items-center justify-center mx-auto mb-6 text-clay">
-                                <Gift size={32} />
+                                {cartCount > 0 ? <ShoppingBag size={32} /> : <Gift size={32} />}
                             </div>
 
-                            <h2 className="text-3xl font-black text-charcoal mb-2">
-                                Gitmek Üzere Misin?
+                            <h2 className="text-3xl font-black text-charcoal mb-2 leading-none uppercase tracking-tighter">
+                                {cartCount > 0 ? 'Sepetini Unutma!' : 'Gitmek Üzere Misin?'}
                             </h2>
-                            <p className="text-charcoal/60 mb-8 max-w-sm mx-auto">
-                                Evinin havasını değiştirmeden gitme. İlk siparişine özel <strong>%10 İndirim</strong> bizden olsun.
+                            <p className="text-charcoal/60 mb-8 max-w-sm mx-auto text-sm font-medium">
+                                {cartCount > 0
+                                    ? `Sepetinde ${cartCount} adet ürün seni bekliyor. Hemen sipariş ver, ilk alışverişine özel %10 indirimi kaçırma.`
+                                    : 'Evinin havasını değiştirmeden gitme. İlk siparişine özel %10 İndirim bizden olsun.'}
                             </p>
 
                             <div className="bg-alabaster border border-dashed border-charcoal/20 rounded-xl p-4 mb-6 flex items-center justify-between gap-4">

@@ -1,3 +1,11 @@
+import { prisma } from '@/lib/prisma';
+import { notFound } from 'next/navigation';
+import Navbar from '@/components/navbar';
+import Footer from '@/components/footer';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
+
 const DEFAULT_POSTS = [
     {
         id: '1',
@@ -28,6 +36,34 @@ const DEFAULT_POSTS = [
     },
     // ... add other posts similarly if needed, or redirect logic
 ];
+
+import { Metadata } from 'next';
+
+type Props = {
+    params: Promise<{ slug: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { slug } = await params;
+    let post = await prisma.blogPost.findUnique({ where: { slug } });
+
+    if (!post) {
+        const fallback = DEFAULT_POSTS.find(p => p.slug === slug);
+        if (fallback) post = fallback as any;
+    }
+
+    if (!post) return { title: 'Yazı Bulunamadı' };
+
+    return {
+        title: `${post.seoTitle || post.title} | Tsuko Journal`,
+        description: post.seoDesc || post.excerpt,
+        openGraph: {
+            title: post.title,
+            description: post.excerpt,
+            images: [post.coverImage || '/images/hero.png'],
+        }
+    };
+}
 
 export default async function BlogPostPage({ params }: Props) {
     const { slug } = await params;

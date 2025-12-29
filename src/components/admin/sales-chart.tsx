@@ -6,7 +6,7 @@ export default function SalesChart({ data }: { data: any[] }) {
     return (
         <div className="bg-white p-6 rounded-2xl border border-black/5 h-[400px]">
             <h3 className="text-lg font-bold text-charcoal mb-6">Haftalık Satışlar</h3>
-            <ResponsiveContainer width="100%" height="85%">
+            <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={data}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                     <XAxis

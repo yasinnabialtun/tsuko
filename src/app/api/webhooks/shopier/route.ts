@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendOrderConfirmationEmail } from '@/lib/email';
 import { restoreStock } from '@/lib/stock';
+import { sendDiscordNotification } from '@/lib/notifications';
 
 // ... (other imports)
 
@@ -53,12 +54,16 @@ export async function POST(req: Request) {
             include: { items: { include: { product: true } } }
         });
 
-        // 2. Send Email
-        // Verify email sending by waiting (prevents lambda freeze before send)
+        // 2. Send Email & Notifications
         try {
             await sendOrderConfirmationEmail(updatedOrder);
+            await sendDiscordNotification({
+                orderNumber: updatedOrder.orderNumber,
+                totalAmount: updatedOrder.totalAmount.toString(),
+                customerName: updatedOrder.customerName
+            });
         } catch (emailErr) {
-            console.error('Email failed but order is paid:', emailErr);
+            console.error('Notification failed but order is paid:', emailErr);
         }
 
         return NextResponse.json({ success: true });

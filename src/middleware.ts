@@ -1,31 +1,40 @@
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
-    // 1. Admin Route Protection
-    if (request.nextUrl.pathname.startsWith('/admin')) {
+const isAdminRoute = createRouteMatcher(['/admin(.*)']);
+
+export default clerkMiddleware(async (auth, req) => {
+    // 1. Admin Route Protection (Existing Logic)
+    if (isAdminRoute(req)) {
         // Allow access to login page
-        if (request.nextUrl.pathname === '/admin/login') {
+        if (req.nextUrl.pathname === '/admin/login') {
             return NextResponse.next();
         }
 
-        const adminToken = request.cookies.get('admin_token');
+        const adminToken = req.cookies.get('admin_session');
 
         // If no token, redirect to login
         if (!adminToken) {
-            const loginUrl = new URL('/admin/login', request.url);
-            // Optional: Add redirect param to return after login
-            loginUrl.searchParams.set('from', request.nextUrl.pathname);
+            const loginUrl = new URL('/admin/login', req.url);
+            loginUrl.searchParams.set('from', req.nextUrl.pathname);
             return NextResponse.redirect(loginUrl);
         }
     }
 
-    return NextResponse.next();
-}
+    const response = NextResponse.next();
+    response.headers.set('x-pathname', req.nextUrl.pathname);
+    return response;
+});
 
 export const config = {
     matcher: [
-        // Apply to all admin routes
-        '/admin/:path*',
+        /*
+         * Match all request paths except for the ones starting with:
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         * - manifest.webmanifest (webmanifest file)
+         */
+        '/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|.*\\.png$).*)',
     ],
 };
