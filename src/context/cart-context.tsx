@@ -113,21 +113,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
             }];
         });
 
-        // GTM DataLayer Event - Add to Cart
-        if (typeof window !== 'undefined' && (window as any).dataLayer) {
-            (window as any).dataLayer.push({
-                event: 'addToCart',
-                ecommerce: {
-                    items: [{
-                        item_id: product.id,
-                        item_name: product.name,
-                        item_variant: variant?.name || '',
-                        price: variant ? variant.price : product.priceNumber,
-                        quantity: quantity
-                    }]
-                }
-            });
-        }
+        // Track Activity for Live View
+        fetch('/api/track/activity', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: 'CART_ADD',
+                productName: product.name,
+                city: 'Ziyaretçi' // We could get real city from session but this is a good start
+            })
+        }).catch(() => { });
 
         setIsCartOpen(true);
     };

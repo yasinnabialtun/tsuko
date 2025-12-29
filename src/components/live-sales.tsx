@@ -5,13 +5,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
 
-const SALES_DATA = [
-    { name: 'Melis', location: 'Kadıköy, İstanbul', product: 'Nami Vazo', image: '/images/products/nami.png', time: '2 dakika önce' },
-    { name: 'Can', location: 'Çankaya, Ankara', product: 'Mantar Lamba', image: '/images/products/mantar.png', time: '12 dakika önce' },
-    { name: 'Selin', location: 'Karşıyaka, İzmir', product: 'Kaya Saksı', image: '/images/products/kaya.png', time: 'Az önce' },
-    { name: 'Zeynep', location: 'Beşiktaş, İstanbul', product: 'Aura Vazo', image: '/images/hero.png', time: '1 saat önce' },
-    { name: 'Mert', location: 'Nilüfer, Bursa', product: 'Nami Vazo - Stone', image: '/images/products/nami.png', time: '45 dakika önce' },
-];
+
 
 export default function LiveSalesNotification() {
     const [sales, setSales] = useState<any[]>([]);
@@ -23,14 +17,10 @@ export default function LiveSalesNotification() {
                 const res = await fetch('/api/orders/public/recent');
                 if (res.ok) {
                     const data = await res.json();
-                    if (data.length > 0) {
-                        setSales(data);
-                    } else {
-                        setSales(SALES_DATA); // Fallback to mock
-                    }
+                    setSales(data); // If empty, it's empty
                 }
             } catch (e) {
-                setSales(SALES_DATA);
+                setSales([]);
             }
         };
 

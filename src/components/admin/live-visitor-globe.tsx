@@ -26,12 +26,13 @@ export default function LiveVisitorGlobe() {
             const res = await fetch('/api/analytics/live');
             if (res.ok) {
                 const data = await res.json();
-                setPoints(data.map((p: any) => ({
+                const sessions = data.sessions || [];
+                setPoints(sessions.map((p: any) => ({
                     ...p,
                     size: 0.5,
                     color: '#FF6B35' // Clay color
                 })));
-                setLiveCount(data.length);
+                setLiveCount(data.stats?.active || sessions.length);
             }
         } catch (e) {
             console.error(e);

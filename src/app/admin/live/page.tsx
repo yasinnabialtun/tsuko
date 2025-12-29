@@ -21,6 +21,7 @@ const Globe = dynamic(() => import('react-globe.gl'), {
 export default function LiveViewPage() {
     const [points, setPoints] = useState<any[]>([]);
     const [stats, setStats] = useState({ active: 0, orders: 0, revenue: 0 });
+    const [activities, setActivities] = useState<any[]>([]);
     const [isMounted, setIsMounted] = useState(false);
     const globeRef = useRef<any>(null);
 
@@ -40,23 +41,14 @@ export default function LiveViewPage() {
             if (res.ok) {
                 const data = await res.json();
 
-                // Add some "fake" random visualization effects if data is empty for demo
-                const displayPoints = data.length > 0 ? data : [
-                    { lat: 41.0082, lng: 28.9784, city: 'Istanbul', size: 0.5, color: '#FF6B35' },
-                    { lat: 38.4237, lng: 27.1428, city: 'Izmir', size: 0.3, color: '#FF6B35' }
-                ];
-
-                setPoints(displayPoints.map((p: any) => ({
+                setPoints((data.sessions || []).map((p: any) => ({
                     ...p,
                     alt: 0.1 + Math.random() * 0.1, // Random altitude for "pulse" effect
                     radius: 0.5
                 })));
 
-                setStats({
-                    active: data.length > 0 ? data.length : 2, // Minimum 2 for show
-                    orders: 12, // Demo value
-                    revenue: 4850 // Demo value
-                });
+                setStats(data.stats || { active: 0, orders: 0, revenue: 0 });
+                setActivities(data.activities || []);
             }
         } catch (e) {
             console.error(e);
@@ -124,11 +116,26 @@ export default function LiveViewPage() {
             {/* Events Overlay - Right */}
             <div className="absolute bottom-12 right-6 z-20 pointer-events-none w-80">
                 <div className="space-y-2">
+                    {activities.map((act, i) => (
+                        <div key={`act-${i}`} className="bg-clay/90 backdrop-blur-md p-4 rounded-xl border border-white/10 flex items-center gap-4 animate-slide-in-right">
+                            <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_10px_#fff]" />
+                            <div>
+                                <p className="text-sm font-bold">{act.city || 'Müşteri'}</p>
+                                <p className="text-xs text-white/90">
+                                    {act.type === 'CART_ADD' ? (
+                                        <>Sepete ekledi: <span className="font-bold">{act.productName}</span></>
+                                    ) : (
+                                        'Harekete geçti'
+                                    )}
+                                </p>
+                            </div>
+                        </div>
+                    ))}
                     {points.map((p, i) => (
-                        <div key={i} className="bg-black/50 backdrop-blur-md p-4 rounded-xl border border-white/5 flex items-center gap-4 animate-slide-in-right">
+                        <div key={`ses-${i}`} className="bg-black/50 backdrop-blur-md p-4 rounded-xl border border-white/5 flex items-center gap-4 animate-slide-in-right">
                             <div className="w-2 h-2 rounded-full bg-clay shadow-[0_0_10px_#FF6B35]" />
                             <div>
-                                <p className="text-sm font-bold">{p.city}, Turkey</p>
+                                <p className="text-sm font-bold">{p.city || 'Ziyaretçi'}, {p.country || 'Turkey'}</p>
                                 <p className="text-xs text-white/40">Şu an koleksiyonu inceliyor.</p>
                             </div>
                         </div>
