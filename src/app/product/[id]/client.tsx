@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingBag, ShieldCheck, Star, ChevronDown, Share2, Truck, Box, Clock } from 'lucide-react';
+import { ShoppingBag, ShieldCheck, Star, ChevronDown, Share2, Truck, Box, Clock, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import { useCart } from '@/context/cart-context';
 import Breadcrumbs from '@/components/breadcrumbs';
@@ -119,11 +119,33 @@ export default function ProductPageClient({ product }: { product: ProductData })
             content: "Tsuko Design objeleri, doğadan ilham alır. Kullandığımız organik biyo-polimer (PLA+), mısır nişastasından elde edilen, sürdürülebilir ve toksik olmayan bir materyaldir. Her bir obje, parametrik algoritmalarla tasarlanır ve 18 saati bulan hassas katmanlama süreciyle fiziksel forma kavuşur.",
             icon: Box
         },
+
         {
             id: 'shipping',
             title: 'Teslimat & Garanti',
             content: "Tüm siparişler özel korumalı ambalajlarda gönderilir. Kargo sırasında oluşabilecek her türlü hasara karşı Tsuko Design %100 değişim garantisi sunar.",
             icon: Truck
+        },
+        {
+            id: 'faq',
+            title: 'Sıkça Sorulan Sorular',
+            content: (
+                <div className="space-y-4">
+                    <div>
+                        <p className="font-bold mb-1">Ürünler su geçirir mi?</p>
+                        <p className="text-xs">Tüm vazolarımız, özel iç kaplama sayesinde %100 su sızdırmazdır. Canlı çiçekleriniz için güvenle kullanabilirsiniz.</p>
+                    </div>
+                    <div>
+                        <p className="font-bold mb-1">Nasıl temizlemeliyim?</p>
+                        <p className="text-xs">Nemli bir bezle silmeniz yeterlidir. Bulaşık makinesinde yıkama tavsiye edilmez, yüksek ısı formun bozulmasına neden olabilir.</p>
+                    </div>
+                    <div>
+                        <p className="font-bold mb-1">Kendi tasarımımı bastırabilir miyim?</p>
+                        <p className="text-xs">Tabii ki! Özel projeleriniz ve kişiselleştirilmiş tasarımlarınız için bizlerle 'İletişim' sayfasından iletişime geçebilirsiniz.</p>
+                    </div>
+                </div>
+            ),
+            icon: MessageCircle
         }
     ];
 

@@ -158,36 +158,40 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                 </div>
                             )}
 
+
                             {hasResults && (
-                                <div className="p-4 space-y-6">
+                                <div className="p-4 space-y-8">
                                     {results.products.length > 0 && (
                                         <div>
-                                            <h3 className="text-xs font-bold text-charcoal/40 uppercase tracking-widest mb-4 px-2">Ürünler</h3>
-                                            <div className="space-y-2">
+                                            <div className="flex items-center justify-between mb-4 px-2">
+                                                <h3 className="text-[10px] font-black text-charcoal/30 uppercase tracking-[0.2em]">Ürünler</h3>
+                                                <span className="text-[10px] font-bold text-clay bg-clay/5 px-2 py-0.5 rounded-full">{results.products.length} Sonuç</span>
+                                            </div>
+                                            <div className="space-y-3">
                                                 {results.products.map((product: any) => (
                                                     <Link
                                                         key={product.id}
                                                         href={`/product/${product.slug || product.id}`}
                                                         onClick={onClose}
-                                                        className="flex items-center gap-4 p-2 hover:bg-alabaster rounded-xl group transition-colors"
+                                                        className="flex items-center gap-5 p-3 hover:bg-alabaster/50 rounded-2xl group transition-all duration-300 border border-transparent hover:border-black/5"
                                                     >
-                                                        <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
+                                                        <div className="relative w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-gray-50 shadow-sm transition-transform duration-500 group-hover:scale-105">
                                                             <Image
                                                                 src={product.image}
                                                                 alt={product.name}
                                                                 fill
                                                                 className="object-cover"
-                                                                sizes="48px"
+                                                                sizes="64px"
                                                             />
                                                         </div>
-                                                        <div className="flex-grow">
-                                                            <h4 className="font-bold text-charcoal group-hover:text-clay transition-colors">{product.name}</h4>
-                                                            <p className="text-xs text-charcoal/50">{product.category}</p>
+                                                        <div className="flex-grow min-w-0">
+                                                            <h4 className="font-bold text-charcoal group-hover:text-clay transition-colors truncate">{product.name}</h4>
+                                                            <p className="text-[10px] font-bold text-charcoal/30 uppercase tracking-widest">{product.category || 'Tasarım'}</p>
                                                         </div>
                                                         <div className="text-right">
-                                                            <span className="text-sm font-bold text-charcoal">{product.price} ₺</span>
+                                                            <span className="text-sm font-black text-charcoal">{Number(product.price).toLocaleString('tr-TR')} ₺</span>
                                                         </div>
-                                                        <ArrowRight size={16} className="text-charcoal/20 group-hover:text-clay opacity-0 group-hover:opacity-100 transition-all ml-2" />
+                                                        <ArrowRight size={16} className="text-charcoal/20 group-hover:text-clay group-hover:translate-x-1 transition-all ml-1" />
                                                     </Link>
                                                 ))}
                                             </div>
@@ -196,22 +200,23 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
                                     {results.posts.length > 0 && (
                                         <div>
-                                            <h3 className="text-xs font-bold text-charcoal/40 uppercase tracking-widest mb-4 px-2">Blog</h3>
-                                            <div className="space-y-2">
+                                            <h3 className="text-[10px] font-black text-charcoal/30 uppercase tracking-[0.2em] mb-4 px-2">Hikayeler & Blog</h3>
+                                            <div className="space-y-3">
                                                 {results.posts.map((post: any) => (
                                                     <Link
                                                         key={post.id}
                                                         href={`/blog/${post.slug}`}
                                                         onClick={onClose}
-                                                        className="flex items-center gap-4 p-3 hover:bg-alabaster rounded-xl group transition-colors"
+                                                        className="flex items-center gap-5 p-4 bg-alabaster/30 hover:bg-alabaster rounded-2xl group transition-all duration-300 border border-black/5"
                                                     >
-                                                        <div className="w-10 h-10 rounded-full bg-sage/10 flex items-center justify-center text-sage flex-shrink-0">
+                                                        <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-charcoal shadow-sm flex-shrink-0 group-hover:bg-clay group-hover:text-white transition-colors duration-500">
                                                             <FileText size={20} />
                                                         </div>
-                                                        <div className="flex-grow">
-                                                            <h4 className="font-bold text-charcoal group-hover:text-clay transition-colors">{post.title}</h4>
-                                                            <p className="text-xs text-charcoal/50 line-clamp-1">{post.excerpt}</p>
+                                                        <div className="flex-grow min-w-0">
+                                                            <h4 className="font-bold text-charcoal group-hover:text-clay transition-colors truncate leading-tight mb-1">{post.title}</h4>
+                                                            <p className="text-xs text-charcoal/40 line-clamp-1 font-medium">{post.excerpt}</p>
                                                         </div>
+                                                        <ArrowRight size={16} className="text-charcoal/20 group-hover:text-clay group-hover:translate-x-1 transition-all" />
                                                     </Link>
                                                 ))}
                                             </div>
