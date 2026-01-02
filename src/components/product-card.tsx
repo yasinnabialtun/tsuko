@@ -54,26 +54,45 @@ export default function ProductCard({ product }: ProductCardProps) {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     </Link>
 
+
                     {/* Quick Interaction Layer */}
-                    <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-10">
+                    <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-10 pointer-events-none">
+                        <div className="flex flex-col gap-2 pointer-events-auto">
+                            {product.stock === 0 ? (
+                                <span className="bg-charcoal/90 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest w-fit">
+                                    Tükendi
+                                </span>
+                            ) : (
+                                <>
+                                    {/* New Badge (Logic: Created within 14 days) */}
+                                    {product.createdAt && new Date(product.createdAt) > new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) && (
+                                        <span className="bg-[var(--mood-accent)] text-white px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg shadow-[var(--mood-accent)]/20 w-fit">
+                                            YENİ
+                                        </span>
+                                    )}
+
+                                    {/* Featured Badge (Simulated logic or from prop) */}
+                                    {product.isFeatured && (
+                                        <span className="bg-white/90 backdrop-blur text-charcoal px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border border-black/5 w-fit">
+                                            ÖZEL
+                                        </span>
+                                    )}
+                                </>
+                            )}
+                        </div>
+
                         <button
                             onClick={(e) => {
                                 e.preventDefault();
                                 isWishlisted ? removeFromWishlist(product.id) : addToWishlist(product.id);
                             }}
                             className={cn(
-                                "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
-                                isWishlisted ? "bg-clay text-white" : "bg-white/80 backdrop-blur-md text-charcoal opacity-0 group-hover:opacity-100 hover:bg-white"
+                                "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 pointer-events-auto",
+                                isWishlisted ? "bg-clay text-white shadow-lg" : "bg-white/80 backdrop-blur-md text-charcoal opacity-0 group-hover:opacity-100 hover:bg-white shadow-sm"
                             )}
                         >
                             <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} />
                         </button>
-
-                        {product.stock === 0 && (
-                            <span className="bg-charcoal/90 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest">
-                                Tükendi
-                            </span>
-                        )}
                     </div>
 
                     {/* View Details Hint */}

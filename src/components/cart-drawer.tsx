@@ -80,17 +80,43 @@ export default function CartDrawer() {
                             </button>
                         </div>
 
-                        {/* Free Shipping Badge - ALWAYS ON */}
-                        {items.length > 0 && (
-                            <div className="px-8 py-4 bg-green-50/50 border-b border-green-100">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center">
-                                        <Truck size={16} />
+
+                        {/* Dynamic Threshold Progress Bar */}
+                        {items.length > 0 && mounted && (
+                            <div className="px-8 py-6 bg-alabaster/50 border-b border-charcoal/5">
+                                {cartTotal >= 1000 ? (
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2 text-green-600 font-bold text-xs uppercase tracking-widest">
+                                            <span className="bg-green-100 p-1 rounded-full"><Truck size={12} /></span>
+                                            <span>Tebrikler! Kargo Bedava & %10 İndirim Hakkı</span>
+                                        </div>
+                                        <div className="h-1.5 w-full bg-green-200 rounded-full overflow-hidden">
+                                            <motion.div
+                                                initial={{ width: 0 }}
+                                                animate={{ width: "100%" }}
+                                                className="h-full bg-green-500"
+                                            />
+                                        </div>
                                     </div>
-                                    <p className="text-[10px] font-black text-green-700 uppercase tracking-widest leading-tight">
-                                        Tüm siparişlerde kargo ücretsizdir
-                                    </p>
-                                </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between text-[10px] uppercase font-black tracking-widest text-charcoal/60">
+                                            <span>Hedefe Kalan: {(1000 - cartTotal).toLocaleString('tr-TR')} ₺</span>
+                                            <span>1.000 ₺</span>
+                                        </div>
+                                        <div className="relative h-1.5 w-full bg-charcoal/5 rounded-full overflow-hidden">
+                                            <motion.div
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${Math.min((cartTotal / 1000) * 100, 100)}%` }}
+                                                transition={{ duration: 1, ease: "easeOut" }}
+                                                className="absolute top-0 left-0 h-full bg-[var(--mood-accent)]"
+                                            />
+                                        </div>
+                                        <p className="text-xs font-medium text-charcoal/80">
+                                            Sepetini <span className="font-bold text-[var(--mood-accent)]">1.000 ₺</span>'ye tamamla, <span className="underline decoration-[var(--mood-accent)]">Sürpriz İndirim</span> kazan!
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         )}
 
