@@ -4,37 +4,98 @@
 
 @layer base {
   :root {
-    /* Pastel & Soft Minimalism Palette */
-    --background: #F9F9F7;
-    /* Porcelain - Warm Off-white */
-    --foreground: #2D2D2D;
-    /* Soft Charcoal */
+    /* --- CORE SYSTEM TOKENS (The Logic) --- */
+    --background: #FFFFFF;
+    --foreground: #101010;
 
-    /* Brand Colors */
-    --color-porcelain: #F9F9F7;
-    --color-stone: #EFEDE8;
-    /* Warm Stone surface */
+    /* Global Palette */
+    --color-charcoal: #101010;
+    --color-alabaster: #FAFAFA;
     --color-clay: #DAA590;
-    /* Muted Clay (Pastel) */
     --color-sage: #B4C5B9;
-    /* Sage Mist */
-    --color-charcoal: #2D2D2D;
+    --color-mauve: #E0CFCF;
 
-    /* UI Tokens */
-    --radius: 1.5rem;
-    /* More organic, rounded corners */
-    --font-inter: 'Inter', sans-serif;
+    /* Spacing & Rhythm (Unbreakable) */
+    --grid-gutter: 2rem;
+    --container-max: 1400px;
+    --section-spacing: 8rem;
+
+    /* Interaction & Tactile */
+    --ease-premium: cubic-bezier(0.23, 1, 0.32, 1);
+    --transition-slow: 0.6s var(--ease-premium);
+    --transition-fast: 0.3s var(--ease-premium);
+    --radius-pill: 9999px;
+    --radius-card: 2.5rem;
+    --radius-ui: 1rem;
+
+    /* --- CATEGORY MOOD VARIABLES (The Feeling) --- */
+    --mood-bg: var(--background);
+    --mood-text: var(--foreground);
+    --mood-accent: var(--color-clay);
+    --mood-card-bg: var(--color-alabaster);
+    --mood-glow: 0px 0px 0px transparent;
+    --mood-blur: 0px;
+  }
+
+  /* --- CATEGORY THEMES (Emotional Layers) --- */
+
+  /* [Lighting] - The Glow & Atmosphere */
+  .theme-lighting {
+    --mood-bg: #0A0A0A;
+    --mood-text: #F5F5F5;
+    --mood-card-bg: #151515;
+    --mood-accent: #FFD2A0;
+    /* Warm Amber */
+    --mood-glow: 0px 0px 40px rgba(255, 210, 160, 0.1);
+  }
+
+  /* [Everforms / Still Bloom] - The Life & Softness */
+  .theme-flowers {
+    --mood-bg: #FCF9F7;
+    --mood-accent: var(--color-sage);
+    --mood-card-bg: #FFFFFF;
+  }
+
+  /* [Sculptural Objects] - The Focus & Contrast */
+  .theme-objects {
+    --mood-bg: #F2F2F2;
+    --mood-accent: var(--color-clay);
+    --mood-card-bg: #FFFFFF;
   }
 
   body {
-    @apply bg-background text-foreground antialiased selection:bg-mauve selection:text-charcoal;
+    @apply antialiased selection:bg-mauve selection:text-charcoal;
+    background-color: var(--mood-bg);
+    color: var(--mood-text);
+    transition: background-color var(--transition-slow), color var(--transition-slow);
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  /* Elite UX: Tactile Feedback */
+  /* Tactile Buttons */
   button,
   a {
-    @apply transition-transform duration-200 ease-out active:scale-95 active:duration-100;
+    @apply transition-transform duration-200 ease-out active:scale-95;
+  }
+
+  /* Unbreakable Headlines */
+  h1,
+  h2,
+  h3 {
+    @apply font-bold tracking-tight;
+    line-height: 1.1;
+  }
+}
+
+@layer components {
+  .container-custom {
+    @apply mx-auto px-6 max-w-[var(--container-max)];
+  }
+
+  .premium-card {
+    background-color: var(--mood-card-bg);
+    border-radius: var(--radius-card);
+    transition: all var(--transition-slow);
+    box-shadow: var(--mood-glow);
   }
 }
 

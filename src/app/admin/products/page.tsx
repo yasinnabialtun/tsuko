@@ -58,7 +58,7 @@ export default async function ProductList() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[#E6E8E6]">
-                        {PRODUCTS.map((product: any) => (
+                        {PRODUCTS.map((product) => (
                             <tr key={product.id} className="group hover:bg-alabaster/50 transition-colors">
                                 <td className="px-8 py-4">
                                     <div className="flex items-center gap-4">

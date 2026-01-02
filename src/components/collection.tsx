@@ -7,14 +7,7 @@ import { ChevronDown, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
-interface Product {
-    id: string;
-    name: string;
-    price: string;
-    image: string;
-    slug: string;
-    category?: string;
-}
+import { Product } from '@/types';
 
 const CATEGORIES = [
     'TÜMÜ',
@@ -28,20 +21,20 @@ export default function Collection({ products = [] }: { products?: Product[] }) 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
-        <section id="collection" className="py-28 bg-white">
-            <div className="container mx-auto px-6">
-                <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-10 border-b border-stone/30 pb-10">
+        <section id="collection" className="py-28 transition-colors duration-1000" style={{ backgroundColor: 'transparent' }}>
+            <div className="container-custom">
+                <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-10 border-b border-current/10 pb-10">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8 }}
                     >
-                        <span className="text-clay text-xs tracking-[0.2em] font-bold uppercase mb-4 block">Seçkin Parçalar</span>
-                        <h2 className="text-5xl md:text-6xl font-light text-charcoal mb-4 tracking-tight">
+                        <span className="text-[var(--mood-accent)] text-xs tracking-[0.2em] font-black uppercase mb-4 block opacity-80">Seçkin Parçalar</span>
+                        <h2 className="text-5xl md:text-7xl font-bold mb-4 tracking-tighter" style={{ color: 'var(--mood-text)' }}>
                             Koleksiyon
                         </h2>
-                        <p className="text-lg text-charcoal/60 max-w-lg font-light leading-relaxed">
+                        <p className="text-lg opacity-60 max-w-lg font-light leading-relaxed" style={{ color: 'var(--mood-text)' }}>
                             Mekanlarınıza karakter katan, fonksiyonel ve estetik dengesi kusursuz tasarımlar.
                         </p>
                     </motion.div>
@@ -50,12 +43,13 @@ export default function Collection({ products = [] }: { products?: Product[] }) 
                     <div className="relative z-30">
                         <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="flex items-center gap-4 bg-porcelain px-6 py-3 rounded-full border border-stone/50 hover:border-mauve/50 transition-all group w-[220px] justify-between"
+                            className="flex items-center gap-4 px-6 py-3 rounded-xl border border-current/10 hover:border-current/30 transition-all group w-[220px] justify-between"
+                            style={{ backgroundColor: 'rgba(var(--mood-text), 0.02)' }}
                         >
-                            <span className="text-xs font-bold uppercase tracking-widest text-charcoal/60 group-hover:text-charcoal transition-colors">
+                            <span className="text-xs font-black uppercase tracking-widest opacity-60 group-hover:opacity-100 transition-opacity">
                                 Filtrele
                             </span>
-                            <ChevronDown size={16} className={cn("text-charcoal/40 group-hover:text-charcoal transition-transform duration-300", isMenuOpen && "rotate-180")} />
+                            <ChevronDown size={16} className={cn("opacity-40 group-hover:opacity-100 transition-transform duration-300", isMenuOpen && "rotate-180")} />
                         </button>
 
                         <AnimatePresence>
@@ -64,7 +58,8 @@ export default function Collection({ products = [] }: { products?: Product[] }) 
                                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl shadow-stone/20 border border-stone/30 p-2 overflow-hidden"
+                                    className="absolute right-0 mt-2 w-64 rounded-2xl shadow-2xl border border-current/10 p-2 overflow-hidden backdrop-blur-xl"
+                                    style={{ backgroundColor: 'var(--mood-card-bg)', color: 'var(--mood-text)' }}
                                 >
                                     {CATEGORIES.map((cat) => {
                                         let slug = 'all';
@@ -77,7 +72,7 @@ export default function Collection({ products = [] }: { products?: Product[] }) 
                                             <a
                                                 key={cat}
                                                 href={`/category/${slug}`}
-                                                className="block w-full text-left px-5 py-3 rounded-lg text-xs font-bold tracking-wider transition-all text-charcoal/50 hover:bg-porcelain hover:text-mauve"
+                                                className="block w-full text-left px-5 py-3 rounded-xl text-[10px] font-black tracking-widest transition-all opacity-50 hover:opacity-100 hover:bg-current/5"
                                             >
                                                 {cat}
                                             </a>
@@ -108,20 +103,20 @@ export default function Collection({ products = [] }: { products?: Product[] }) 
                                 transition={{ duration: 0.6, delay: index * 0.1 }}
                                 className={index % 2 === 1 ? "lg:translate-y-16" : ""} // Enhanced masonry effect
                             >
-                                <ProductCard product={product as any} index={index} />
+                                <ProductCard product={product} />
                             </motion.div>
                         ))}
                     </AnimatePresence>
 
                     {products.length === 0 && (
-                        <div className="col-span-full py-32 text-center bg-porcelain rounded-2xl">
-                            <p className="text-charcoal/40 font-medium tracking-widest">Koleksiyon güncelleniyor...</p>
+                        <div className="col-span-full py-32 text-center rounded-3xl" style={{ backgroundColor: 'rgba(var(--mood-text), 0.02)' }}>
+                            <p className="opacity-40 font-black tracking-widest text-xs uppercase">Koleksiyon güncelleniyor...</p>
                         </div>
                     )}
                 </motion.div>
 
                 <div className="mt-40 text-center">
-                    <Link href="/category/all" className="inline-flex items-center gap-3 bg-charcoal text-white px-10 py-5 rounded-xl font-medium hover:bg-clay transition-all shadow-xl shadow-charcoal/10 group">
+                    <Link href="/category/all" className="inline-flex items-center gap-4 px-10 py-5 rounded-2xl font-black text-xs tracking-[0.2em] transition-all shadow-2xl group hover:scale-[1.05]" style={{ backgroundColor: 'var(--mood-accent)', color: 'var(--mood-bg)' }}>
                         <span>TÜM ÜRÜNLERİ İNCELE</span>
                         <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                     </Link>

@@ -1,6 +1,7 @@
 
 import { Resend } from 'resend';
 import { getWelcomeEmailHtml, getOrderConfirmationEmailHtml, getOrderShippedEmailHtml, getStockNotificationEmailHtml } from './email-templates';
+import { Order } from '@/types';
 
 export const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -42,7 +43,7 @@ export async function sendWelcomeEmail(email: string) {
     }
 }
 
-export async function sendOrderConfirmationEmail(order: any) {
+export async function sendOrderConfirmationEmail(order: Order) {
     if (!process.env.RESEND_API_KEY) {
         console.warn('RESEND_API_KEY missing, skipping email.');
         return;
@@ -50,7 +51,7 @@ export async function sendOrderConfirmationEmail(order: any) {
 
     try {
         // Prepare items for template
-        const items = order.items.map((i: any) => ({
+        const items = order.items.map((i) => ({
             name: i.product.name,
             quantity: i.quantity,
             price: i.price.toString()
@@ -83,7 +84,7 @@ export async function sendOrderConfirmationEmail(order: any) {
     }
 }
 
-export async function sendOrderShippedEmail(order: any) {
+export async function sendOrderShippedEmail(order: Order) {
     if (!process.env.RESEND_API_KEY) return;
 
     try {

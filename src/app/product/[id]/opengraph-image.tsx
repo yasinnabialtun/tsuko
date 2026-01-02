@@ -11,7 +11,7 @@ export const size = {
 };
 export const contentType = 'image/png';
 
-export default async function Image({ params }: { params: { id: string } }) {
+export default async function Image({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
 
     // Fetch product

@@ -1,14 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, ShoppingBag, Trash2, Truck, ChevronRight, Percent } from 'lucide-react';
-// ...
-<div className="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center">
-    <Percent size={12} />
-</div>
 import { useCart } from '@/context/cart-context';
 import { useRouter } from 'next/navigation';
 
@@ -26,6 +22,11 @@ export default function CartDrawer() {
     } = useCart();
 
     const router = useRouter();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => {
@@ -67,7 +68,7 @@ export default function CartDrawer() {
                                 <h2 className="text-2xl font-black text-charcoal flex items-center gap-3">
                                     Sepetim
                                     <span className="text-xs bg-clay/10 text-clay px-2 py-0.5 rounded-full font-black">
-                                        {items.length}
+                                        {mounted ? items.length : 0}
                                     </span>
                                 </h2>
                             </div>
@@ -236,7 +237,7 @@ export default function CartDrawer() {
                                 <div className="space-y-4 mb-8">
                                     <div className="flex justify-between items-center text-charcoal/40 font-bold uppercase tracking-widest text-[10px]">
                                         <span>Ara Toplam</span>
-                                        <span className="text-charcoal text-sm">{cartTotal.toLocaleString('tr-TR')} ₺</span>
+                                        <span className="text-charcoal text-sm">{mounted ? cartTotal.toLocaleString('tr-TR') : 0} ₺</span>
                                     </div>
                                     <div className="flex justify-between items-center text-charcoal/40 font-bold uppercase tracking-widest text-[10px]">
                                         <span>Kargo</span>
@@ -245,7 +246,7 @@ export default function CartDrawer() {
                                     <div className="flex justify-between items-center pt-4 border-t border-charcoal/5">
                                         <span className="text-xl font-black text-charcoal">Toplam</span>
                                         <span className="text-2xl font-black text-charcoal tracking-tighter">
-                                            {cartTotal.toLocaleString('tr-TR')} ₺
+                                            {mounted ? cartTotal.toLocaleString('tr-TR') : 0} ₺
                                         </span>
                                     </div>
                                 </div>

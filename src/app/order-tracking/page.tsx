@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
-import { Search, Package, ArrowRight, Loader2 } from 'lucide-react';
+import { Search, Package, ArrowRight, Loader2, Check, Truck } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function OrderTrackingPage() {
     const [orderNumber, setOrderNumber] = useState('');
@@ -177,7 +178,4 @@ export default function OrderTrackingPage() {
         </main>
     );
 }
-
-import { motion } from 'framer-motion';
-import { Check, Truck } from 'lucide-react';
 

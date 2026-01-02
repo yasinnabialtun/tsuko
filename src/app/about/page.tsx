@@ -27,7 +27,7 @@ export default function AboutPage() {
                     <h2 className="text-3xl font-bold text-charcoal">Parametrik Tasarımın Öncüsü</h2>
                     <p className="text-lg text-charcoal/70 leading-relaxed font-light">
                         Tsuko Design, geleneksel el işçiliğini modern algoritmik tasarım yöntemleriyle birleştiren yeni nesil bir tasarım stüdyosudur.
-                        İstanbul'daki atölyemizde, doğadaki karmaşık formları analiz ediyor ve parametrik tasarım araçlarıyla ev dekorasyon objelerine dönüştürüyoruz.
+                        İstanbul&apos;daki atölyemizde, doğadaki karmaşık formları analiz ediyor ve parametrik tasarım araçlarıyla ev dekorasyon objelerine dönüştürüyoruz.
                     </p>
                 </section>
 

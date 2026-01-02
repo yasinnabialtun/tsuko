@@ -1,8 +1,9 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Mail, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, CheckCircle, AlertCircle, Loader2, Sparkles } from 'lucide-react';
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 export default function Newsletter() {
     const [email, setEmail] = useState('');
@@ -30,7 +31,7 @@ export default function Newsletter() {
                     setMessage('Bu e-posta zaten kayıtlı!');
                 } else {
                     setStatus('success');
-                    setMessage('Teşekkürler! %10 indirim kodunuz e-postanıza gönderildi.');
+                    setMessage('Harika! İndirim kodun yola çıktı.');
                     setEmail('');
                 }
             } else {
@@ -42,7 +43,6 @@ export default function Newsletter() {
             setMessage('Bağlantı hatası. Lütfen tekrar deneyin.');
         }
 
-        // Reset after 5 seconds
         setTimeout(() => {
             setStatus('idle');
             setMessage('');
@@ -50,37 +50,39 @@ export default function Newsletter() {
     };
 
     return (
-        <section className="py-24 px-6 bg-charcoal text-white overflow-hidden relative">
-            <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-clay rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-sage rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2" />
+        <section className="py-40 bg-charcoal relative overflow-hidden">
+            {/* Background Texture */}
+            <div className="absolute inset-0 opacity-20 pointer-events-none">
+                <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-clay rounded-full blur-[150px] -translate-y-1/2 translate-x-1/2" />
+                <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-mauve rounded-full blur-[150px] translate-y-1/2 -translate-x-1/2" />
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/p6.png')] opacity-[0.05]" />
             </div>
 
-            <div className="container mx-auto px-6 max-w-4xl text-center relative z-10">
+            <div className="container-custom relative z-10 text-center">
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
+                    transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                    className="max-w-4xl mx-auto"
                 >
-                    {/* Icon */}
-                    <div className="w-16 h-16 rounded-full bg-clay/20 flex items-center justify-center mx-auto mb-6">
-                        <Mail size={32} className="text-clay" />
+                    <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/5 border border-white/10 mb-10">
+                        <Sparkles size={14} className="text-white opacity-40 animate-pulse" />
+                        <span className="text-[10px] font-black tracking-[0.3em] text-white/40 uppercase">Ayrıcalıklı Dünya</span>
                     </div>
 
-                    <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-                        İlham Kutunuza Gelsin
-                    </h2>
-                    <p className="text-xl text-white/60 mb-8 max-w-xl mx-auto">
-                        Yeni koleksiyonlar, dekorasyon fikirleri ve özel kampanyalar... <br />
-                        <span className="text-clay font-bold">%10 Hoş Geldin İndirimi</span> ile başlayalım mı?
+                    <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 uppercase tracking-tighter">İlham Kutunuza Gelsin</h2>
+                    <p className="text-xl md:text-2xl text-white/40 mb-16 max-w-2xl mx-auto font-light leading-relaxed">
+                        Yeni koleksiyonlar, dekorasyon fikirleri ve sadece üyelere özel lansmanlar... <br />
+                        <span className="text-white font-bold">%10 Hoş Geldin İndirimi</span> ile başlayalım mı?
                     </p>
 
-                    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
-                        <div className="relative flex-grow">
+                    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-6 max-w-2xl mx-auto">
+                        <div className="relative flex-grow group">
                             <input
                                 type="email"
-                                placeholder="eposta@adresiniz.com"
-                                className="w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-6 py-4 outline-none focus:border-clay focus:ring-2 focus:ring-clay/20 transition-all text-white placeholder:text-white/40"
+                                placeholder="E-posta adresiniz"
+                                className="w-full bg-white/5 border border-white/10 rounded-[2rem] px-10 py-6 outline-none focus:bg-white focus:text-charcoal focus:placeholder:text-charcoal/20 transition-all text-white placeholder:text-white/20 font-medium text-lg"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -90,62 +92,48 @@ export default function Newsletter() {
                         <button
                             type="submit"
                             disabled={status === 'loading'}
-                            className="bg-clay text-white px-8 py-4 rounded-xl font-bold hover:bg-white hover:text-charcoal transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-w-[140px]"
+                            className="bg-white text-charcoal px-12 py-6 rounded-[2rem] font-black text-xs tracking-[0.2em] hover:bg-clay hover:text-white transition-all shadow-2xl disabled:opacity-50 min-w-[180px] active:scale-95"
                         >
                             {status === 'loading' ? (
-                                <>
-                                    <Loader2 size={18} className="animate-spin" />
-                                    <span>Gönderiliyor</span>
-                                </>
+                                <Loader2 size={24} className="animate-spin" />
                             ) : (
-                                'Abone Ol'
+                                'ABONE OL'
                             )}
                         </button>
                     </form>
 
-                    {/* Status Messages */}
-                    {status === 'success' && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="flex items-center justify-center gap-2 text-green-400 mt-4 font-medium"
-                        >
-                            <CheckCircle size={18} />
-                            <span>{message}</span>
-                        </motion.div>
-                    )}
+                    {/* Status Feedback */}
+                    <div className="h-10 mt-6 overflow-hidden">
+                        <AnimatePresence mode="wait">
+                            {message && (
+                                <motion.div
+                                    initial={{ y: 20, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    exit={{ y: -20, opacity: 0 }}
+                                    className={cn(
+                                        "flex items-center justify-center gap-3 font-bold text-xs uppercase tracking-widest leading-none",
+                                        status === 'success' ? "text-green-400" :
+                                            status === 'already' ? "text-yellow-400" : "text-rose"
+                                    )}
+                                >
+                                    {status === 'success' ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
+                                    {message}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
 
-                    {status === 'already' && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="flex items-center justify-center gap-2 text-yellow-400 mt-4 font-medium"
-                        >
-                            <AlertCircle size={18} />
-                            <span>{message}</span>
-                        </motion.div>
-                    )}
-
-                    {status === 'error' && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="flex items-center justify-center gap-2 text-red-400 mt-4 font-medium"
-                        >
-                            <AlertCircle size={18} />
-                            <span>{message}</span>
-                        </motion.div>
-                    )}
-
-                    <p className="mt-6 text-xs text-white/30">
-                        Spam yok. Sadece ilham. İstediğiniz zaman ayrılabilirsiniz.
-                    </p>
-
-                    {/* Trust Elements */}
-                    <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-white/40">
-                        <span>🔒 Verileriniz güvende</span>
-                        <span>📧 Ayda max 4 e-posta</span>
-                        <span>🎁 Özel indirimler</span>
+                    <div className="mt-16 pt-16 border-t border-white/5 flex flex-wrap items-center justify-center gap-12">
+                        {[
+                            { label: 'Verileriniz güvende', value: '256-Bit SSL' },
+                            { label: 'Gönderim Sıklığı', value: 'Ayda max 4 e-posta' },
+                            { label: 'Sınırlı Erişim', value: 'Özel indirimler' }
+                        ].map((stat, i) => (
+                            <div key={i} className="text-left">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-1">{stat.label}</p>
+                                <p className="text-sm font-bold text-white/60">{stat.value}</p>
+                            </div>
+                        ))}
                     </div>
                 </motion.div>
             </div>

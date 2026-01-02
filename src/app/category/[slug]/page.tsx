@@ -6,6 +6,8 @@ import Breadcrumbs from '@/components/breadcrumbs';
 import { notFound } from 'next/navigation';
 import { SlidersHorizontal, ArrowUpDown, X } from 'lucide-react';
 import { Metadata } from 'next';
+import { getCategoryTheme, cn } from '@/lib/utils';
+import { Product } from '@/types';
 
 // Revalidate every hour
 export const revalidate = 3600;
@@ -103,14 +105,18 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     }
 
     // Transform for frontend
-    const formattedProducts = products.map((p: any) => ({
+    const formattedProducts: Product[] = products.map((p) => ({
         id: p.id,
         name: p.name,
         slug: p.slug,
         image: p.images[0] || '/images/hero.png',
-        price: `${p.price.toString()} ₺`,
-        category: p.category?.name
+        images: p.images,
+        price: p.price.toString(),
+        category: p.category,
+        stock: p.stock
     }));
+
+    const themeClass = getCategoryTheme(categoryName);
 
     // Schema.org Structured Data
     const breadcrumbJsonLd = {
@@ -133,7 +139,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     };
 
     return (
-        <main className="min-h-screen bg-white">
+        <main className={cn("min-h-screen transition-colors duration-1000", themeClass)} style={{ backgroundColor: 'var(--mood-bg)', color: 'var(--mood-text)' }}>
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
@@ -141,57 +147,65 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
             <Navbar />
 
-            <section className="pt-32 pb-24 px-6 md:px-0">
-                <div className="container mx-auto">
+            <section className="pt-40 pb-32">
+                <div className="container-custom">
 
                     <Breadcrumbs items={[
                         { label: 'Koleksiyon', href: '/#collection' },
                         { label: categoryName, href: `/category/${slug}` }
                     ]} />
 
-                    <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-                        <div>
-                            <h1 className="text-4xl md:text-5xl font-black text-charcoal mb-4 capitalize">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-24 gap-12 border-b border-current/10 pb-12">
+                        <div className="space-y-4">
+                            <span className="text-[var(--mood-accent)] text-xs tracking-[0.2em] font-black uppercase opacity-80 block">
+                                {products.length} Eser Listeleniyor
+                            </span>
+                            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none capitalize">
                                 {categoryName}
                             </h1>
-                            <p className="text-charcoal/60 text-lg max-w-2xl">
+                            <p className="opacity-60 text-lg max-w-2xl font-light leading-relaxed">
                                 {categoryDescription}
-                                <span className="block mt-2 text-sm font-bold text-clay uppercase tracking-widest">
-                                    {products.length} Ürün Listeleniyor
-                                </span>
                             </p>
                         </div>
 
-                        {/* Sort Actions (Client-side functionality handled via URL params or simple links in SSR) */}
-                        <div className="flex gap-4">
-                            {/* Simple Sort Links for SSR SEO */}
-                            <div className="hidden md:flex bg-alabaster rounded-xl p-1">
-                                <a href={`?sort=newest`} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${sort === 'newest' ? 'bg-white shadow-sm text-charcoal' : 'text-charcoal/40 hover:text-charcoal'}`}>
-                                    Yeniler
-                                </a>
-                                <a href={`?sort=price-asc`} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${sort === 'price-asc' ? 'bg-white shadow-sm text-charcoal' : 'text-charcoal/40 hover:text-charcoal'}`}>
-                                    Fiyat Artan
-                                </a>
-                                <a href={`?sort=price-desc`} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${sort === 'price-desc' ? 'bg-white shadow-sm text-charcoal' : 'text-charcoal/40 hover:text-charcoal'}`}>
-                                    Fiyat Azalan
-                                </a>
-                            </div>
+                        {/* Sort Actions */}
+                        <div className="flex gap-2 bg-current/5 p-1.5 rounded-2xl backdrop-blur-sm border border-current/5">
+                            <a href={`?sort=newest`} className={cn(
+                                "px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                                sort === 'newest' ? "bg-white text-charcoal shadow-xl" : "opacity-40 hover:opacity-100"
+                            )}>
+                                Yeniler
+                            </a>
+                            <a href={`?sort=price-asc`} className={cn(
+                                "px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                                sort === 'price-asc' ? "bg-white text-charcoal shadow-xl" : "opacity-40 hover:opacity-100"
+                            )}>
+                                Artan
+                            </a>
+                            <a href={`?sort=price-desc`} className={cn(
+                                "px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                                sort === 'price-desc' ? "bg-white text-charcoal shadow-xl" : "opacity-40 hover:opacity-100"
+                            )}>
+                                Azalan
+                            </a>
                         </div>
                     </div>
 
-                    {/* Product Grid */}
+                    {/* Product Grid - Using our Premium Architecture */}
                     <div className="w-full">
                         {formattedProducts.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                                {formattedProducts.map((product: any, index: number) => (
-                                    <ProductCard key={product.id} product={product} index={index} />
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-20">
+                                {formattedProducts.map((product, index) => (
+                                    <div key={product.id} className={cn("transition-all duration-700", index % 2 === 1 && "lg:translate-y-16")}>
+                                        <ProductCard product={product} />
+                                    </div>
                                 ))}
                             </div>
                         ) : (
-                            <div className="bg-alabaster rounded-3xl p-16 text-center text-charcoal/50 border border-black/5">
-                                <SlidersHorizontal className="mx-auto mb-4 opacity-20" size={48} />
-                                <p className="font-bold text-xl mb-2">Bu kategoride henüz ürün yok.</p>
-                                <p>Yeni tasarımlarımız fırından çıkmak üzere! Lütfen daha sonra tekrar kontrol edin.</p>
+                            <div className="bg-current/5 rounded-[3rem] p-24 text-center border border-current/5">
+                                <SlidersHorizontal className="mx-auto mb-6 opacity-20" size={64} />
+                                <h3 className="font-bold text-2xl mb-4 tracking-tight">Koleksiyon Hazırlanıyor</h3>
+                                <p className="opacity-50 max-w-md mx-auto">Yeni tasarımlarımız atölyede şekilleniyor. Lütfen daha sonra tekrar kontrol edin.</p>
                             </div>
                         )}
                     </div>

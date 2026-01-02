@@ -12,72 +12,69 @@ import confetti from 'canvas-confetti';
 
 function SuccessContent() {
     const searchParams = useSearchParams();
-    const router = useRouter();
     const orderId = searchParams.get('orderId');
     const { clearCart } = useCart();
 
     useEffect(() => {
-        // Clear cart on successful payment
         clearCart();
-
-        // Throw confetti!
         confetti({
             particleCount: 150,
             spread: 70,
             origin: { y: 0.6 },
             colors: ['#D4A373', '#4A4A4A', '#FAFAFA']
         });
-    }, []);
+    }, [clearCart]);
 
     return (
-        <div className="min-h-screen bg-porcelain flex flex-col">
+        <div className="min-h-screen bg-[var(--background)] flex flex-col transition-colors duration-1000">
             <Navbar />
 
-            <div className="flex-1 flex items-center justify-center p-6 pt-40">
+            <div className="flex-1 flex items-center justify-center p-6 pt-40 pb-32">
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                    initial={{ opacity: 0, scale: 0.9, y: 30 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    className="max-w-md w-full bg-white rounded-[2.5rem] p-10 shadow-2xl shadow-charcoal/5 border border-black/5 text-center"
+                    className="max-w-xl w-full premium-card bg-white p-12 md:p-16 text-center"
                 >
-                    <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-8">
-                        <CheckCircle size={40} className="text-green-500" />
+                    <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-10 shadow-inner">
+                        <CheckCircle size={48} className="text-green-500" />
                     </div>
 
-                    <h1 className="text-3xl font-black text-charcoal mb-4 lowercase tracking-tighter">
-                        siparişin alındı!
+                    <h1 className="text-4xl md:text-5xl font-black text-charcoal mb-6 tracking-tighter">
+                        HARİKA BİR SEÇİM!
                     </h1>
 
-                    <p className="text-charcoal/60 mb-8 leading-relaxed">
-                        Harika seçim. Tasarım yolculuğu başlıyor. Sipariş numaran:
-                        <span className="block font-black text-charcoal mt-1 text-lg">#{orderId || 'TSK-1234'}</span>
+                    <p className="text-charcoal/60 mb-10 text-lg font-light leading-relaxed">
+                        Siparişin başarıyla alındı. Atölyemizde senin için hazırlıklar başlıyor. Sipariş numaranı not etmeyi unutma:
+                        <span className="block font-black text-charcoal mt-3 text-2xl tracking-tight">#{orderId || 'TSK-2024-X'}</span>
                     </p>
 
-                    <div className="bg-alabaster rounded-2xl p-6 mb-8 text-left space-y-4">
-                        <div className="flex items-start gap-4">
-                            <div className="w-8 h-8 rounded-full bg-charcoal/5 flex items-center justify-center shrink-0">
-                                <Package size={16} className="text-charcoal" />
-                            </div>
-                            <div>
-                                <p className="text-xs font-black uppercase tracking-widest text-charcoal/40">Süreç</p>
-                                <p className="text-xs text-charcoal/70 font-medium">Siparişin 1-3 iş günü içinde titizlikle paketlenip kargoya verilecek.</p>
-                            </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+                        <div className="bg-current/5 rounded-2xl p-6 text-left border border-current/5">
+                            <Package size={20} className="text-charcoal opacity-20 mb-3" />
+                            <p className="text-[10px] font-black uppercase tracking-widest text-charcoal/40 mb-1">Teslimat</p>
+                            <p className="text-xs text-charcoal/70 font-bold">1-3 iş günü içinde kargoya verilir.</p>
+                        </div>
+                        <div className="bg-current/5 rounded-2xl p-6 text-left border border-current/5">
+                            <ShoppingBag size={20} className="text-charcoal opacity-20 mb-3" />
+                            <p className="text-[10px] font-black uppercase tracking-widest text-charcoal/40 mb-1">Takip</p>
+                            <p className="text-xs text-charcoal/70 font-bold">E-posta ile bilgilendirileceksiniz.</p>
                         </div>
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="flex flex-col gap-4">
                         <Link
-                            href="/collection"
-                            className="w-full py-4 bg-charcoal text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-black transition-all shadow-xl shadow-charcoal/10"
+                            href={`/order-tracking?orderId=${orderId}`}
+                            className="w-full py-5 bg-charcoal text-white rounded-[2rem] font-black text-xs tracking-[0.2em] flex items-center justify-center gap-3 hover:scale-[1.02] transition-all shadow-2xl shadow-charcoal/20"
                         >
-                            Keşfetmeye Devam Et
-                            <ArrowRight size={18} />
+                            SİPARİŞİ TAKİP ET
+                            <ArrowRight size={16} />
                         </Link>
 
                         <Link
-                            href="/"
-                            className="w-full py-4 bg-white text-charcoal border border-black/5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-alabaster transition-all"
+                            href="/collection"
+                            className="w-full py-5 bg-white text-charcoal border border-current/10 rounded-[2rem] font-black text-xs tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-current/5 transition-all"
                         >
-                            Anasayfa
+                            KEŞFETMEYE DEVAM ET
                         </Link>
                     </div>
                 </motion.div>
@@ -90,7 +87,7 @@ function SuccessContent() {
 
 export default function SuccessPage() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={null}>
             <SuccessContent />
         </Suspense>
     );

@@ -6,6 +6,8 @@ import SalesChart from '@/components/admin/sales-chart';
 import LiveVisitorGlobe from '@/components/admin/live-visitor-globe';
 import SystemPulse from '@/components/admin/system-pulse';
 
+export const dynamic = 'force-dynamic';
+
 async function getStats() {
     try {
         const now = new Date();

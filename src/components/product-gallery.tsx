@@ -1,18 +1,19 @@
+'use client';
+
 import { useState } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Box } from 'lucide-react';
+import { Box, PlayCircle } from 'lucide-react';
 import Product3DViewer from './product-3d-viewer';
 
 export default function ProductGallery({ images, name, modelUrl }: { images: string[], name: string, modelUrl?: string | null }) {
     const [selected, setSelected] = useState(0);
     const [zoom, setZoom] = useState({ x: 0, y: 0, show: false });
 
-    // Logical list of items: [...images, (optional) model]
     const hasModel = !!modelUrl;
+    const modelIndex = images.length;
     const totalItems = images.length + (hasModel ? 1 : 0);
-    const modelIndex = images.length; // The index of the model, if it exists
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
@@ -22,23 +23,24 @@ export default function ProductGallery({ images, name, modelUrl }: { images: str
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
+            {/* Main Stage */}
             <div
-                className="relative aspect-[4/5] bg-stone-100/50 rounded-[2rem] overflow-hidden group cursor-zoom-in"
+                className="relative aspect-[3/4] bg-current/5 rounded-[3rem] overflow-hidden group border border-current/5 cursor-zoom-in"
                 onMouseMove={handleMouseMove}
                 onMouseLeave={() => setZoom(prev => ({ ...prev, show: false }))}
             >
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={selected}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.5 }}
+                        initial={{ opacity: 0, scale: 1.05 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                         className="relative w-full h-full"
                     >
                         {selected === modelIndex && hasModel ? (
-                            <div className="w-full h-full bg-porcelain">
+                            <div className="w-full h-full bg-transparent">
                                 <Product3DViewer modelUrl={modelUrl!} name={name} poster={images[0]} />
                             </div>
                         ) : images[selected]?.match(/\.(mp4|webm|ogg)$/) ? (
@@ -56,33 +58,45 @@ export default function ProductGallery({ images, name, modelUrl }: { images: str
                                 alt={name}
                                 fill
                                 className={cn(
-                                    "object-cover transition-transform duration-700",
+                                    "object-cover transition-transform duration-[1.2s] ease-out",
                                     !zoom.show && "group-hover:scale-105"
                                 )}
                                 priority
                                 style={zoom.show ? {
-                                    transform: `scale(2)`,
+                                    transform: `scale(2.5)`,
                                     transformOrigin: `${zoom.x}% ${zoom.y}%`
                                 } : {}}
                             />
                         )}
                     </motion.div>
                 </AnimatePresence>
+
+                {/* Video/3D Overlays */}
+                {selected !== modelIndex && images[selected]?.match(/\.(mp4|webm|ogg)$/) && (
+                    <div className="absolute top-8 right-8 p-4 bg-white/20 backdrop-blur-xl rounded-full text-white pointer-events-none">
+                        <PlayCircle size={24} />
+                    </div>
+                )}
             </div>
 
-            {/* Thumbnails */}
+            {/* Thumbnails - Architectural Layout */}
             {totalItems > 1 && (
-                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none">
+                <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide px-2">
                     {images.map((img, index) => (
                         <button
                             key={index}
                             onClick={() => setSelected(index)}
                             className={cn(
-                                "relative w-24 h-24 rounded-2xl overflow-hidden border-2 transition-all flex-shrink-0",
-                                selected === index ? 'border-charcoal opacity-100' : 'border-transparent opacity-60 hover:opacity-100'
+                                "relative w-24 h-28 rounded-2xl overflow-hidden border-2 transition-all flex-shrink-0 active:scale-95",
+                                selected === index ? 'border-[var(--mood-accent)] shadow-xl' : 'border-transparent opacity-40 hover:opacity-100'
                             )}
                         >
                             <Image src={img} alt="" fill className="object-cover" />
+                            {img.match(/\.(mp4|webm|ogg)$/) && (
+                                <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                                    <PlayCircle size={20} className="text-white" />
+                                </div>
+                            )}
                         </button>
                     ))}
 
@@ -90,12 +104,12 @@ export default function ProductGallery({ images, name, modelUrl }: { images: str
                         <button
                             onClick={() => setSelected(modelIndex)}
                             className={cn(
-                                "relative w-24 h-24 rounded-2xl overflow-hidden border-2 transition-all flex-shrink-0 flex items-center justify-center bg-porcelain",
-                                selected === modelIndex ? 'border-charcoal opacity-100' : 'border-transparent opacity-60 hover:opacity-100'
+                                "relative w-24 h-28 rounded-2xl overflow-hidden border-2 transition-all flex-shrink-0 flex flex-col items-center justify-center bg-current/5",
+                                selected === modelIndex ? 'border-[var(--mood-accent)] shadow-xl' : 'border-transparent opacity-40 hover:opacity-100 text-current/50'
                             )}
                         >
-                            <Box size={24} className="text-charcoal" />
-                            <span className="absolute bottom-2 text-[8px] font-black uppercase tracking-widest text-charcoal">3D Gör</span>
+                            <Box size={24} />
+                            <span className="mt-2 text-[8px] font-black uppercase tracking-widest">3D MODEL</span>
                         </button>
                     )}
                 </div>

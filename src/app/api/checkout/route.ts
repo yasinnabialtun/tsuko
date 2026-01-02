@@ -177,7 +177,7 @@ export async function POST(request: Request) {
             });
 
             // Send Email
-            await sendOrderConfirmationEmail(updatedOrder);
+            await sendOrderConfirmationEmail(updatedOrder as any);
 
             // Send Discord Notification
             await sendDiscordNotification({

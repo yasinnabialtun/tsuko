@@ -3,24 +3,15 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingBag, Eye, Heart, Star } from 'lucide-react';
+import { Eye, Heart } from 'lucide-react';
 import QuickViewModal from './quick-view-modal';
 import { useWishlist } from '@/context/wishlist-context';
+import { getCategoryTheme, cn } from '@/lib/utils';
+
+import { Product } from '@/types';
 
 interface ProductCardProps {
-    product: {
-        id: string;
-        name: string;
-        slug: string;
-        price: any;
-        image: string;
-        images: string[];
-        category?: { name: string };
-        description?: string;
-        stock: number;
-        avgRating?: number;
-        reviewCount?: number;
-    };
+    product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
@@ -29,12 +20,15 @@ export default function ProductCard({ product }: ProductCardProps) {
     const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
     const isWishlisted = isInWishlist(product.id);
 
+    const categoryName = typeof product.category === 'object' ? product.category?.name : (typeof product.category === 'string' ? product.category : undefined);
+    const themeClass = getCategoryTheme(categoryName);
+
     // Ensure price is string
-    const displayPrice = typeof product.price === 'object' ? product.price.toString() : String(product.price);
+    const displayPrice = String(product.price || '0');
     const formattedPrice = displayPrice.includes('₺') ? displayPrice : `${displayPrice} ₺`;
 
     return (
-        <>
+        <section className={cn("group transition-all duration-700", themeClass)}>
             <QuickViewModal
                 isOpen={quickViewOpen}
                 onClose={() => setQuickViewOpen(false)}
@@ -42,90 +36,76 @@ export default function ProductCard({ product }: ProductCardProps) {
             />
 
             <div
-                className="group relative"
+                className="relative"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
-                {/* Quick Add Overlay */}
-                <div className="absolute bottom-6 left-6 right-6 z-20 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto">
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            // Cart logic here
-                        }}
-                        className="w-full bg-white/95 backdrop-blur-md text-charcoal py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl hover:bg-charcoal hover:text-white transition-all active:scale-95"
-                    >
-                        Sepete Ekle
-                    </button>
-                </div>
-
-                {/* Image Container */}
-                <div className="relative aspect-[4/5] bg-alabaster rounded-[2.5rem] overflow-hidden mb-6 cursor-pointer group-hover:shadow-2xl group-hover:shadow-charcoal/10 transition-all duration-700">
+                {/* Image Container (Tactile & Unbreakable) */}
+                <div className="relative aspect-[3/4] premium-card overflow-hidden mb-6 cursor-pointer group-hover:scale-[1.02]">
                     <Link href={`/product/${product.slug || product.id}`}>
                         <Image
                             src={isHovered && product.images[1] ? product.images[1] : (product.images[0] || product.image)}
                             alt={product.name}
                             fill
-                            className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                            className="object-cover transition-transform duration-[1.2s] group-hover:scale-110"
+                            sizes="(max-width: 768px) 100vw, 33vw"
                         />
+                        {/* Overlay Gradient for mood-text readability */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     </Link>
 
-                    {/* Badge */}
-                    {product.stock === 0 ? (
-                        <div className="absolute top-6 right-6 bg-charcoal text-white text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-widest z-10">
-                            Tükendi
-                        </div>
-                    ) : product.stock > 0 && product.stock <= 5 ? (
-                        <div className="absolute top-6 right-6 bg-clay text-white text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-widest z-10 shadow-lg shadow-clay/20 animate-pulse">
-                            Son {product.stock}
-                        </div>
-                    ) : null}
+                    {/* Quick Interaction Layer */}
+                    <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-10">
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                isWishlisted ? removeFromWishlist(product.id) : addToWishlist(product.id);
+                            }}
+                            className={cn(
+                                "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
+                                isWishlisted ? "bg-clay text-white" : "bg-white/80 backdrop-blur-md text-charcoal opacity-0 group-hover:opacity-100 hover:bg-white"
+                            )}
+                        >
+                            <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} />
+                        </button>
 
-                    {/* Wishlist Button */}
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            isWishlisted ? removeFromWishlist(product.id) : addToWishlist(product.id);
-                        }}
-                        className={`absolute top-6 left-6 p-3 rounded-full shadow-xl transition-all z-10 ${isWishlisted ? 'bg-clay text-white' : 'bg-white/90 text-charcoal hover:bg-white opacity-0 group-hover:opacity-100'
-                            }`}
-                    >
-                        <Heart size={18} fill={isWishlisted ? "currentColor" : "none"} />
-                    </button>
-
-                    {/* Eye / Quick View Icon overlay */}
-                    <button
-                        onClick={() => setQuickViewOpen(true)}
-                        className="absolute bottom-6 right-6 p-3 rounded-full bg-white/50 backdrop-blur-md text-charcoal opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-10"
-                    >
-                        <Eye size={18} />
-                    </button>
-                </div>
-
-                {/* Info Container */}
-                <div className="text-center space-y-2 px-2">
-                    <div className="flex items-center justify-center gap-2">
-                        <span className="text-[10px] font-black tracking-[0.2em] text-charcoal/20 uppercase">
-                            {product.category?.name || 'TSUKO DESIGN'}
-                        </span>
-                        {product.reviewCount !== undefined && product.reviewCount > 0 && (
-                            <div className="flex items-center gap-1">
-                                <Star size={10} className="text-orange-400 fill-orange-400" />
-                                <span className="text-[10px] font-black text-charcoal/30">{product.avgRating?.toFixed(1)}</span>
-                            </div>
+                        {product.stock === 0 && (
+                            <span className="bg-charcoal/90 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest">
+                                Tükendi
+                            </span>
                         )}
                     </div>
 
-                    <h3 className="text-xl font-bold text-charcoal tracking-tighter group-hover:text-clay transition-colors duration-300">
+                    {/* View Details Hint */}
+                    <div className="absolute inset-x-0 bottom-6 px-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+                        <button
+                            onClick={() => setQuickViewOpen(true)}
+                            className="w-full h-12 bg-white/90 backdrop-blur-xl text-charcoal rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl hover:bg-white transition-colors flex items-center justify-center gap-2"
+                        >
+                            <Eye size={14} /> Hızlı Bakış
+                        </button>
+                    </div>
+                </div>
+
+                {/* Information Layer (The Soul) */}
+                <div className="text-center space-y-2">
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                        <span className="text-[10px] font-black tracking-[0.2em] text-[var(--mood-accent)] uppercase opacity-80">
+                            {categoryName || 'TSUKO DESIGN'}
+                        </span>
+                    </div>
+
+                    <h3 className="text-xl font-bold tracking-tighter transition-colors" style={{ color: 'var(--mood-text)' }}>
                         <Link href={`/product/${product.slug || product.id}`}>
                             {product.name}
                         </Link>
                     </h3>
-                    <p className="text-lg font-black text-charcoal">
+
+                    <p className="text-lg font-black" style={{ color: 'var(--mood-text)' }}>
                         {formattedPrice}
                     </p>
                 </div>
             </div>
-        </>
+        </section>
     );
 }

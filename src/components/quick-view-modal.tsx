@@ -6,16 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/context/cart-context';
 
-interface Product {
-    id: string;
-    name: string;
-    slug: string;
-    price: any;
-    image: string;
-    stock: number;
-    description?: string;
-    category?: { name: string };
-}
+import { Product } from '@/types';
 
 interface QuickViewModalProps {
     isOpen: boolean;
@@ -25,6 +16,8 @@ interface QuickViewModalProps {
 
 export default function QuickViewModal({ isOpen, onClose, product }: QuickViewModalProps) {
     const { addToCart } = useCart();
+
+    const categoryName = typeof product.category === 'object' ? product.category?.name : (typeof product.category === 'string' ? product.category : undefined);
 
     const handleAddToCart = () => {
         addToCart(product);
@@ -68,7 +61,7 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
                         {/* Content Side */}
                         <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
                             <span className="text-xs font-bold text-clay tracking-widest uppercase mb-2">
-                                {product.category?.name || 'Tasarım'}
+                                {categoryName || 'Tasarım'}
                             </span>
                             <h2 className="text-3xl font-bold text-charcoal mb-4">{product.name}</h2>
                             <p className="text-charcoal/60 mb-6 line-clamp-3 md:line-clamp-5">

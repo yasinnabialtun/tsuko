@@ -1,115 +1,125 @@
-
 'use client';
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowDown, MoveRight } from 'lucide-react';
+import { ArrowDown, MoveRight, Sparkles } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function Hero() {
     return (
-        <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden bg-porcelain">
-            {/* Background Texture/Gradient - Muted & Premium */}
-            <div className="absolute inset-0 z-0 opacity-60 pointer-events-none">
-                <div className="absolute top-[-20%] right-[-10%] w-[900px] h-[900px] bg-clay/10 rounded-full blur-[180px]" />
-                <div className="absolute bottom-[-10%] left-[-20%] w-[800px] h-[800px] bg-sage/20 rounded-full blur-[150px]" />
+        <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[var(--background)]">
+            {/* Background Architecture */}
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-[-10%] right-[-10%] w-[1000px] h-[1000px] bg-[var(--mood-accent)]/5 rounded-full blur-[200px] animate-pulse" />
+                <div className="absolute bottom-10 left-[-10%] w-[800px] h-[800px] bg-charcoal/5 rounded-full blur-[150px]" />
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/p6.png')] opacity-[0.03] contrast-150" />
             </div>
 
-            <div className="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center relative z-10 pt-28 lg:pt-0">
+            <div className="container-custom relative z-10 pt-40 lg:pt-0">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
 
-                {/* Text Content */}
-                <div className="lg:col-span-6 flex flex-col justify-center text-left order-2 lg:order-1">
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                    >
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-stone/50 border border-stone mb-10 animate-reveal" style={{ animationDelay: '0.1s' }}>
-                            <span className="w-1.5 h-1.5 rounded-full bg-clay"></span>
-                            <span className="text-[10px] md:text-xs font-semibold tracking-widest text-[#2D2D2D]/70 uppercase">El Yapımı & 3D Baskı</span>
-                        </div>
-
-                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-[#2D2D2D] leading-[1.05] tracking-tight mb-8 font-heading">
-                            Evinizin <br />
-                            <span className="text-purplish-grey relative inline-block">
-                                Heykel
-                                <svg className="absolute w-full h-3 -bottom-1 left-0 text-sage/40 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
-                                    <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
-                                </svg>
-                            </span>
-                            Hali.
-                        </h1>
-
-                        <p className="text-lg text-[#2D2D2D]/60 font-light max-w-md leading-relaxed mb-12 font-body">
-                            Parametrik tasarımın estetiği, doğa dostu malzemelerle buluştu. Sıradan objeleri sanat eserine dönüştürüyoruz.
-                        </p>
-
-                        <div className="flex flex-col sm:flex-row items-center gap-5">
-                            <Link href="/#collection" className="group relative px-10 py-5 bg-[#2D2D2D] text-white rounded-full font-medium overflow-hidden transition-all hover:shadow-xl hover:shadow-clay/20 shadow-lg w-full sm:w-auto text-center">
-                                <span className="relative z-10 flex items-center justify-center gap-3">
-                                    KEŞFET
-                                    <MoveRight size={18} className="transition-transform group-hover:translate-x-1" />
-                                </span>
-                                <div className="absolute inset-0 bg-clay transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500 ease-out" />
-                            </Link>
-                            <Link href="/about" className="px-10 py-5 text-[#2D2D2D] border border-stone bg-white/50 backdrop-blur-sm rounded-full hover:bg-white hover:border-sage/50 transition-all font-medium w-full sm:w-auto text-center">
-                                Atölye Hikayesi
-                            </Link>
-                        </div>
-                    </motion.div>
-                </div>
-
-                {/* Hero Image - Elite Composition */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
-                    className="lg:col-span-6 relative h-[500px] lg:h-[800px] w-full order-1 lg:order-2"
-                >
-                    <div className="relative w-full h-full">
-                        {/* Main Large Image */}
-                        <div className="absolute top-0 right-0 w-[90%] h-[85%] rounded-[2rem] overflow-hidden shadow-2xl shadow-stone/50 z-10">
-                            <Image
-                                src="/images/hero.png"
-                                alt="Tsuko Design Vazolar"
-                                fill
-                                className="object-cover hover:scale-105 transition-transform duration-[2s]"
-                                priority
-                                sizes="(max-width: 768px) 100vw, 50vw"
-                            />
-                        </div>
-
-                        {/* Floating Detail Card */}
+                    {/* Text Content */}
+                    <div className="lg:col-span-12 xl:col-span-7 flex flex-col justify-center text-left order-2 lg:order-1 outline-none">
                         <motion.div
-                            initial={{ y: 40, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.8 }}
-                            className="absolute bottom-[10%] left-0 w-[240px] bg-white p-5 rounded-2xl shadow-xl z-20 border border-stone/30 hidden md:block"
+                            initial={{ opacity: 0, x: -50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                         >
-                            <div className="flex items-center justify-between mb-3">
-                                <span className="text-xs font-bold text-clay uppercase tracking-widest">Sürdürülebilir</span>
-                                <div className="flex gap-0.5">
-                                    {[1, 2, 3, 4, 5].map(i => (
-                                        <div key={i} className="w-1 h-1 rounded-full bg-charcoal/20"></div>
-                                    ))}
-                                </div>
+                            <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/50 backdrop-blur-xl border border-current/10 mb-12 shadow-sm">
+                                <Sparkles size={14} className="text-[var(--mood-accent)] animate-pulse" />
+                                <span className="text-[10px] font-black tracking-[0.3em] text-charcoal/40 uppercase">Limitli Üretim • Parametrik Sanat</span>
                             </div>
-                            <p className="text-charcoal font-semibold leading-snug mb-2">PLA+ Biyo-Polimer</p>
-                            <p className="text-xs text-charcoal/50 leading-relaxed">Mısır nişastasından üretilen, doğada çözünebilir premium malzeme.</p>
+
+                            <h1 className="text-6xl md:text-8xl lg:text-[10rem] font-bold text-charcoal leading-[0.85] tracking-tighter mb-10">
+                                EVİNİZİN <br />
+                                <span className="text-[var(--mood-accent)] relative inline-block italic">
+                                    HEYKEL
+                                    <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: '100%' }}
+                                        transition={{ delay: 1, duration: 1.5, ease: "easeInOut" }}
+                                        className="absolute -bottom-2 left-0 h-1 md:h-2 bg-charcoal/5 -z-10 rounded-full"
+                                    />
+                                </span>
+                                <br />HALİ.
+                            </h1>
+
+                            <p className="text-xl md:text-2xl text-charcoal/50 font-light max-w-xl leading-relaxed mb-16 tracking-tight">
+                                Parametrik tasarımın matematiksel kusursuzluğu, doğa dostu materyallerin sıcaklığıyla buluştu. Yaşam alanınıza karakter katan dijital zanaat eserleri.
+                            </p>
+
+                            <div className="flex flex-col sm:flex-row items-center gap-6">
+                                <Link
+                                    href="/#collection"
+                                    className="group relative px-12 py-6 bg-charcoal text-white rounded-full font-black text-xs tracking-[0.2em] overflow-hidden transition-all shadow-2xl shadow-charcoal/20 w-full sm:w-auto text-center active:scale-95"
+                                >
+                                    <span className="relative z-10 flex items-center justify-center gap-4">
+                                        KOLEKSİYONU KEŞFET
+                                        <MoveRight size={18} className="transition-transform group-hover:translate-x-2" />
+                                    </span>
+                                    <div className="absolute inset-0 bg-mauve transform -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-[0.16, 1, 0.3, 1]" />
+                                </Link>
+                                <Link
+                                    href="/about"
+                                    className="px-12 py-6 text-charcoal/40 font-black text-xs tracking-[0.2em] border border-current/10 rounded-full hover:bg-white hover:text-charcoal hover:border-charcoal/20 transition-all w-full sm:w-auto text-center"
+                                >
+                                    ATÖLYE HİKAYESİ
+                                </Link>
+                            </div>
                         </motion.div>
                     </div>
-                </motion.div>
+
+                    {/* Hero Image / Visual Element */}
+                    <div className="lg:col-span-12 xl:col-span-5 relative order-1 lg:order-2">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
+                            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                            className="relative aspect-square w-full"
+                        >
+                            <div className="absolute inset-0 bg-charcoal/5 rounded-[4rem] group overflow-hidden border border-current/5 shadow-2xl">
+                                <Image
+                                    src="/images/hero.png"
+                                    alt="Tsuko Design Vazolar"
+                                    fill
+                                    className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[3s] ease-out"
+                                    priority
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/20 to-transparent" />
+                            </div>
+
+                            {/* Floating Stats */}
+                            <motion.div
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 1, duration: 1 }}
+                                className="absolute -bottom-8 -left-8 bg-white/80 backdrop-blur-2xl p-8 rounded-[2rem] border border-current/5 shadow-2xl hidden md:block"
+                            >
+                                <div className="flex items-center gap-4 mb-4">
+                                    <div className="w-10 h-10 rounded-full bg-[var(--mood-accent)] flex items-center justify-center text-white">
+                                        <Sparkles size={20} />
+                                    </div>
+                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Materyal Bilgisi</span>
+                                </div>
+                                <h4 className="text-lg font-black tracking-tight mb-2">PLA+ Biyo-Polimer</h4>
+                                <p className="text-xs text-charcoal/50 leading-relaxed font-medium">Doğa dostu, dayanıklı ve <br />sıfır atık prensibiyle üretildi.</p>
+                            </motion.div>
+                        </motion.div>
+                    </div>
+                </div>
             </div>
 
             {/* Scroll Indicator */}
             <motion.a
                 href="#collection"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.5, duration: 1, repeat: Infinity, repeatType: "reverse" }}
-                className="absolute bottom-10 left-1/2 -translate-x-1/2 text-charcoal/30 hover:text-clay transition-colors cursor-pointer"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 2 }}
+                className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 opacity-20 hover:opacity-100 transition-opacity cursor-pointer group"
             >
-                <ArrowDown size={24} strokeWidth={1.5} />
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] rotate-180 [writing-mode:vertical-lr]">Scroll</span>
+                <div className="w-px h-12 bg-charcoal group-hover:h-16 transition-all duration-500" />
             </motion.a>
         </section>
     );

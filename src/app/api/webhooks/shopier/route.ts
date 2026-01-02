@@ -80,7 +80,7 @@ export async function POST(req: Request) {
 
         // 2. Send Email & Notifications
         try {
-            await sendOrderConfirmationEmail(updatedOrder);
+            await sendOrderConfirmationEmail(updatedOrder as any);
             await sendDiscordNotification({
                 orderNumber: updatedOrder.orderNumber,
                 totalAmount: updatedOrder.totalAmount.toString(),

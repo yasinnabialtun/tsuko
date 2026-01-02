@@ -76,7 +76,7 @@ export default function NewsletterPopup() {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-8">
                                 <p className="text-white text-lg font-serif italic">
-                                    "Evinizin ruhunu yansıtan tasarımlar."
+                                    &quot;Evinizin ruhunu yansıtan tasarımlar.&quot;
                                 </p>
                             </div>
                         </div>

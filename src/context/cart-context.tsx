@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import toast from 'react-hot-toast';
+import { Product } from '@/types';
 
 export interface CartItem {
     id: string; // Product ID
@@ -17,7 +18,7 @@ export interface CartItem {
 
 interface CartContextType {
     items: CartItem[];
-    addToCart: (product: any, quantity?: number, variant?: ProductVariantInfo) => void;
+    addToCart: (product: Product, quantity?: number, variant?: ProductVariantInfo) => void;
     removeFromCart: (productId: string, variantId?: string) => void;
     updateQuantity: (productId: string, quantity: number, variantId?: string) => void;
     clearCart: () => void;
@@ -81,7 +82,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
     }, [items, activeCoupon, isClient]);
 
-    const addToCart = (product: any, quantity = 1, variant?: ProductVariantInfo) => {
+    const addToCart = (product: Product, quantity = 1, variant?: ProductVariantInfo) => {
         setItems(prev => {
             // Check if item exists (match product ID AND variant ID)
             const existing = prev.find(item => item.id === product.id && item.variantId === variant?.id);
@@ -106,7 +107,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 name: product.name,
                 variantName: variant?.name,
                 slug: product.slug,
-                price: variant ? variant.price : (typeof product.price === 'string' ? parseFloat(product.price) : product.priceNumber || 0),
+                price: variant ? variant.price : Number(product.price),
                 image: variant?.image || product.images?.[0] || product.image || '',
                 quantity: Math.min(quantity, stockLimit),
                 maxStock: stockLimit

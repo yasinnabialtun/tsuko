@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { validateAdminRequest } from '@/lib/admin-auth';
-import { revalidateTag } from 'next/cache';
+import { revalidateTag, revalidatePath } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
             update: data
         });
 
-        revalidateTag('site-settings');
+        revalidatePath('/', 'layout');
 
         return NextResponse.json(settings);
     } catch (error) {

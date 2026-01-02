@@ -103,7 +103,7 @@ export async function GET(req: Request) {
                 code: 'MERHABA10',
                 discountType: 'PERCENTAGE',
                 discountValue: 10,
-                maxUsage: 100,
+                usageLimit: 100,
                 usedCount: 0,
                 isActive: true
             }

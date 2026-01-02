@@ -12,6 +12,8 @@ import LiveSales from '@/components/live-sales';
 import InstagramFeed from '@/components/instagram-feed';
 import { prisma } from "@/lib/prisma";
 
+import { Product } from '@/types';
+
 // Revalidate data every hour
 export const revalidate = 3600;
 
@@ -24,7 +26,7 @@ async function getProducts() {
       include: { category: true }
     });
 
-    return products.map((p: any) => ({
+    return products.map((p) => ({
       ...p,
       id: p.id,
       name: p.name,
@@ -32,7 +34,7 @@ async function getProducts() {
       image: p.images[0] || '/images/hero.png',
       category: p.category?.name || 'Tasarım',
       description: p.description
-    }));
+    })) as Product[];
   } catch (e) {
     console.error("Database connection failed, returning fallback data");
     return [];
@@ -58,7 +60,7 @@ export default async function Home() {
   const productListSchema = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    itemListElement: products.map((product: any, index: number) => ({
+    itemListElement: products.map((product: Product, index: number) => ({
       '@type': 'ListItem',
       position: index + 1,
       item: {

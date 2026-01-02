@@ -9,6 +9,8 @@ import BundleSuggester from '@/components/bundle-suggester';
 import { prisma } from '@/lib/prisma';
 import Breadcrumbs from '@/components/breadcrumbs';
 import ProductPageClient from './client';
+import { getCategoryTheme, cn } from '@/lib/utils';
+import { Product } from '@/types';
 
 // SSR with revalidation
 export const revalidate = 60; // Revalidate every minute
@@ -153,13 +155,12 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         category: product.category?.name || 'Tasarım',
         image: product.images[0] || '/images/hero.png',
         images: product.images,
-        description: product.description,
+        description: product.description || '',
         stock: product.stock,
         avgRating,
         reviewCount,
-        variants: product.variants,
-        modelUrl: (product as any).modelUrl,
-        // Generate Shopier URL from product data or use placeholder
+        variants: product.variants as any[],
+        modelUrl: (product as any).modelUrl || null,
         shopierUrl: `https://www.shopier.com/tsukodesign/${product.slug}`,
         similarProducts: similarProducts
     };
@@ -192,8 +193,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         }
     };
 
+    const themeClass = getCategoryTheme(product.category?.name);
+
     return (
-        <main className="min-h-screen bg-white">
+        <main className={cn("min-h-screen transition-colors duration-1000", themeClass)}>
             {/* JSON-LD Structured Data */}
             <script
                 type="application/ld+json"

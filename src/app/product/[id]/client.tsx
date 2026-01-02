@@ -3,10 +3,8 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingBag, ShieldCheck, Clock, Star, Minus, Plus, ChevronDown, Share2, Truck, Box } from 'lucide-react';
+import { ShoppingBag, ShieldCheck, Star, ChevronDown, Share2, Truck, Box, Clock } from 'lucide-react';
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
-import CouponValidation from '@/components/coupon-validation';
-import BundleSuggester from '@/components/bundle-suggester';
 import { useCart } from '@/context/cart-context';
 import Breadcrumbs from '@/components/breadcrumbs';
 import ReviewSection from '@/components/review-section';
@@ -15,7 +13,25 @@ import VariantSelector from '@/components/variant-selector';
 import { useRecentProducts } from '@/hooks/use-recent-products';
 import ProductGallery from '@/components/product-gallery';
 import RecentlyViewed from '@/components/recently-viewed';
+import BundleSuggester from '@/components/bundle-suggester';
 import { cn } from '@/lib/utils';
+interface Variant {
+    id: string;
+    title: string;
+    sku: string;
+    price: number;
+    stock: number;
+    attributes: Record<string, any>;
+    images: string[];
+}
+
+interface Suggestion {
+    id: string;
+    name: string;
+    price: string;
+    image: string;
+    slug: string;
+}
 
 interface ProductData {
     id: string;
@@ -29,8 +45,8 @@ interface ProductData {
     description: string;
     stock: number;
     shopierUrl: string;
-    similarProducts: any[];
-    variants?: any[];
+    similarProducts: Suggestion[];
+    variants?: Variant[];
     avgRating?: number;
     reviewCount?: number;
     modelUrl?: string | null;
@@ -42,11 +58,10 @@ export default function ProductPageClient({ product }: { product: ProductData })
     const { scrollY } = useScroll();
     const [viewers] = useState(getRandomViewers());
     const [showSticky, setShowSticky] = useState(false);
-    const [selectedVariant, setSelectedVariant] = useState<any>(null);
-    const [activeTab, setActiveTab] = useState('details'); // details, specs, shipping
+    const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
+    const [activeTab, setActiveTab] = useState('details');
 
     const { addToCart } = useCart();
-
     const { addProduct } = useRecentProducts();
 
     useEffect(() => {
@@ -101,19 +116,19 @@ export default function ProductPageClient({ product }: { product: ProductData })
         {
             id: 'specs',
             title: 'Malzeme & İşçilik',
-            content: "Tsuko Design objeleri, doğadan ilham alır. Kullandığımız organik biyo-polimer (PLA+), mısır nişastasından elde edilen, sürdürülebilir ve toksik olmayan bir materyaldir. Her bir obje, parametrik algoritmalarla tasarlanır ve 18 saati bulan hassas katmanlama süreciyle fiziksel forma kavuşur. Dokunduğunuzda, dijital zanaatin izlerini hissedeceksiniz.",
+            content: "Tsuko Design objeleri, doğadan ilham alır. Kullandığımız organik biyo-polimer (PLA+), mısır nişastasından elde edilen, sürdürülebilir ve toksik olmayan bir materyaldir. Her bir obje, parametrik algoritmalarla tasarlanır ve 18 saati bulan hassas katmanlama süreciyle fiziksel forma kavuşur.",
             icon: Box
         },
         {
             id: 'shipping',
             title: 'Teslimat & Garanti',
-            content: "Tüm siparişler özel korumalı ambalajlarda gönderilir. Kargo sırasında oluşabilecek her türlü hasara karşı Tsuko Design %100 değişim garantisi sunar. Siparişiniz 1-3 iş günü içinde kargoya teslim edilir. Memnun kalmazsanız 14 gün içinde iade edebilirsiniz.",
+            content: "Tüm siparişler özel korumalı ambalajlarda gönderilir. Kargo sırasında oluşabilecek her türlü hasara karşı Tsuko Design %100 değişim garantisi sunar.",
             icon: Truck
         }
     ];
 
     return (
-        <div className="bg-white min-h-screen">
+        <div className="min-h-screen" style={{ backgroundColor: 'var(--mood-bg)', color: 'var(--mood-text)' }}>
             {/* Sticky Mobile Add-to-Cart */}
             <AnimatePresence>
                 {showSticky && !isOutOfStock && (
@@ -121,19 +136,21 @@ export default function ProductPageClient({ product }: { product: ProductData })
                         initial={{ y: 100 }}
                         animate={{ y: 0 }}
                         exit={{ y: 100 }}
-                        className="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-black/5 p-4 z-50 md:hidden shadow-[0_-10px_40px_rgba(0,0,0,0.15)]"
+                        className="fixed bottom-0 left-0 w-full p-4 z-50 md:hidden shadow-[0_-10px_40px_rgba(0,0,0,0.3)]"
+                        style={{ backgroundColor: 'var(--mood-card-bg)', borderTop: '1px solid rgba(var(--mood-text), 0.05)' }}
                     >
                         <div className="flex items-center gap-4 max-w-lg mx-auto">
-                            <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gray-50 border border-black/5">
+                            <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-black/5">
                                 <Image src={product.image} alt={product.name} fill className="object-cover" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <h4 className="font-bold text-charcoal text-xs truncate uppercase tracking-tighter">{product.name}</h4>
-                                <p className="text-sm font-black text-clay">{currentPrice.toFixed(2)} ₺</p>
+                                <h4 className="font-bold text-xs truncate uppercase tracking-tighter" style={{ color: 'var(--mood-text)' }}>{product.name}</h4>
+                                <p className="text-sm font-black" style={{ color: 'var(--mood-accent)' }}>{currentPrice.toFixed(2)} ₺</p>
                             </div>
                             <button
                                 onClick={handleAddToCart}
-                                className="px-6 py-3 bg-charcoal text-white rounded-xl font-bold text-sm shadow-xl shadow-charcoal/20 active:scale-95 transition-transform"
+                                className="px-6 py-3 rounded-xl font-bold text-sm shadow-xl active:scale-95 transition-all"
+                                style={{ backgroundColor: 'var(--mood-accent)', color: 'var(--mood-bg)' }}
                             >
                                 Sepete Ekle
                             </button>
@@ -166,30 +183,30 @@ export default function ProductPageClient({ product }: { product: ProductData })
                             {/* Header */}
                             <div>
                                 <div className="flex items-center gap-3 mb-4">
-                                    <div className="flex text-orange-400">
+                                    <div className="flex" style={{ color: 'var(--mood-accent)' }}>
                                         {[1, 2, 3, 4, 5].map(i => (
                                             <Star
                                                 key={i}
                                                 size={14}
                                                 fill={i <= Math.round(product.avgRating || 0) ? "currentColor" : "none"}
-                                                className={i <= Math.round(product.avgRating || 0) ? "" : "text-gray-300"}
+                                                className={i <= Math.round(product.avgRating || 0) ? "" : "opacity-20"}
                                             />
                                         ))}
                                     </div>
-                                    <span className="text-xs font-bold tracking-widest text-charcoal/40 uppercase">
+                                    <span className="text-xs font-bold tracking-widest uppercase opacity-40">
                                         {product.reviewCount || 0} DEĞERLENDİRME
                                     </span>
                                 </div>
 
-                                <h1 className="text-4xl md:text-5xl font-light text-charcoal mb-4 tracking-tight leading-tight">
+                                <h1 className="text-4xl md:text-5xl font-light mb-4 tracking-tight leading-tight" style={{ color: 'var(--mood-text)' }}>
                                     {product.name}
                                 </h1>
 
-                                <div className="flex items-end justify-between border-b border-gray-100 pb-8">
+                                <div className="flex items-end justify-between border-b pb-8" style={{ borderColor: 'rgba(var(--mood-text), 0.1)' }}>
                                     <div className="space-y-2">
-                                        <p className="text-3xl font-medium text-charcoal">{currentPrice.toFixed(2)} ₺</p>
+                                        <p className="text-3xl font-medium" style={{ color: 'var(--mood-text)' }}>{currentPrice.toFixed(2)} ₺</p>
                                         {!isOutOfStock && (
-                                            <div className="flex items-center gap-2 text-emerald-600 text-xs font-bold uppercase tracking-widest">
+                                            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--mood-accent)' }}>
                                                 <Clock size={14} />
                                                 <span>Aynı Gün Kargo</span>
                                             </div>
@@ -208,7 +225,8 @@ export default function ProductPageClient({ product }: { product: ProductData })
                                                 alert('Bağlantı kopyalandı!');
                                             }
                                         }}
-                                        className="p-3 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors text-charcoal/40"
+                                        className="p-3 rounded-full transition-colors opacity-40 hover:opacity-100"
+                                        style={{ backgroundColor: 'rgba(var(--mood-text), 0.05)' }}
                                     >
                                         <Share2 size={18} />
                                     </button>
@@ -217,14 +235,14 @@ export default function ProductPageClient({ product }: { product: ProductData })
 
                             {/* Urgency & Social Proof */}
                             {!isOutOfStock && (
-                                <div className="flex items-center gap-3 text-sm text-charcoal/70 bg-gray-50 p-4 rounded-xl">
+                                <div className="flex items-center gap-3 text-sm p-4 rounded-xl" style={{ backgroundColor: 'rgba(var(--mood-text), 0.05)', color: 'var(--mood-text)' }}>
                                     <div className="relative">
-                                        <div className="w-2 h-2 bg-clay rounded-full animate-ping absolute inset-0"></div>
-                                        <div className="w-2 h-2 bg-clay rounded-full relative"></div>
+                                        <div className="w-2 h-2 rounded-full animate-ping absolute inset-0" style={{ backgroundColor: 'var(--mood-accent)' }}></div>
+                                        <div className="w-2 h-2 rounded-full relative" style={{ backgroundColor: 'var(--mood-accent)' }}></div>
                                     </div>
-                                    <p>
-                                        Şu an <span className="font-bold text-charcoal">{viewers} kişi</span> inceliyor.
-                                        {currentStock < 5 && <span className="text-clay font-bold ml-1">Son {currentStock} ürün!</span>}
+                                    <p className="opacity-80">
+                                        Şu an <span className="font-bold">{viewers} kişi</span> inceliyor.
+                                        {currentStock < 5 && <span className="font-bold ml-1" style={{ color: 'var(--mood-accent)' }}>Son {currentStock} ürün!</span>}
                                     </p>
                                 </div>
                             )}
@@ -242,9 +260,10 @@ export default function ProductPageClient({ product }: { product: ProductData })
                                 {!isOutOfStock ? (
                                     <button
                                         onClick={handleAddToCart}
-                                        className="w-full flex items-center justify-center gap-3 py-5 rounded-xl text-lg font-bold transition-all shadow-xl bg-charcoal text-white hover:bg-clay hover:shadow-2xl hover:-translate-y-1 shadow-charcoal/10 relative overflow-hidden group"
+                                        className="w-full flex items-center justify-center gap-3 py-5 rounded-xl text-lg font-bold transition-all shadow-xl relative overflow-hidden group hover:scale-[1.02]"
+                                        style={{ backgroundColor: 'var(--mood-accent)', color: 'var(--mood-bg)' }}
                                     >
-                                        <span className="relative z-10 flex items-center gap-2">
+                                        <span className="relative z-10 flex items-center gap-2 uppercase tracking-widest text-sm font-black">
                                             <ShoppingBag size={20} />
                                             Sepete Ekle
                                         </span>
@@ -253,12 +272,12 @@ export default function ProductPageClient({ product }: { product: ProductData })
                                     <StockNotifyForm productId={product.id} />
                                 )}
 
-                                <div className="grid grid-cols-2 gap-4 text-[11px] font-bold tracking-wider text-charcoal/50 uppercase text-center">
-                                    <div className="flex items-center justify-center gap-2 bg-gray-50 py-3 rounded-lg border border-gray-100">
+                                <div className="grid grid-cols-2 gap-4 text-[11px] font-bold tracking-wider opacity-50 uppercase text-center">
+                                    <div className="flex items-center justify-center gap-2 py-3 rounded-lg border" style={{ borderColor: 'rgba(var(--mood-text), 0.1)', backgroundColor: 'rgba(var(--mood-text), 0.02)' }}>
                                         <ShieldCheck size={14} />
                                         <span className="mt-0.5">%100 Kırılma Garantisi</span>
                                     </div>
-                                    <div className="flex items-center justify-center gap-2 bg-gray-50 py-3 rounded-lg border border-gray-100">
+                                    <div className="flex items-center justify-center gap-2 py-3 rounded-lg border" style={{ borderColor: 'rgba(var(--mood-text), 0.1)', backgroundColor: 'rgba(var(--mood-text), 0.02)' }}>
                                         <Truck size={14} />
                                         <span className="mt-0.5">Hızlı Teslimat</span>
                                     </div>
@@ -268,18 +287,19 @@ export default function ProductPageClient({ product }: { product: ProductData })
                             {/* Collapsible Info Tabs - Elite UX */}
                             <div className="space-y-2 pt-8">
                                 {sections.map((section) => (
-                                    <div key={section.id} className="border border-gray-100 rounded-xl overflow-hidden">
+                                    <div key={section.id} className="rounded-xl overflow-hidden border" style={{ borderColor: 'rgba(var(--mood-text), 0.1)' }}>
                                         <button
                                             onClick={() => setActiveTab(activeTab === section.id ? '' : section.id)}
-                                            className="w-full flex items-center justify-between p-4 bg-white hover:bg-gray-50 transition-colors text-left"
+                                            className="w-full flex items-center justify-between p-4 transition-colors text-left"
+                                            style={{ backgroundColor: 'transparent' }}
                                         >
                                             <div className="flex items-center gap-3">
-                                                <section.icon size={18} className="text-gray-400" />
-                                                <span className="font-bold text-sm text-charcoal uppercase tracking-wide">{section.title}</span>
+                                                <section.icon size={18} className="opacity-40" />
+                                                <span className="font-bold text-sm uppercase tracking-wide">{section.title}</span>
                                             </div>
                                             <ChevronDown
                                                 size={16}
-                                                className={cn("text-gray-300 transition-transform duration-300", activeTab === section.id && "rotate-180")}
+                                                className={cn("opacity-20 transition-transform duration-300", activeTab === section.id && "rotate-180")}
                                             />
                                         </button>
                                         <AnimatePresence>
@@ -290,7 +310,7 @@ export default function ProductPageClient({ product }: { product: ProductData })
                                                     exit={{ height: 0, opacity: 0 }}
                                                     transition={{ duration: 0.3 }}
                                                 >
-                                                    <div className="p-4 pt-0 text-charcoal/70 leading-relaxed text-sm border-t border-gray-100 bg-gray-50">
+                                                    <div className="p-4 pt-0 leading-relaxed text-sm opacity-70" style={{ backgroundColor: 'rgba(var(--mood-text), 0.02)' }}>
                                                         {section.content}
                                                     </div>
                                                 </motion.div>
@@ -301,15 +321,17 @@ export default function ProductPageClient({ product }: { product: ProductData })
                             </div>
 
                             {/* Bundle / Cross Sell */}
-                            <div className="pt-8 border-t border-gray-100">
-                                <h3 className="font-bold text-sm uppercase tracking-widest text-charcoal mb-4">Birlikte Harika Durur</h3>
-                                <BundleSuggester products={product.similarProducts} />
+                            <div className="pt-8 border-t" style={{ borderColor: 'rgba(var(--mood-text), 0.1)' }}>
+                                <h3 className="font-bold text-sm uppercase tracking-widest mb-4">Birlikte Harika Durur</h3>
+                                <div className="opacity-90">
+                                    <BundleSuggester products={product.similarProducts} />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="mt-32 max-w-5xl mx-auto border-t border-gray-100 pt-16">
+                <div className="mt-32 max-w-5xl mx-auto border-t pt-16" style={{ borderColor: 'rgba(var(--mood-text), 0.1)' }}>
                     <ReviewSection productId={product.id} />
                 </div>
 
