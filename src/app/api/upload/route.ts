@@ -1,14 +1,6 @@
 
-import { v2 as cloudinary } from 'cloudinary';
 import { NextResponse } from 'next/server';
-
-// Configure Cloudinary
-cloudinary.config({
-    cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-    secure: true,
-});
+import { uploadFile, BUCKETS } from '@/lib/supabase-storage';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,37 +13,25 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'No file provided' }, { status: 400 });
         }
 
-        // Convert File to Buffer for Cloudinary
-        const arrayBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
+        // Upload to Supabase 'products' bucket
+        const result = await uploadFile(file, BUCKETS.PRODUCTS);
 
-        // Upload to Cloudinary using a Promise wrapper
-        const result: any = await new Promise((resolve, reject) => {
-            cloudinary.uploader.upload_stream(
-                {
-                    folder: 'tsuko-products', // Organized folder in Cloudinary
-                    resource_type: 'auto',   // Detects image/video automatically
-                    transformation: [
-                        { quality: 'auto:good' }, // Optimization
-                        { fetch_format: 'auto' }  // WebP auto-conversion
-                    ]
-                },
-                (error, result) => {
-                    if (error) reject(error);
-                    else resolve(result);
-                }
-            ).end(buffer);
-        });
+        if (result.error) {
+            console.error('Supabase Upload Error:', result.error);
+            return NextResponse.json({ error: result.error }, { status: 500 });
+        }
 
         return NextResponse.json({
-            url: result.secure_url,
-            publicId: result.public_id,
-            width: result.width,
-            height: result.height
+            url: result.url,
+            // Mocking these as Supabase doesn't return dimensions immediately without extra logic
+            // But frontend might expect them.
+            publicId: file.name,
+            width: 0,
+            height: 0
         }, { status: 201 });
 
     } catch (error) {
-        console.error('Cloudinary Upload Error:', error);
-        return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
+        console.error('Upload API Error:', error);
+        return NextResponse.json({ error: 'Upload process failed' }, { status: 500 });
     }
 }
