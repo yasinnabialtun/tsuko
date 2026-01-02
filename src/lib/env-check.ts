@@ -11,9 +11,7 @@ const REQUIRED_ENV = [
     'SHOPIER_API_SECRET',
     'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY',
     'CLERK_SECRET_KEY',
-    'RESEND_API_KEY',
-    'TELEGRAM_BOT_TOKEN',
-    'TELEGRAM_CHAT_ID'
+    'RESEND_API_KEY'
 ];
 
 export function validateEnv() {
