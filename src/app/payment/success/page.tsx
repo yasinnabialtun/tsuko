@@ -43,10 +43,24 @@ function SuccessContent() {
                         HARİKA BİR SEÇİM!
                     </h1>
 
-                    <p className="text-charcoal/60 mb-10 text-lg font-light leading-relaxed">
+
+                    <p className="text-charcoal/60 mb-8 text-lg font-light leading-relaxed">
                         Siparişin başarıyla alındı. Atölyemizde senin için hazırlıklar başlıyor. Sipariş numaranı not etmeyi unutma:
                         <span className="block font-black text-charcoal mt-3 text-2xl tracking-tight">#{orderId || 'TSK-2024-X'}</span>
                     </p>
+
+                    {/* Sustainability Impact Badge */}
+                    <div className="bg-green-50 border border-green-100 rounded-2xl p-6 mb-12 flex items-start gap-4 text-left">
+                        <div className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center flex-shrink-0 animate-pulse">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" /><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" /></svg>
+                        </div>
+                        <div>
+                            <h4 className="font-bold text-green-800 text-sm uppercase tracking-wide mb-1">Doğa Sana Teşekkür Ediyor</h4>
+                            <p className="text-xs text-green-700 leading-relaxed font-medium">
+                                Bu siparişle, petrol türevi plastikler yerine %100 doğada çözünebilen biyo-materyal tercih ettin. Karbon ayak izini azalttığın için teşekkürler.
+                            </p>
+                        </div>
+                    </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
                         <div className="bg-current/5 rounded-2xl p-6 text-left border border-current/5">
