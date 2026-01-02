@@ -78,6 +78,32 @@ export async function POST(req: Request) {
             include: { items: { include: { product: true } } }
         });
 
+        // 1.5 Update Affiliate Earnings if applicable
+        const orderAny = updatedOrder as any;
+        if (orderAny.affiliateId) {
+            try {
+                const affiliate = await (prisma as any).affiliate.findUnique({
+                    where: { id: orderAny.affiliateId }
+                });
+
+                if (affiliate) {
+                    const orderTotal = Number(updatedOrder.totalAmount);
+                    const commissionRate = Number(affiliate.commissionRate);
+                    const earnedAmount = (orderTotal * commissionRate) / 100;
+
+                    await (prisma as any).affiliate.update({
+                        where: { id: affiliate.id },
+                        data: {
+                            totalSales: { increment: orderTotal },
+                            totalEarnings: { increment: earnedAmount }
+                        }
+                    });
+                }
+            } catch (affError) {
+                console.error('Affiliate update failed:', affError);
+            }
+        }
+
         // 2. Send Email & Notifications
         try {
             await sendOrderConfirmationEmail(updatedOrder as any);

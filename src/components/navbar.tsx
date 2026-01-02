@@ -88,9 +88,7 @@ export default function Navbar() {
                                     <UserButton afterSignOutUrl="/" />
                                 </SignedIn>
 
-                                <Link href="/admin" className="opacity-30 hover:opacity-100 transition-opacity ml-2">
-                                    <LayoutDashboard size={18} strokeWidth={1.5} />
-                                </Link>
+
                             </div>
 
                             <button

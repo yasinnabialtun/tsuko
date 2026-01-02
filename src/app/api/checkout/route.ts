@@ -119,6 +119,17 @@ export async function POST(request: Request) {
         const orderNumber = generateOrderNumber();
         const fullAddress = `${customer.address}, ${customer.district}, ${customer.city}, ${customer.zipCode}`;
 
+        // Check for Affiliate Link
+        let affiliateId = null;
+        if (couponCode) {
+            const affiliate = await (prisma as any).affiliate.findUnique({
+                where: { code: couponCode.toUpperCase() }
+            });
+            if (affiliate && affiliate.isActive) {
+                affiliateId = affiliate.id;
+            }
+        }
+
         const order = await prisma.order.create({
             data: {
                 orderNumber,
@@ -133,6 +144,8 @@ export async function POST(request: Request) {
                 userId: userId || null,
                 status: 'PENDING',        // Waiting for payment
                 paymentStatus: 'UNPAID',  // Waiting for payment
+                // @ts-ignore
+                affiliateId: affiliateId, // Link to affiliate
                 items: {
                     create: orderItemsData
                 }
@@ -146,9 +159,6 @@ export async function POST(request: Request) {
                     where: { id: item.variantId },
                     data: { stock: { decrement: item.quantity } }
                 });
-
-                // Optionally deduct from base product total stock if tracking aggregate
-                // await prisma.product.update({ ... stock: { decrement: ... } }) 
             } else {
                 await prisma.product.update({
                     where: { id: item.productId },
@@ -157,7 +167,12 @@ export async function POST(request: Request) {
             }
         }
 
-        // 2.2 Increment Coupon Usage
+        // 2.2 Increment Coupon Usage & Update Affiliate Stats (Optimistic for now, or should wait for payment?)
+        // Let's increment Coupon usage here as intent. 
+        // For Affiliate Stats, we should ideally wait for Payment Success. 
+        // But for "create order" flow, we just link it.
+        // We will update Affiliate Stats in the Webhook when Payment is PAID.
+
         if (discountAmount > 0 && couponCode) {
             await prisma.coupon.update({
                 where: { code: couponCode.toUpperCase() },

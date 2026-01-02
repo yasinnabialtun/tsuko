@@ -15,6 +15,7 @@ const MENU_ITEMS = [
     { icon: ShoppingBag, label: 'Ürünler', href: '/admin/products' },
     { icon: Package, label: 'Siparişler', href: '/admin/orders' },
     { icon: Tag, label: 'Kuponlar', href: '/admin/coupons' },
+    { icon: Users, label: 'Affiliate', href: '/admin/affiliates' },
     { icon: FileText, label: 'Blog', href: '/admin/blog' },
     { icon: MessageCircle, label: 'Yorumlar', href: '/admin/reviews' },
     { icon: Bell, label: 'Bildirimler', href: '/admin/notifications' },
