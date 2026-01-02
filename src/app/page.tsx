@@ -41,20 +41,30 @@ async function getProducts() {
   }
 }
 
+
+async function getSettings() {
+  try {
+    const settings = await prisma.settings.findUnique({
+      where: { id: 'singleton' }
+    });
+    return settings;
+  } catch (e) {
+    return null;
+  }
+}
+
 export default async function Home() {
   const products = await getProducts();
+  const settings = await getSettings();
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Tsuko Design',
+    name: settings?.siteName || 'Tsuko Design',
     url: 'https://tsukodesign.com',
     logo: 'https://tsukodesign.com/images/hero.png',
-    sameAs: [
-      'https://www.instagram.com/tsukodesign',
-      'https://twitter.com/tsukodesign'
-    ],
-    description: 'Mimari 3D baskı ev dekorasyon ürünleri ve aydınlatma tasarımları.',
+    // ... (rest of jsonLd)
+    description: settings?.siteDescription || 'Mimari 3D baskı ev dekorasyon ürünleri ve aydınlatma tasarımları.',
   };
 
   const productListSchema = {
@@ -145,8 +155,9 @@ export default async function Home() {
       />
 
       <Navbar />
-      <Hero />
-      <Philosophy />
+      <Hero settings={settings} />
+      <Philosophy settings={settings} />
+
       <Collection products={products} />
       <ShopTheLook />
       <FAQ />

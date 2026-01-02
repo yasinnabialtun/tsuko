@@ -265,6 +265,19 @@ model Settings {
   // UI / Maintenance
   maintenanceMode       Boolean  @default(false)
   
+  // CMS (Dynamic Content)
+  heroTitle             String   @default("ZAMANIN ÖTESİNDE TASARIMLAR")
+  heroSubtitle          String   @default("Evinizin ruhunu yansıtan, sürdürülebilir ve estetik parçalar.")
+  heroButtonText        String   @default("KOLEKSİYONU KEŞFET")
+  heroButtonLink        String   @default("/collection")
+  heroImage             String   @default("/images/hero.png")
+  
+  philosophyTitle       String   @default("MİMARİ BAKIŞ")
+  philosophyContent     String   @default("Tsuko, Japonca'da 'yaratmak' anlamına gelir. Biz sadece obje değil, yaşam alanlarınıza karakter katan hikayeler tasarlıyoruz. Her bir parça, mimari disiplin ve sanatın buluşma noktasıdır.")
+  
+  announcementBar       String   @default("TÜM TÜRKİYE'YE ÜCRETSİZ KARGO")
+  announcementActive    Boolean  @default(true)
+
   updatedAt             DateTime @updatedAt
 }
 

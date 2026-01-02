@@ -6,7 +6,17 @@ import Link from 'next/link';
 import { ArrowDown, MoveRight, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export default function Hero() {
+
+export default function Hero({ settings }: { settings?: any }) {
+    // Fallback values if settings are missing
+    const content = {
+        title: settings?.heroTitle || "EVİNİZİN HEYKEL HALİ.",
+        subtitle: settings?.heroSubtitle || "Parametrik tasarımın matematiksel kusursuzluğu, doğa dostu materyallerin sıcaklığıyla buluştu. Yaşam alanınıza karakter katan dijital zanaat eserleri.",
+        buttonText: settings?.heroButtonText || "KOLEKSİYONU KEŞFET",
+        buttonLink: settings?.heroButtonLink || "/#collection",
+        image: settings?.heroImage || "/images/hero.png"
+    };
+
     return (
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[var(--background)]">
             {/* Background Architecture */}
@@ -31,31 +41,21 @@ export default function Hero() {
                                 <span className="text-[10px] font-black tracking-[0.3em] text-charcoal/40 uppercase">Limitli Üretim • Parametrik Sanat</span>
                             </div>
 
-                            <h1 className="text-6xl md:text-8xl lg:text-[10rem] font-bold text-charcoal leading-[0.85] tracking-tighter mb-10">
-                                EVİNİZİN <br />
-                                <span className="text-[var(--mood-accent)] relative inline-block italic">
-                                    HEYKEL
-                                    <motion.div
-                                        initial={{ width: 0 }}
-                                        animate={{ width: '100%' }}
-                                        transition={{ delay: 1, duration: 1.5, ease: "easeInOut" }}
-                                        className="absolute -bottom-2 left-0 h-1 md:h-2 bg-charcoal/5 -z-10 rounded-full"
-                                    />
-                                </span>
-                                <br />HALİ.
+                            <h1 className="text-6xl md:text-8xl lg:text-[7rem] font-bold text-charcoal leading-[0.9] tracking-tighter mb-10 whitespace-pre-line uppercase">
+                                {content.title}
                             </h1>
 
                             <p className="text-xl md:text-2xl text-charcoal/50 font-light max-w-xl leading-relaxed mb-16 tracking-tight">
-                                Parametrik tasarımın matematiksel kusursuzluğu, doğa dostu materyallerin sıcaklığıyla buluştu. Yaşam alanınıza karakter katan dijital zanaat eserleri.
+                                {content.subtitle}
                             </p>
 
                             <div className="flex flex-col sm:flex-row items-center gap-6">
                                 <Link
-                                    href="/#collection"
+                                    href={content.buttonLink}
                                     className="group relative px-12 py-6 bg-charcoal text-white rounded-full font-black text-xs tracking-[0.2em] overflow-hidden transition-all shadow-2xl shadow-charcoal/20 w-full sm:w-auto text-center active:scale-95"
                                 >
                                     <span className="relative z-10 flex items-center justify-center gap-4">
-                                        KOLEKSİYONU KEŞFET
+                                        {content.buttonText}
                                         <MoveRight size={18} className="transition-transform group-hover:translate-x-2" />
                                     </span>
                                     <div className="absolute inset-0 bg-mauve transform -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-[0.16, 1, 0.3, 1]" />
@@ -80,8 +80,8 @@ export default function Hero() {
                         >
                             <div className="absolute inset-0 bg-charcoal/5 rounded-[4rem] group overflow-hidden border border-current/5 shadow-2xl">
                                 <Image
-                                    src="/images/hero.png"
-                                    alt="Tsuko Design Vazolar"
+                                    src={content.image}
+                                    alt="Tsuko Design"
                                     fill
                                     className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[3s] ease-out"
                                     priority

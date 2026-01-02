@@ -4,7 +4,14 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Sparkles } from 'lucide-react';
 
-export default function Philosophy() {
+
+export default function Philosophy({ settings }: { settings?: any }) {
+    // Fallback content
+    const content = {
+        title: settings?.philosophyTitle || "MİMARİ BAKIŞ",
+        text: settings?.philosophyContent || "Tsuko, Japonca'da 'yaratmak' anlamına gelir. Biz sadece obje değil, yaşam alanlarınıza karakter katan hikayeler tasarlıyoruz. Her bir parça, mimari disiplin ve sanatın buluşma noktasıdır."
+    };
+
     return (
         <section id="philosophy" className="py-32 bg-[var(--background)] overflow-hidden">
             <div className="container-custom">
@@ -59,23 +66,14 @@ export default function Philosophy() {
                             <div className="space-y-4 mb-10">
                                 <span className="text-[var(--mood-accent)] text-xs font-black tracking-[0.3em] uppercase opacity-60">Manifesto</span>
                                 <h2 className="text-5xl md:text-7xl font-bold text-charcoal tracking-tighter leading-[0.9]">
-                                    Sadece Sizin İçin <br />
-                                    <span className="text-[var(--mood-accent)] italic opacity-80">&quot;Dijital Zanaat&quot;</span>
+                                    {content.title}
                                 </h2>
                             </div>
 
-                            <div className="space-y-10 text-xl text-charcoal/60 font-light leading-relaxed tracking-tight">
-                                <p>
-                                    Tsuko&apos;da &quot;Stokta ne varsa onu gönder&quot; mantığı yoktur. Siparişiniz bize ulaştığında, o ürün sadece sizin için <span className="text-charcoal font-bold">atölyemizde yolculuğuna başlar.</span>
-                                </p>
-                                <p className="relative pl-10">
-                                    <span className="absolute left-0 top-0 text-4xl text-[var(--mood-accent)] opacity-20 font-serif">&quot;</span>
-                                    İleri teknoloji 3D yazıcılarımız, mısır nişastasından elde edilen doğal polimerleri milim milim işler. Bu süreç, el yapımı seramiklerin sıcaklığını dijital dünyanın hassasiyetiyle buluşturur.
-                                </p>
-                                <p>
-                                    Japon folklorendeki <span className="text-charcoal font-bold">Tsukumogami</span> inancından ilham alıyoruz: Objelerin zamanla bir ruh kazandığına inanıyoruz. Bizim her katmanımız, o ruhun birer yıllık halkasıdır.
-                                </p>
+                            <div className="space-y-10 text-xl text-charcoal/60 font-light leading-relaxed tracking-tight whitespace-pre-line">
+                                {content.text}
                             </div>
+
 
                             <div className="pt-8 flex items-center gap-12">
                                 <div className="text-center">

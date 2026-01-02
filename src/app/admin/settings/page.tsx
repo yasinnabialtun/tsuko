@@ -26,7 +26,17 @@ export default function AdminSettingsPage() {
         maintenanceMode: false,
         orderNotifications: true,
         stockAlerts: true,
-        newsletterNotifications: true
+        newsletterNotifications: true,
+        // CMS Defaults
+        heroTitle: '',
+        heroSubtitle: '',
+        heroButtonText: '',
+        heroButtonLink: '',
+        heroImage: '',
+        philosophyTitle: '',
+        philosophyContent: '',
+        announcementBar: '',
+        announcementActive: true
     });
 
     useEffect(() => {
@@ -61,6 +71,7 @@ export default function AdminSettingsPage() {
 
     const handleSave = async () => {
         setSaving(true);
+        // ... (rest of save logic)
         try {
             const res = await fetch('/api/admin/settings', {
                 method: 'POST',
@@ -115,7 +126,7 @@ export default function AdminSettingsPage() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold text-charcoal">Site Ayarları</h1>
-                    <p className="text-gray-500">Genel site ayarlarını yönetin.</p>
+                    <p className="text-gray-500">Genel site ayarlarını ve içeriklerini yönetin.</p>
                 </div>
                 <button
                     onClick={handleSave}
@@ -139,6 +150,131 @@ export default function AdminSettingsPage() {
                         </>
                     )}
                 </button>
+            </div>
+
+            {/* CMS / Content Management */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-8">
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="p-3 bg-purple-50 rounded-xl">
+                        <Palette size={24} className="text-purple-600" />
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-bold text-charcoal">İçerik Yönetimi (CMS)</h2>
+                        <p className="text-sm text-gray-500">Ana sayfa metinleri ve görselleri</p>
+                    </div>
+                </div>
+
+                <div className="space-y-8">
+                    {/* Announcement Bar */}
+                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-bold text-gray-700">Duyuru Çubuğu</h3>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <span className="text-sm text-gray-500">Aktif</span>
+                                <input
+                                    type="checkbox"
+                                    name="announcementActive"
+                                    checked={(settings as any).announcementActive}
+                                    onChange={handleChange}
+                                    className="w-5 h-5 rounded border-gray-300 text-clay focus:ring-clay"
+                                />
+                            </label>
+                        </div>
+                        <input
+                            type="text"
+                            name="announcementBar"
+                            value={(settings as any).announcementBar}
+                            onChange={handleChange}
+                            placeholder="Örn: TÜM TÜRKİYE'YE ÜCRETSİZ KARGO"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay outline-none transition-all bg-white"
+                        />
+                    </div>
+
+                    {/* Hero Section */}
+                    <div>
+                        <h3 className="font-bold text-gray-700 mb-4 pb-2 border-b">Ana Sayfa Giriş (Hero)</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="col-span-2">
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Başlık (Manşet)</label>
+                                <input
+                                    type="text"
+                                    name="heroTitle"
+                                    value={(settings as any).heroTitle}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay outline-none transition-all"
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Alt Başlık</label>
+                                <textarea
+                                    name="heroSubtitle"
+                                    value={(settings as any).heroSubtitle}
+                                    onChange={handleChange}
+                                    rows={2}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay outline-none transition-all resize-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Buton Yazısı</label>
+                                <input
+                                    type="text"
+                                    name="heroButtonText"
+                                    value={(settings as any).heroButtonText}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay outline-none transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Buton Linki</label>
+                                <input
+                                    type="text"
+                                    name="heroButtonLink"
+                                    value={(settings as any).heroButtonLink}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay outline-none transition-all"
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Arka Plan Görsel URL</label>
+                                <input
+                                    type="text"
+                                    name="heroImage"
+                                    value={(settings as any).heroImage}
+                                    onChange={handleChange}
+                                    placeholder="https://..."
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay outline-none transition-all"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Philosophy Section */}
+                    <div>
+                        <h3 className="font-bold text-gray-700 mb-4 pb-2 border-b">Hakkımızda / Felsefe</h3>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Başlık</label>
+                                <input
+                                    type="text"
+                                    name="philosophyTitle"
+                                    value={(settings as any).philosophyTitle}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay outline-none transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">İçerik Yazısı</label>
+                                <textarea
+                                    name="philosophyContent"
+                                    value={(settings as any).philosophyContent}
+                                    onChange={handleChange}
+                                    rows={4}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay outline-none transition-all"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* Site Info */}
