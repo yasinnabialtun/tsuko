@@ -28,6 +28,8 @@ export default function NewsletterPopup() {
         e.preventDefault();
         setStatus('loading');
 
+
+
         try {
             const res = await fetch('/api/newsletter', {
                 method: 'POST',

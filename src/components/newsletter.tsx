@@ -16,6 +16,8 @@ export default function Newsletter() {
 
         setStatus('loading');
 
+
+
         try {
             const response = await fetch('/api/newsletter', {
                 method: 'POST',

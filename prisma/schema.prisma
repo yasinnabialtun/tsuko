@@ -314,6 +314,7 @@ model LiveActivity {
   @@index([createdAt])
 }
 
+
 model Affiliate {
   id             String   @id @default(cuid())
   name           String
@@ -323,8 +324,11 @@ model Affiliate {
   iban       String?
   totalSales    Decimal @default(0) @db.Decimal(10, 2)
   totalEarnings Decimal @default(0) @db.Decimal(10, 2)
+  // Fix: Order relation is already defined in Order model, so we need to add relation field here if explicit
   orders     Order[]
+
   isActive   Boolean  @default(true)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
+
