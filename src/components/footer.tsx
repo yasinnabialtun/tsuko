@@ -14,11 +14,12 @@ export default async function Footer() {
             {/* Trust Bar - Integrated */}
             <div className="container mx-auto px-6 mb-20">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+
                     {[
                         { icon: Truck, title: "Ücretsiz Kargo", desc: "Tüm siparişlerde" },
-                        { icon: ShieldCheck, title: "Kırılma Garantisi", desc: "%100 değişim hakkı" },
+                        { icon: Mail, title: "%100 Destek", desc: "Hızlı yanıt süresi" },
                         { icon: CreditCard, title: "Güvenli Ödeme", desc: "Shopier güvencesi" },
-                        { icon: null, emoji: "🌱", title: "Doğa Dostu", desc: "PLA biyo-polimer" }
+                        { icon: null, emoji: "✨", title: "Özgün Tasarım", desc: "Modern ev dekoru" }
                     ].map((item, i) => (
                         <div key={i} className="flex items-start gap-4 p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
                             <div className="text-mauve mt-1">

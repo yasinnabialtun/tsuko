@@ -5,25 +5,26 @@ const prisma = new PrismaClient();
 async function main() {
     console.log('🌱 Seedleme Başlıyor: Premium İçerik...');
 
+
     const premiumContent = {
         // Hero
-        heroTitle: "EVİNİZİN\nHEYKEL HALİ.",
-        heroSubtitle: "Parametrik tasarımın matematiksel kusursuzluğu, doğa dostu biyo-polimerlerin sıcaklığıyla buluştu. Yaşam alanınıza karakter katan dijital zanaat eserleri.",
+        heroTitle: "EVİNİZİN\nRENKLİ RUHU.",
+        heroSubtitle: "Modern minimalizmin tatlı tonlarla buluştuğu nokta: Tsuko. Japon 'Tsukumogami' felsefesiyle tasarlanan, evinize karakter ve neşe katan özel dekorasyon koleksiyonu.",
         heroButtonText: "KOLEKSİYONU KEŞFET",
         heroButtonLink: "/#collection",
-        heroImage: "/images/hero.png", // Varsayılan görsel kalabilir, kullanıcı panelden değiştirebilir.
+        heroImage: "/images/hero.png",
 
         // Philosophy
-        philosophyTitle: "SADECE SİZİN İÇİN\n'DİJİTAL ZANAAT'",
-        philosophyContent: "Tsuko'da 'Stokta ne varsa onu gönder' mantığı yoktur. Siparişiniz bize ulaştığında, ürününüz sadece sizin için atölyemizde yolculuğuna başlar.\n\nİleri teknoloji 3D yazıcılarımız, mısır nişastasından elde edilen doğal polimerleri mikron hassasiyetinde işler. Bu süreç, el yapımı seramiklerin sıcaklığını dijital dünyanın geometrik kusursuzluğuyla buluşturur.\n\nJapon folklorendeki 'Tsukumogami' inancından ilham alıyoruz: Objelerin zamanla ve emekle bir ruh kazandığına inanıyoruz.",
+        philosophyTitle: "RUHU OLAN\n'MODERN OBJELER'",
+        philosophyContent: "Tsuko'da her obje, sessiz bir dost gibi evinizin en tatlı köşesinde yerini almak için tasarlanır.\n\nJapon geleneğindeki 'Tsukumogami' inancından ilham alıyoruz: Eşyaların zamanla bir ruh kazandığına inanıyoruz. Bu yüzden tasarımlarımızda sadece formu değil, o objenin size hissettireceği enerjiyi de önemsiyoruz.\n\nİleri teknoloji 3D yazıcılarımızı bir 'zanaat aracı' olarak kullanıyor, matematiksel kusursuzluğu, içinizi ısıtacak renk paletleriyle birleştiriyoruz.",
 
         // Announcement
-        announcementBar: "✨ ŞİMDİ AL, SONRA ÇİÇEKLENSİN: İLK SİPARİŞE ÖZEL %10 İNDİRİM KODU: TSUKO10",
+        announcementBar: "🌈 EVİNİZE RENK KATIN: İLK SİPARİŞE ÖZEL %10 İNDİRİM KODU: TSUKO10",
         announcementActive: true,
 
         // Site General
         siteName: "TSUKO DESIGN",
-        siteDescription: "Türkiye'nin öncü parametrik tasarım ve 3D baskı dekorasyon stüdyosu. Sürdürülebilir lüks.",
+        siteDescription: "Renkli, modern ve minimal ev dekorasyon stüdyosu. Tsukumogami felsefesiyle ruh kazanan eşyalar.",
 
         // Footer & Contact Defaults
         email: "info@tsukodesign.com",

@@ -1,8 +1,21 @@
 
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { rateLimit } from '@/lib/rate-limit';
+import { headers } from 'next/headers';
 
 export async function POST(request: Request) {
+    // 🛡️ Rate Limit: 5 attempts per minute per IP
+    const headerList = await headers();
+    const ip = headerList.get('x-forwarded-for') || '127.0.0.1';
+
+    if (!rateLimit(`coupon_${ip}`, 5, 60000)) {
+        return NextResponse.json({
+            valid: false,
+            error: 'Çok fazla deneme yaptınız. Lütfen 1 dakika sonra tekrar deneyin.'
+        }, { status: 429 });
+    }
+
     try {
         const { code, cartTotal } = await request.json();
 

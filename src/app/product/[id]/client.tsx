@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingBag, ShieldCheck, Star, ChevronDown, Share2, Truck, Box, Clock, MessageCircle } from 'lucide-react';
+import { ShoppingBag, ShieldCheck, Star, ChevronDown, Share2, Truck, Box, Clock, MessageCircle, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import { useCart } from '@/context/cart-context';
 import Breadcrumbs from '@/components/breadcrumbs';
@@ -113,17 +113,19 @@ export default function ProductPageClient({ product }: { product: ProductData })
             content: product.description,
             icon: Star
         },
+
         {
             id: 'specs',
-            title: 'Malzeme & İşçilik',
-            content: "Tsuko Design objeleri, doğadan ilham alır. Kullandığımız organik biyo-polimer (PLA+), mısır nişastasından elde edilen, sürdürülebilir ve toksik olmayan bir materyaldir. Her bir obje, parametrik algoritmalarla tasarlanır ve 18 saati bulan hassas katmanlama süreciyle fiziksel forma kavuşur.",
+            title: 'Tasarım & Form',
+            content: "Tsuko tasarımları, modern minimalizmin en dinamik detaylarını evinize taşır. İleri teknoloji üretim teknikleriyle hazırlanan her bir parça, pürüzsüz geometrisi ve canlı renk paletiyle mekanın enerjisini tazeler. Modern yaşam alanları için şık bir tamamlayıcıdır.",
             icon: Box
         },
 
+
         {
             id: 'shipping',
-            title: 'Teslimat & Garanti',
-            content: "Tüm siparişler özel korumalı ambalajlarda gönderilir. Kargo sırasında oluşabilecek her türlü hasara karşı Tsuko Design %100 değişim garantisi sunar.",
+            title: 'Teslimat & Paketleme',
+            content: "Ürünlerimiz, yolculukları sırasında zarar görmemeleri için darbelere dayanıklı özel kutularda paketlenir. Siparişiniz size kusursuz bir şekilde ulaşana kadar bizim güvencemiz altındadır.",
             icon: Truck
         },
         {
@@ -295,9 +297,10 @@ export default function ProductPageClient({ product }: { product: ProductData })
                                 )}
 
                                 <div className="grid grid-cols-2 gap-4 text-[11px] font-bold tracking-wider opacity-50 uppercase text-center">
+
                                     <div className="flex items-center justify-center gap-2 py-3 rounded-lg border" style={{ borderColor: 'rgba(var(--mood-text), 0.1)', backgroundColor: 'rgba(var(--mood-text), 0.02)' }}>
-                                        <ShieldCheck size={14} />
-                                        <span className="mt-0.5">%100 Kırılma Garantisi</span>
+                                        <Sparkles size={14} />
+                                        <span className="mt-0.5">Modern Form</span>
                                     </div>
                                     <div className="flex items-center justify-center gap-2 py-3 rounded-lg border" style={{ borderColor: 'rgba(var(--mood-text), 0.1)', backgroundColor: 'rgba(var(--mood-text), 0.02)' }}>
                                         <Truck size={14} />

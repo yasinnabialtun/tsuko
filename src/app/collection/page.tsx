@@ -82,10 +82,24 @@ async function getProducts(categorySlug?: string, sort?: string, minPrice?: numb
                 : 0;
 
             return {
-                ...p,
+                id: p.id,
+                name: p.name,
+                slug: p.slug,
                 price: p.price.toString(),
+                images: p.images,
+                image: p.images[0] || '/images/hero.png',
+                stock: p.stock,
+                categoryId: p.categoryId,
+                description: p.description,
+                isActive: p.isActive,
+                isFeatured: p.isFeatured,
                 avgRating,
-                reviewCount
+                reviewCount,
+                category: p.category ? {
+                    id: p.category.id,
+                    name: p.category.name,
+                    slug: p.category.slug
+                } : undefined
             };
         });
     } catch (e) {

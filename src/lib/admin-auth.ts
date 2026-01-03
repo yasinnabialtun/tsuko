@@ -2,13 +2,20 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { verifyToken } from './auth-utils';
 
-// Admin Password from environment
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'tsuko123';
+
+// Admin Password from environment - FORCE PROD CHECK
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 /**
- * Validate admin API request securely using cookies
+ * Validate admin API request securely using cookies or API Key
  */
 export async function validateAdminRequest(request: Request): Promise<NextResponse | null> {
+    // 0. Safety Check for Production
+    if (process.env.NODE_ENV === 'production' && !ADMIN_PASSWORD) {
+        console.error('CRITICAL: ADMIN_PASSWORD is NOT set in environment variables! Admin access is disabled for safety.');
+        return NextResponse.json({ error: 'System Configuration Error' }, { status: 500 });
+    }
+
     // 1. Check for API Key (for external tools/scripts)
     const apiKey = request.headers.get('x-api-key');
     const validApiKey = process.env.ADMIN_API_KEY;
@@ -28,10 +35,7 @@ export async function validateAdminRequest(request: Request): Promise<NextRespon
         }
     }
 
-    // 3. Development Bypass (Optional - can be risky in prod)
-    if (process.env.NODE_ENV === 'development') {
-        // return null; // Uncomment to allow dev access without login
-    }
+    console.warn(`Unauthorized Admin access attempt from IP: ${request.headers.get('x-forwarded-for') || 'unknown'}`);
 
     return NextResponse.json(
         { error: 'Unauthorized Access' },

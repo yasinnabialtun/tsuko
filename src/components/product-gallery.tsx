@@ -4,8 +4,19 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+
 import { Box, PlayCircle } from 'lucide-react';
-import Product3DViewer from './product-3d-viewer';
+import dynamic from 'next/dynamic';
+
+const Product3DViewer = dynamic(() => import('./product-3d-viewer'), {
+    ssr: false,
+    loading: () => (
+        <div className="w-full h-full flex flex-col items-center justify-center bg-current/5 rounded-[3rem]">
+            <div className="w-10 h-10 border-4 border-clay border-t-transparent rounded-full animate-spin mb-4" />
+            <p className="text-[10px] font-black uppercase tracking-widest opacity-20">3D Deneyimi Yükleniyor...</p>
+        </div>
+    )
+});
 
 export default function ProductGallery({ images, name, modelUrl }: { images: string[], name: string, modelUrl?: string | null }) {
     const [selected, setSelected] = useState(0);

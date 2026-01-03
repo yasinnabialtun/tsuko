@@ -1,10 +1,16 @@
 
 import { NextResponse } from 'next/server';
+
 import { uploadFile, BUCKETS } from '@/lib/supabase-storage';
+import { validateAdminRequest } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
+    // 🔒 Security: Only Admins can upload files
+    const authError = await validateAdminRequest(request);
+    if (authError) return authError;
+
     try {
         const formData = await request.formData();
         const file = formData.get('file') as File;

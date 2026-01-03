@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Plus, ShieldCheck, Truck, CreditCard, RotateCcw } from 'lucide-react';
+import { Plus, ShieldCheck, Truck, CreditCard, RotateCcw, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 
 const faqs = [
@@ -10,8 +10,8 @@ const faqs = [
         answer: "Tüm ürünlerimiz İstanbul'daki atölyemizden özenle paketlenip, Türkiye genelinde ücretsiz kargo ile gönderilmektedir. Siparişleriniz 1-3 iş günü içinde kargoya verilir ve ortalama 2-4 iş gününde elinize ulaşır."
     },
     {
-        question: "Ürünler kırılır mı, garanti var mı?",
-        answer: "Kullandığımız biyo-polimer materyal, cam veya seramiğe göre çok daha dayanıklıdır. Yine de kargo kaynaklı hasarlarda %100 kırılma garantisi sunuyoruz. Hasarlı ürün gelirse fotoğraf paylaşmanız yeterli, hemen yenisini gönderiyoruz."
+        question: "Ürünler ne kadar dayanıklı?",
+        answer: "Kullandığımız biyo-polimer materyal (PLA+), darbelere ve düşmelere karşı oldukça dirençlidir. Renk solması yapmaz ve uzun yıllar formunu korur. Paketleme konusunda çok titiziz, ürünün size sorunsuz ulaşması en büyük önceliğimiz."
     },
     {
         question: "3D baskı ev ürünleri dayanıklı mıdır?",
@@ -41,11 +41,11 @@ export default function FAQ() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 p-6 bg-alabaster rounded-2xl">
                     <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
-                            <ShieldCheck size={24} className="text-green-600" />
+                            <Sparkles size={24} className="text-green-600" />
                         </div>
                         <div>
-                            <p className="font-bold text-charcoal text-sm">Kırılma Garantisi</p>
-                            <p className="text-xs text-charcoal/50">%100 Koruma</p>
+                            <p className="font-bold text-charcoal text-sm">Kaliteli Malzeme</p>
+                            <p className="text-xs text-charcoal/50">Dayanıklı & Şık</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">

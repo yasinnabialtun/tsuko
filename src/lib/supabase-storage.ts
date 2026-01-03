@@ -19,45 +19,57 @@ export const BUCKETS = {
     GENERAL: 'uploads'
 };
 
+
 // Upload a file to Supabase Storage
 export async function uploadFile(
     file: File,
     bucket: string = BUCKETS.GENERAL,
     path?: string
 ): Promise<{ url: string; error: null } | { url: null; error: string }> {
-    if (!supabase) {
-        return { url: null, error: 'Supabase not configured' };
+    if (!isSupabaseConfigured || !supabase) {
+        return { url: null, error: 'Supabase yapılandırması eksik (.env kontrol edin).' };
     }
 
     try {
-        // Generate unique filename
+        // Safe filename generation
         const timestamp = Date.now();
-        const randomId = Math.random().toString(36).substring(2, 8);
-        const extension = file.name.split('.').pop();
-        const fileName = path || `${timestamp}-${randomId}.${extension}`;
+        const rand = Math.random().toString(36).substring(2, 8);
+        const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
 
-        // Upload file
+        // Clean special characters but keep alphanumeric
+        const baseName = file.name
+            .split('.')[0]
+            .toLowerCase()
+            .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
+            .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
+            .replace(/[^a-z0-9]/g, '-')
+            .substring(0, 30);
+
+        const fileName = path || `${baseName}-${timestamp}-${rand}.${extension}`;
+
         const { data, error } = await supabase.storage
             .from(bucket)
             .upload(fileName, file, {
-                cacheControl: '31536000', // 1 year cache
-                upsert: false
+                cacheControl: '31536000',
+                upsert: true
             });
 
         if (error) {
-            console.error('Upload error:', error);
-            return { url: null, error: error.message };
+            console.error('Supabase ERROR:', error);
+            if (error.message.toLowerCase().includes('bucket not found')) {
+                return { url: null, error: `Supabase'de '${bucket}' isimli kova bulunamadı. Lütfen kovanın oluşturulduğundan ve 'Public' olduğundan emin olun.` };
+            }
+            return { url: null, error: `Supabase Hatası: ${error.message}` };
         }
 
-        // Get public URL
         const { data: { publicUrl } } = supabase.storage
             .from(bucket)
             .getPublicUrl(data.path);
 
         return { url: publicUrl, error: null };
-    } catch (err) {
+    } catch (err: any) {
         console.error('Upload exception:', err);
-        return { url: null, error: 'Upload failed' };
+        return { url: null, error: `Beklenmeyen yükleme hatası: ${err.message || 'Bağlantı sorunu'}` };
     }
 }
 

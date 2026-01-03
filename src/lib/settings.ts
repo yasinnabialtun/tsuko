@@ -25,8 +25,18 @@ export async function getSiteSettings() {
         }
 
         return {
-            ...settings,
-            freeShippingThreshold: Number(settings.freeShippingThreshold)
+            siteName: settings.siteName,
+            siteDescription: settings.siteDescription,
+            siteUrl: settings.siteUrl,
+            email: settings.email,
+            phone: settings.phone,
+            whatsapp: settings.whatsapp,
+            address: settings.address,
+            instagram: settings.instagram,
+            pinterest: settings.pinterest,
+            shopierUrl: settings.shopierUrl,
+            freeShippingThreshold: Number(settings.freeShippingThreshold),
+            maintenanceMode: settings.maintenanceMode
         };
     } catch (error) {
         console.error('getSiteSettings error:', error);

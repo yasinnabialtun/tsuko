@@ -180,9 +180,16 @@ export async function POST(request: Request) {
             });
         }
 
+
         // 3. Prepare Shopier Form or Mock Response
         if (!SHOPIER_API_KEY || !SHOPIER_API_SECRET) {
-            console.warn('Shopier credentials missing. Mocking success.');
+            // 🛡️ CRITICAL: SECURITY GUARD
+            if (process.env.NODE_ENV === 'production') {
+                console.error('CRITICAL: Shopier credentials missing in production!');
+                return NextResponse.json({ error: 'Ödeme sistemi şu an devredışı. Lütfen yönetici ile iletişime geçin.' }, { status: 500 });
+            }
+
+            console.warn('Shopier credentials missing. Mocking success for development.');
 
             // AUTO-COMPLETE for Dev
             const updatedOrder = await prisma.order.update({
@@ -191,25 +198,27 @@ export async function POST(request: Request) {
                 include: { items: { include: { product: true } } }
             });
 
-            // Send Email
-            await sendOrderConfirmationEmail(updatedOrder as any);
+            // Send Email & Notifications (Dry Run in Dev)
+            try {
+                await sendOrderConfirmationEmail(updatedOrder as any);
+                const itemsString = updatedOrder.items.map(item => `- ${item.product.name} (x${item.quantity})`).join('\n');
+                await Promise.all([
+                    sendDiscordNotification({
+                        orderNumber: updatedOrder.orderNumber,
+                        totalAmount: updatedOrder.totalAmount.toString(),
+                        customerName: updatedOrder.customerName
+                    }),
+                    sendTelegramNotification({
+                        orderNumber: updatedOrder.orderNumber,
+                        totalAmount: updatedOrder.totalAmount.toString(),
+                        customerName: updatedOrder.customerName,
+                        items: itemsString
+                    })
+                ]);
+            } catch (notifyErr) {
+                console.error('Dev notifications failed:', notifyErr);
+            }
 
-            // Send Discord Notification
-            await sendDiscordNotification({
-                orderNumber: updatedOrder.orderNumber,
-                totalAmount: updatedOrder.totalAmount.toString(),
-                customerName: updatedOrder.customerName
-            });
-
-            const itemsString = updatedOrder.items.map(item => `- ${item.product.name} (x${item.quantity})`).join('\n');
-            await sendTelegramNotification({
-                orderNumber: updatedOrder.orderNumber,
-                totalAmount: updatedOrder.totalAmount.toString(),
-                customerName: updatedOrder.customerName,
-                items: itemsString
-            });
-
-            // Mock response for dev
             return NextResponse.json({
                 mock: true,
                 message: 'Mock Payment Success (Dev Mode)',

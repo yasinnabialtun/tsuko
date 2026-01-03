@@ -27,13 +27,20 @@ async function getProducts() {
     });
 
     return products.map((p) => ({
-      ...p,
       id: p.id,
       name: p.name,
-      price: `${p.price.toString()} ₺`,
+      slug: p.slug,
+      price: p.price.toString(),
       image: p.images[0] || '/images/hero.png',
       category: p.category?.name || 'Tasarım',
-      description: p.description
+      description: p.description,
+      stock: p.stock,
+      images: p.images,
+      categoryId: p.categoryId,
+      isActive: p.isActive,
+      isFeatured: p.isFeatured,
+      modelUrl: (p as any).modelUrl || null,
+      shopierUrl: (p as any).shopierUrl || null
     })) as Product[];
   } catch (e) {
     console.error("Database connection failed, returning fallback data");
