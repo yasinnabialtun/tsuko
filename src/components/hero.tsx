@@ -41,7 +41,7 @@ export default function Hero({ settings }: { settings?: any }) {
                                 <span className="text-[10px] font-black tracking-[0.3em] text-charcoal/40 uppercase">Limitli Üretim • Parametrik Sanat</span>
                             </div>
 
-                            <h1 className="text-6xl md:text-8xl lg:text-[7rem] font-bold text-charcoal leading-[0.9] tracking-tighter mb-10 whitespace-pre-line uppercase">
+                            <h1 className="text-5xl md:text-8xl lg:text-[7rem] font-bold text-charcoal leading-[0.9] tracking-tighter mb-10 whitespace-pre-line uppercase break-words">
                                 {content.title}
                             </h1>
 

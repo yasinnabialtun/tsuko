@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ShoppingBag, Search, Heart, User, LayoutDashboard } from 'lucide-react';
+import { Menu, X, ShoppingBag, Search, Heart, User, LayoutDashboard, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import SearchModal from './search-modal';
 import { useWishlist } from '@/context/wishlist-context';
@@ -107,16 +107,19 @@ export default function Navbar() {
 
                     {/* Mobile Menu Button */}
                     <div className="flex items-center gap-4 md:hidden" style={{ color: 'var(--mood-text)' }}>
-                        <button onClick={toggleCart} className="relative">
-                            <ShoppingBag size={24} strokeWidth={1.5} />
+                        <button onClick={() => setSearchOpen(true)} className="p-2">
+                            <Search size={22} strokeWidth={1.5} />
+                        </button>
+                        <button onClick={toggleCart} className="relative p-2">
+                            <ShoppingBag size={22} strokeWidth={1.5} />
                             {mounted && cartCount > 0 && (
-                                <span className="absolute -top-1 -right-1 w-4 h-4 text-[10px] flex items-center justify-center rounded-full" style={{ backgroundColor: 'var(--mood-accent)', color: 'var(--mood-bg)' }}>
+                                <span className="absolute top-1 right-1 w-4 h-4 text-[10px] flex items-center justify-center rounded-full font-bold" style={{ backgroundColor: 'var(--mood-accent)', color: 'var(--mood-bg)' }}>
                                     {cartCount}
                                 </span>
                             )}
                         </button>
-                        <button onClick={() => setMobileMenuOpen(true)}>
-                            <Menu size={28} strokeWidth={1.5} />
+                        <button onClick={() => setMobileMenuOpen(true)} className="p-2">
+                            <Menu size={26} strokeWidth={1.5} />
                         </button>
                     </div>
                 </div>
@@ -125,34 +128,71 @@ export default function Navbar() {
                 <AnimatePresence>
                     {mobileMenuOpen && (
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.98 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.98 }}
+                            initial={{ opacity: 0, x: '100%' }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: '100%' }}
+                            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
                             className="fixed inset-0 z-[60] flex flex-col"
                             style={{ backgroundColor: 'var(--mood-bg)', color: 'var(--mood-text)' }}
                         >
                             <div className="p-6 flex justify-between items-center border-b border-current/10">
-                                <div className="relative w-32 h-10">
-                                    <Image src="/logo.png" alt="Tsuko" fill className="object-contain object-left" />
-                                </div>
-                                <button className="p-2 rounded-full hover:bg-current/10" onClick={() => setMobileMenuOpen(false)}>
-                                    <X size={24} />
+                                <Link href="/" onClick={() => setMobileMenuOpen(false)}>
+                                    <div className="relative w-32 h-10">
+                                        <Image src="/logo.png" alt="Tsuko" fill className="object-contain object-left" />
+                                    </div>
+                                </Link>
+                                <button className="p-2 rounded-full hover:bg-current/10 transition-colors" onClick={() => setMobileMenuOpen(false)}>
+                                    <X size={28} />
                                 </button>
                             </div>
 
-                            <div className="flex-1 flex flex-col justify-center items-center gap-10 p-8">
-                                <nav className="flex flex-col items-center gap-8 text-3xl font-light">
-                                    <Link href="/collection" onClick={() => setMobileMenuOpen(false)}>Koleksiyon</Link>
-                                    <Link href="/blog" onClick={() => setMobileMenuOpen(false)}>Journal</Link>
-                                    <Link href="/about" onClick={() => setMobileMenuOpen(false)}>Atölye</Link>
+                            <div className="flex-1 flex flex-col p-8 overflow-y-auto">
+                                <nav className="flex flex-col gap-6 text-4xl font-bold tracking-tighter uppercase mb-12">
+                                    <Link href="/collection" onClick={() => setMobileMenuOpen(false)} className="hover:text-clay transition-colors flex items-center justify-between group">
+                                        Koleksiyon
+                                        <ArrowRight className="opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all" size={24} />
+                                    </Link>
+                                    <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="hover:text-clay transition-colors flex items-center justify-between group">
+                                        Journal
+                                        <ArrowRight className="opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all" size={24} />
+                                    </Link>
+                                    <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-clay transition-colors flex items-center justify-between group">
+                                        Atölye
+                                        <ArrowRight className="opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all" size={24} />
+                                    </Link>
+                                    <Link href="/wishlist" onClick={() => setMobileMenuOpen(false)} className="hover:text-clay transition-colors flex items-center justify-between group">
+                                        Favorilerim
+                                        <Heart size={24} className={cn(mounted && wishlistItems.length > 0 && "fill-clay text-clay")} />
+                                    </Link>
                                 </nav>
-                                <div className="w-16 h-px bg-current/20"></div>
+
+                                <div className="space-y-6 mt-auto">
+                                    <SignedIn>
+                                        <div className="flex items-center gap-4 p-4 bg-current/5 rounded-2xl">
+                                            <UserButton afterSignOutUrl="/" />
+                                            <div>
+                                                <p className="font-bold text-sm">Hesabım</p>
+                                                <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="text-xs opacity-50 underline">Profilini Düzenle</Link>
+                                            </div>
+                                        </div>
+                                    </SignedIn>
+                                    <SignedOut>
+                                        <Link
+                                            href="/profile"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                            className="w-full py-4 border border-current/10 rounded-2xl flex items-center justify-center gap-2 font-bold"
+                                        >
+                                            <User size={18} />
+                                            Giriş Yap
+                                        </Link>
+                                    </SignedOut>
+                                </div>
                             </div>
 
                             <div className="p-8 border-t border-current/10" style={{ backgroundColor: 'var(--mood-card-bg)' }}>
                                 <button
                                     onClick={() => { setMobileMenuOpen(false); toggleCart(); }}
-                                    className="w-full flex items-center justify-center gap-3 py-5 rounded-2xl text-lg font-bold shadow-2xl"
+                                    className="w-full flex items-center justify-center gap-3 py-5 rounded-2xl text-lg font-black shadow-2xl active:scale-95 transition-transform"
                                     style={{ backgroundColor: 'var(--mood-accent)', color: 'var(--mood-bg)' }}
                                 >
                                     <ShoppingBag size={20} />

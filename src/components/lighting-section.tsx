@@ -35,11 +35,11 @@ export default function LightingSection() {
                             Oda ışıklarını kapatın ve ruhunu keşfedin.
                         </p>
 
-                        <div className="flex flex-wrap gap-4 pt-4">
+                        <div className="flex flex-col sm:flex-row gap-4 pt-4">
                             <button
                                 onClick={() => setRoomLight(!roomLight)}
                                 className={cn(
-                                    "flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300",
+                                    "flex items-center justify-center gap-2 px-6 py-4 rounded-xl border transition-all duration-300 w-full sm:w-auto font-bold",
                                     roomLight
                                         ? "bg-charcoal text-white border-charcoal hover:bg-black"
                                         : "bg-white text-charcoal border-white hover:bg-alabaster"
@@ -52,7 +52,7 @@ export default function LightingSection() {
                             <button
                                 onClick={() => setProductLight(!productLight)}
                                 className={cn(
-                                    "flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300",
+                                    "flex items-center justify-center gap-2 px-6 py-4 rounded-xl border transition-all duration-300 w-full sm:w-auto font-bold",
                                     productLight
                                         ? (roomLight ? "bg-clay text-white border-clay" : "bg-clay text-white border-clay shadow-[0_0_20px_rgba(214,140,120,0.5)]")
                                         : (roomLight ? "bg-transparent text-charcoal border-charcoal hover:bg-charcoal/5" : "bg-transparent text-white border-white hover:bg-white/10")

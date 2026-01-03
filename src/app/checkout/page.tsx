@@ -162,7 +162,7 @@ export default function CheckoutPage() {
         <div className="min-h-screen bg-[var(--background)]">
             <Navbar />
 
-            <div className="container-custom pt-40 pb-32">
+            <div className="container-custom pt-24 md:pt-40 pb-20 md:pb-32">
                 <div className="flex items-center gap-4 mb-12">
                     <button onClick={() => router.back()} className="w-12 h-12 rounded-full border border-current/10 flex items-center justify-center hover:bg-current/5 transition-all">
                         <ArrowLeft size={20} />

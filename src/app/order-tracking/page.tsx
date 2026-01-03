@@ -49,7 +49,7 @@ export default function OrderTrackingPage() {
         <main className="min-h-screen bg-porcelain">
             <Navbar />
 
-            <div className="pt-40 pb-20 container mx-auto px-6">
+            <div className="pt-24 md:pt-40 pb-20 container mx-auto px-6">
                 <div className="max-w-2xl mx-auto text-center mb-12">
                     <span className="text-clay text-xs font-bold tracking-[0.3em] uppercase mb-4 block">Nerede Bu Kargo?</span>
                     <h1 className="text-4xl md:text-5xl font-light text-charcoal mb-6">Sipariş Takibi</h1>

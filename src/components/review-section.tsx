@@ -143,7 +143,7 @@ export default function ReviewSection({ productId }: { productId: string }) {
                                             className="focus:outline-none transition-transform hover:scale-110"
                                         >
                                             <Star
-                                                size={32}
+                                                size={24}
                                                 className={star <= rating ? "text-orange-400 fill-orange-400" : "text-gray-300"}
                                             />
                                         </button>

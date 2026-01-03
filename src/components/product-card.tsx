@@ -41,7 +41,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 onMouseLeave={() => setIsHovered(false)}
             >
                 {/* Image Container (Tactile & Unbreakable) */}
-                <div className="relative aspect-[3/4] premium-card overflow-hidden mb-6 cursor-pointer group-hover:scale-[1.02]">
+                <div className="relative aspect-[3/4] premium-card overflow-hidden mb-3 md:mb-6 cursor-pointer group-hover:scale-[1.02]">
                     <Link href={`/product/${product.slug || product.id}`}>
                         <Image
                             src={isHovered && product.images[1] ? product.images[1] : (product.images[0] || product.image)}
@@ -88,15 +88,15 @@ export default function ProductCard({ product }: ProductCardProps) {
                             }}
                             className={cn(
                                 "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 pointer-events-auto",
-                                isWishlisted ? "bg-clay text-white shadow-lg" : "bg-white/80 backdrop-blur-md text-charcoal opacity-0 group-hover:opacity-100 hover:bg-white shadow-sm"
+                                isWishlisted ? "bg-clay text-white shadow-lg" : "bg-white/80 backdrop-blur-md text-charcoal md:opacity-0 group-hover:opacity-100 hover:bg-white shadow-sm"
                             )}
                         >
                             <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} />
                         </button>
                     </div>
 
-                    {/* View Details Hint */}
-                    <div className="absolute inset-x-0 bottom-6 px-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+                    {/* View Details Hint - Only desktop, mobile goes straight to details on tap */}
+                    <div className="absolute inset-x-0 bottom-6 px-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 hidden md:block">
                         <button
                             onClick={() => setQuickViewOpen(true)}
                             className="w-full h-12 bg-white/90 backdrop-blur-xl text-charcoal rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl hover:bg-white transition-colors flex items-center justify-center gap-2"
@@ -107,20 +107,20 @@ export default function ProductCard({ product }: ProductCardProps) {
                 </div>
 
                 {/* Information Layer (The Soul) */}
-                <div className="text-center space-y-2">
-                    <div className="flex items-center justify-center gap-2 mb-1">
-                        <span className="text-[10px] font-black tracking-[0.2em] text-[var(--mood-accent)] uppercase opacity-80">
+                <div className="text-center space-y-1 md:space-y-2">
+                    <div className="flex items-center justify-center gap-2 mb-0.5 md:mb-1">
+                        <span className="text-[8px] md:text-[10px] font-black tracking-[0.2em] text-[var(--mood-accent)] uppercase opacity-80">
                             {categoryName || 'TSUKO DESIGN'}
                         </span>
                     </div>
 
-                    <h3 className="text-xl font-bold tracking-tighter transition-colors" style={{ color: 'var(--mood-text)' }}>
+                    <h3 className="text-sm md:text-xl font-bold tracking-tighter leading-tight transition-colors line-clamp-2 min-h-[2.5rem] flex items-center justify-center px-1" style={{ color: 'var(--mood-text)' }}>
                         <Link href={`/product/${product.slug || product.id}`}>
                             {product.name}
                         </Link>
                     </h3>
 
-                    <p className="text-lg font-black" style={{ color: 'var(--mood-text)' }}>
+                    <p className="text-base md:text-lg font-black" style={{ color: 'var(--mood-text)' }}>
                         {formattedPrice}
                     </p>
                 </div>

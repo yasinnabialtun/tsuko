@@ -88,7 +88,7 @@
 
 @layer components {
   .container-custom {
-    @apply mx-auto px-6 max-w-[var(--container-max)];
+    @apply mx-auto px-5 md:px-6 max-w-[var(--container-max)];
   }
 
   .premium-card {
@@ -96,6 +96,25 @@
     border-radius: var(--radius-card);
     transition: all var(--transition-slow);
     box-shadow: var(--mood-glow);
+  }
+
+  /* Mobile Adjustments */
+  @media (max-width: 768px) {
+    :root {
+      --radius-card: 1.5rem;
+      --section-spacing: 4rem;
+    }
+    
+    body {
+      font-size: 15px;
+    }
+
+    h1 { font-size: 3rem !important; }
+    h2 { font-size: 2.25rem !important; }
+    
+    .container-custom {
+      @apply px-4;
+    }
   }
 }
 

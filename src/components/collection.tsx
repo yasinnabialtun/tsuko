@@ -140,7 +140,7 @@ export default function Collection({ products = [] }: { products?: Product[] }) 
 
                 <motion.div
                     layout
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-20"
+                    className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-x-4 md:gap-x-8 gap-y-12 md:gap-y-20"
                 >
                     <AnimatePresence mode="popLayout">
                         {products.map((product, index) => (

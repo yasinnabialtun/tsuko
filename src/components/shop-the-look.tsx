@@ -60,7 +60,7 @@ export default function ShopTheLook({ looks: customLooks }: ShopTheLookProps) {
     const currentLook = looks[0];
 
     return (
-        <section className="py-40 bg-[var(--background)] overflow-hidden">
+        <section className="py-20 md:py-40 bg-[var(--background)] overflow-hidden">
             <div className="container-custom">
                 <div className="flex flex-col xl:flex-row gap-24 xl:gap-32 items-center">
 

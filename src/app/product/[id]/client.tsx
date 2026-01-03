@@ -183,7 +183,7 @@ export default function ProductPageClient({ product }: { product: ProductData })
                 )}
             </AnimatePresence>
 
-            <div className="pt-32 pb-24 container mx-auto px-6">
+            <div className="pt-24 md:pt-32 pb-16 md:pb-24 container mx-auto px-6">
                 <Breadcrumbs items={[
                     { label: 'Koleksiyon', href: '/collection' },
                     { label: product.category, href: `/collection?category=${product.category.toLowerCase()}` },
