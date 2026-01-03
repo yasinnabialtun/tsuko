@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -31,11 +32,23 @@ export default function AdminLayout({
     children: React.ReactNode
 }) {
     const pathname = usePathname();
+    const isLoginPage = pathname === '/admin/login';
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+        // Check for admin session cookie
+        const hasSession = document.cookie.includes('admin_session=');
+        setIsAuthenticated(hasSession);
+    }, [pathname]);
+
+    if (isLoginPage || !isAuthenticated) {
+        return <div className={`min-h-screen bg-[#FDFBF7] font-sans ${syne.variable}`}>{children}</div>;
+    }
 
     return (
         <div className={`min-h-screen bg-[#FDFBF7] flex font-sans ${syne.variable}`}>
-            {/* Sidebar */}
-            <aside className="w-72 bg-white border-r border-[#E6E8E6] flex flex-col fixed h-full z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+            {/* Sidebar - Hidden on mobile, visible on lg up */}
+            <aside className="hidden lg:flex w-72 bg-white border-r border-[#E6E8E6] flex-col fixed h-full z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
 
                 {/* Logo Area */}
                 <div className="h-24 flex items-center px-8 border-b border-[#F0F0F0]">
@@ -107,7 +120,8 @@ export default function AdminLayout({
             </aside>
 
             {/* Main Content Area */}
-            <main className="flex-1 ml-72 p-8 lg:p-12">
+            {/* Main Content Area - Responsive Margin */}
+            <main className="flex-1 lg:ml-72 p-4 md:p-8 lg:p-12">
                 <div className="max-w-6xl mx-auto animate-fade-in-up">
                     {children}
                 </div>
