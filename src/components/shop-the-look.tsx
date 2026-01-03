@@ -7,21 +7,57 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, ArrowRight, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const LOOKS = [
-    {
-        id: 1,
-        title: "Zen Köşesi",
-        image: "/images/hero.png",
-        description: "Sakinlik ve denge arayanlar için minimalist bir kurgu.",
-        products: [
-            { id: "nami-vazo", name: "Nami Vazo", price: "₺1.250", x: 40, y: 60, image: "/images/products/nami.png" },
-            { id: "mantar-lamba", name: "Mantar Lamba", price: "₺850", x: 70, y: 40, image: "/images/products/mantar.png" }
-        ]
-    }
-];
+interface LookProduct {
+    id: string;
+    product: {
+        id: string;
+        name: string;
+        price: any;
+        images: string[];
+    };
+    x: number;
+    y: number;
+}
 
-export default function ShopTheLook() {
+interface Look {
+    id: string;
+    title: string;
+    description: string | null;
+    image: string;
+    pins: LookProduct[];
+}
+
+interface ShopTheLookProps {
+    looks?: Look[];
+}
+
+export default function ShopTheLook({ looks: customLooks }: ShopTheLookProps) {
     const [activePin, setActivePin] = useState<string | null>(null);
+
+    const looks = customLooks && customLooks.length > 0 ? customLooks : [
+        {
+            id: '1',
+            title: "Zen Köşesi",
+            image: "/images/hero.png",
+            description: "Sakinlik ve denge arayanlar için minimalist bir kurgu.",
+            pins: [
+                {
+                    id: "p1",
+                    x: 40,
+                    y: 60,
+                    product: { id: "nami-vazo", name: "Nami Vazo", price: "1250", images: ["/images/products/nami.png"] }
+                },
+                {
+                    id: "p2",
+                    x: 70,
+                    y: 40,
+                    product: { id: "mantar-lamba", name: "Mantar Lamba", price: "850", images: ["/images/products/mantar.png"] }
+                }
+            ]
+        }
+    ];
+
+    const currentLook = looks[0];
 
     return (
         <section className="py-40 bg-[var(--background)] overflow-hidden">
@@ -36,20 +72,20 @@ export default function ShopTheLook() {
                                 <span className="text-[10px] font-black tracking-[0.3em] text-charcoal/40 uppercase">Yaşam Alanınız</span>
                             </div>
                             <h2 className="text-5xl md:text-7xl font-bold text-charcoal tracking-tighter leading-[0.9] uppercase">
-                                Görünümü <br />
-                                <span className="text-clay italic opacity-80">Evinize Taşıyın.</span>
+                                {currentLook.title.split(' ')[0]} <br />
+                                <span className="text-clay italic opacity-80">{currentLook.title.split(' ').slice(1).join(' ')}</span>
                             </h2>
                         </div>
 
                         <p className="text-xl text-charcoal/60 font-light leading-relaxed max-w-md">
-                            Küratörlerimiz tarafından tasarlanan bu özel kurgularla, dekorasyon dergilerinden fırlamış gibi görünen köşeleri tek tıkla evinize taşıyın.
+                            {currentLook.description || "Küratörlerimiz tarafından tasarlanan bu özel kurgularla, dekorasyon dergilerinden fırlamış gibi görünen köşeleri tek tıkla evinize taşıyın."}
                         </p>
 
                         <Link
                             href="/#collection"
                             className="group flex items-center gap-6 font-black text-xs tracking-[0.3em] text-charcoal hover:text-clay transition-all group"
                         >
-                            TÜM KOMBİNLERİ İNCELE
+                            TÜM KOLEKSİYONU İNCELE
                             <div className="w-12 h-px bg-current group-hover:w-16 transition-all" />
                             <ArrowRight size={18} className="translate-x-0 group-hover:translate-x-2 transition-transform" />
                         </Link>
@@ -59,28 +95,28 @@ export default function ShopTheLook() {
                     <div className="xl:w-2/3 w-full relative">
                         <div className="relative aspect-[16/10] md:aspect-[16/9] bg-current/5 rounded-[4rem] overflow-hidden border border-current/5 shadow-2xl group">
                             <Image
-                                src={LOOKS[0].image}
-                                alt={LOOKS[0].title}
+                                src={currentLook.image}
+                                alt={currentLook.title}
                                 fill
                                 className="object-cover scale-105 group-hover:scale-110 transition-transform duration-[3s] ease-out opacity-90 group-hover:opacity-100"
                                 sizes="(max-width: 1200px) 100vw, 66vw"
                             />
 
                             {/* Pins */}
-                            {LOOKS[0].products.map((prod) => (
+                            {currentLook.pins.map((pin) => (
                                 <div
-                                    key={prod.id}
+                                    key={pin.id}
                                     className="absolute z-20"
-                                    style={{ top: `${prod.y}%`, left: `${prod.x}%` }}
+                                    style={{ top: `${pin.y}%`, left: `${pin.x}%` }}
                                 >
                                     <button
-                                        onClick={() => setActivePin(activePin === prod.id ? null : prod.id)}
+                                        onClick={() => setActivePin(activePin === pin.id ? null : pin.id)}
                                         className="relative w-12 h-12 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center group/pin"
                                     >
                                         <span className="absolute inset-0 bg-white rounded-full animate-ping opacity-40 group-hover/pin:animate-none scale-150" />
                                         <div className={cn(
                                             "relative w-full h-full rounded-full shadow-2xl flex items-center justify-center transition-all duration-500 backdrop-blur-md border border-white/40",
-                                            activePin === prod.id ? 'bg-clay text-white scale-125 rotate-45' : 'bg-white/80 text-charcoal hover:scale-110'
+                                            activePin === pin.id ? 'bg-clay text-white scale-125 rotate-45' : 'bg-white/80 text-charcoal hover:scale-110'
                                         )}>
                                             <Plus size={24} />
                                         </div>
@@ -88,7 +124,7 @@ export default function ShopTheLook() {
 
                                     {/* Elevated Popup Card */}
                                     <AnimatePresence>
-                                        {activePin === prod.id && (
+                                        {activePin === pin.id && (
                                             <motion.div
                                                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                                                 animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -96,14 +132,14 @@ export default function ShopTheLook() {
                                                 className="absolute bottom-full left-1/2 -translate-x-1/2 mb-8 w-64 premium-card bg-white p-4 z-30"
                                             >
                                                 <div className="relative w-full aspect-square bg-current/5 rounded-2xl mb-4 overflow-hidden">
-                                                    <Image src={prod.image} alt={prod.name} fill className="object-cover" />
+                                                    <Image src={pin.product.images[0]} alt={pin.product.name} fill className="object-cover" />
                                                 </div>
                                                 <div className="space-y-1 mb-4 px-1">
-                                                    <h4 className="font-bold text-charcoal">{prod.name}</h4>
-                                                    <p className="text-xs font-black text-clay uppercase tracking-widest">{prod.price}</p>
+                                                    <h4 className="font-bold text-charcoal">{pin.product.name}</h4>
+                                                    <p className="text-xs font-black text-clay uppercase tracking-widest">{pin.product.price} ₺</p>
                                                 </div>
                                                 <Link
-                                                    href={`/product/${prod.id}`}
+                                                    href={`/product/${pin.product.id}`}
                                                     className="w-full py-4 bg-charcoal text-white rounded-xl font-black text-[10px] tracking-widest flex items-center justify-center gap-2 hover:bg-black transition-all"
                                                 >
                                                     ÜRÜNÜ İNCELE

@@ -36,7 +36,13 @@ export default function AdminSettingsPage() {
         philosophyTitle: '',
         philosophyContent: '',
         announcementBar: '',
-        announcementActive: true
+        announcementActive: true,
+        // Popup CMS
+        newsletterPopupTitle: '',
+        newsletterPopupDesc: '',
+        newsletterPopupImage: '',
+        exitIntentTitle: '',
+        exitIntentDesc: '',
     });
 
     useEffect(() => {
@@ -271,6 +277,81 @@ export default function AdminSettingsPage() {
                                     rows={4}
                                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay outline-none transition-all"
                                 />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Popup CMS */}
+                    <div>
+                        <h3 className="font-bold text-gray-700 mb-4 pb-2 border-b">Popup Yönetimi</h3>
+                        <div className="space-y-6">
+                            <div className="bg-gray-50 p-6 rounded-2xl space-y-4">
+                                <h4 className="font-bold text-charcoal flex items-center gap-2">
+                                    <Bell size={18} className="text-purple-500" />
+                                    Bülten Kayıt (Newsletter) Popup
+                                </h4>
+                                <div className="grid grid-cols-1 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">Başlık</label>
+                                        <input
+                                            type="text"
+                                            name="newsletterPopupTitle"
+                                            value={(settings as any).newsletterPopupTitle}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none focus:border-clay"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">Açıklama</label>
+                                        <textarea
+                                            name="newsletterPopupDesc"
+                                            value={(settings as any).newsletterPopupDesc}
+                                            onChange={handleChange}
+                                            rows={2}
+                                            className="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none focus:border-clay"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">Popup Görsel URL</label>
+                                        <input
+                                            type="text"
+                                            name="newsletterPopupImage"
+                                            value={(settings as any).newsletterPopupImage}
+                                            onChange={handleChange}
+                                            placeholder="/images/popup.jpg"
+                                            className="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none focus:border-clay"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-gray-50 p-6 rounded-2xl space-y-4">
+                                <h4 className="font-bold text-charcoal flex items-center gap-2">
+                                    <AlertTriangle size={18} className="text-orange-500" />
+                                    Siteden Çıkış (Exit Intent) Popup
+                                </h4>
+                                <div className="grid grid-cols-1 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">Başlık</label>
+                                        <input
+                                            type="text"
+                                            name="exitIntentTitle"
+                                            value={(settings as any).exitIntentTitle}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none focus:border-clay"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">Açıklama</label>
+                                        <textarea
+                                            name="exitIntentDesc"
+                                            value={(settings as any).exitIntentDesc}
+                                            onChange={handleChange}
+                                            rows={2}
+                                            className="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none focus:border-clay"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

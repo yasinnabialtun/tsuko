@@ -45,6 +45,7 @@ model Product {
   reviews     Review[]
   notifications StockNotification[]
   Wishlist    Wishlist[]
+  lookPins    ShopTheLookPin[]
 
   @@index([slug])
   @@index([categoryId])
@@ -121,6 +122,7 @@ model Order {
   shippingAddress String      @default("")
   city            String      @default("")
   trackingNumber  String?
+  carrier         String?     // e.g. "Yurtiçi Kargo", "Aras Kargo"
   
   userId          String?     // Optional Clerk User ID
   
@@ -278,7 +280,48 @@ model Settings {
   announcementBar       String   @default("TÜM TÜRKİYE'YE ÜCRETSİZ KARGO")
   announcementActive    Boolean  @default(true)
 
+  // Popups CMS
+  newsletterPopupTitle  String   @default("İLK SİPARİŞİNE ÖZEL %10 İNDİRİM")
+  newsletterPopupDesc   String   @default("Bültene abone ol, indirim kodunu hemen kap. Yeni koleksiyonlardan ilk senin haberin olsun.")
+  newsletterPopupImage  String   @default("/images/popup.jpg")
+  
+  exitIntentTitle       String   @default("GİTMEDEN ÖNCE...")
+  exitIntentDesc        String   @default("Sepetindeki ürünleri kaçırma! Şimdi tamamla, ücretsiz kargo fırsatını yakala.")
+
   updatedAt             DateTime @updatedAt
+}
+
+model ShopTheLook {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  image       String   // Main look image
+  isActive    Boolean  @default(true)
+  pins        ShopTheLookPin[]
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ShopTheLookPin {
+  id             String   @id @default(cuid())
+  lookId         String
+  look           ShopTheLook @relation(fields: [lookId], references: [id], onDelete: Cascade)
+  productId      String
+  product        Product  @relation(fields: [productId], references: [id])
+  x              Float    // Percentage 0-100
+  y              Float    // Percentage 0-100
+  createdAt      DateTime @default(now())
+}
+
+model FAQ {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String   @db.Text
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model VisitorSession {

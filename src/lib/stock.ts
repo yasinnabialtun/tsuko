@@ -44,6 +44,18 @@ export async function restoreStock(orderId: string) {
             where: { id: order.id },
             data: { status: 'CANCELLED', paymentStatus: 'UNPAID' }
         });
+
+        // 🟢 Restore Coupon Usage
+        if (order.couponCode) {
+            try {
+                await tx.coupon.update({
+                    where: { code: order.couponCode },
+                    data: { usedCount: { decrement: 1 } }
+                });
+            } catch (couponErr) {
+                console.error('Failed to restore coupon usage:', couponErr);
+            }
+        }
     });
 
     console.log(`Stock restored for Order: ${orderId}`);

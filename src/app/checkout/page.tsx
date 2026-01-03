@@ -78,7 +78,11 @@ export default function CheckoutPage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    items: items.map(item => ({ id: item.id, quantity: item.quantity })),
+                    items: items.map(item => ({
+                        id: item.id,
+                        quantity: item.quantity,
+                        variantId: (item as any).variantId
+                    })),
                     customer: formData,
                     couponCode: activeCoupon?.code
                 })

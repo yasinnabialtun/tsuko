@@ -79,8 +79,9 @@ export async function PUT(request: Request, { params }: RouteParams) {
             data: {
                 status: body.status ?? existingOrder.status,
                 paymentStatus: body.paymentStatus ?? existingOrder.paymentStatus,
-                trackingNumber: body.trackingNumber ?? existingOrder.trackingNumber
-            }
+                trackingNumber: body.trackingNumber ?? existingOrder.trackingNumber,
+                carrier: body.carrier ?? (existingOrder as any).carrier
+            } as any
         });
 
         // Send shipping notification email if status changed to SHIPPED

@@ -5,11 +5,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Gift, Copy, Check, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/context/cart-context';
 
-export default function ExitIntentPopup() {
+interface ExitIntentPopupProps {
+    settings?: any;
+}
+
+export default function ExitIntentPopup({ settings }: ExitIntentPopupProps) {
     const { cartCount } = useCart();
     const [isVisible, setIsVisible] = useState(false);
     const [hasShown, setHasShown] = useState(false);
     const [copied, setCopied] = useState(false);
+
+    const title = settings?.exitIntentTitle || "GİTMEDEN ÖNCE...";
+    const desc = settings?.exitIntentDesc || "Sepetindeki ürünleri kaçırma! Şimdi tamamla, ücretsiz kargo fırsatını yakala.";
 
     useEffect(() => {
         // Check if already shown in this session
@@ -79,12 +86,12 @@ export default function ExitIntentPopup() {
                             </div>
 
                             <h2 className="text-3xl font-black text-charcoal mb-2 leading-none uppercase tracking-tighter">
-                                {cartCount > 0 ? 'Sepetini Unutma!' : 'Gitmek Üzere Misin?'}
+                                {cartCount > 0 ? 'Sepetini Unutma!' : title}
                             </h2>
                             <p className="text-charcoal/60 mb-8 max-w-sm mx-auto text-sm font-medium">
                                 {cartCount > 0
                                     ? `Sepetinde ${cartCount} adet ürün seni bekliyor. Hemen sipariş ver, ilk alışverişine özel %10 indirimi kaçırma.`
-                                    : 'Evinin havasını değiştirmeden gitme. İlk siparişine özel %10 İndirim bizden olsun.'}
+                                    : desc}
                             </p>
 
                             <div className="bg-alabaster border border-dashed border-charcoal/20 rounded-xl p-4 mb-6 flex items-center justify-between gap-4">

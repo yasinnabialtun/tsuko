@@ -5,16 +5,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 
-export default function NewsletterPopup() {
+interface NewsletterPopupProps {
+    settings?: any;
+}
+
+export default function NewsletterPopup({ settings }: NewsletterPopupProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [email, setEmail] = useState('');
     const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle');
+
+    const title = settings?.newsletterPopupTitle || "İLK SİPARİŞİNE ÖZEL %10 İNDİRİM";
+    const desc = settings?.newsletterPopupDesc || "Bültene abone ol, indirim kodunu hemen kap. Yeni koleksiyonlardan ilk senin haberin olsun.";
+    const image = settings?.newsletterPopupImage || "/images/hero.png";
 
     useEffect(() => {
         // Check if user has already seen/closed the popup
         const hasSeen = localStorage.getItem('tsuko_newsletter_seen');
         if (!hasSeen) {
-            const timer = setTimeout(() => setIsOpen(true), 5000); // Show after 5 seconds
+            const timer = setTimeout(() => setIsOpen(true), 15000); // 15 seconds
             return () => clearTimeout(timer);
         }
     }, []);
@@ -27,8 +35,6 @@ export default function NewsletterPopup() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setStatus('loading');
-
-
 
         try {
             const res = await fetch('/api/newsletter', {
@@ -71,7 +77,7 @@ export default function NewsletterPopup() {
                         {/* Image Section */}
                         <div className="w-full md:w-1/2 relative min-h-[200px] md:min-h-[400px]">
                             <Image
-                                src="/images/hero.png" // Fallback to hero image
+                                src={image}
                                 alt="Newsletter"
                                 fill
                                 className="object-cover"
@@ -107,10 +113,10 @@ export default function NewsletterPopup() {
                                             Tsuko Club
                                         </span>
                                         <h2 className="text-3xl font-black text-charcoal mb-4">
-                                            %10 İndirim Kazan
+                                            {title}
                                         </h2>
                                         <p className="text-charcoal/60 leading-relaxed">
-                                            İlk siparişine özel indirim kodu ve yeni koleksiyonlardan haberdar olmak için bültenimize katıl.
+                                            {desc}
                                         </p>
                                     </div>
 
@@ -132,7 +138,7 @@ export default function NewsletterPopup() {
                                             className="w-full bg-charcoal text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-black transition-all shadow-lg shadow-charcoal/10 disabled:opacity-70"
                                         >
                                             {status === 'loading' ? 'Kaydediliyor...' : 'Abone Ol'}
-                                            {!status && <ArrowRight size={18} />}
+                                            {status !== 'loading' && <ArrowRight size={18} />}
                                         </button>
                                         <p className="text-[10px] text-center text-charcoal/40 mt-4">
                                             Spam yok, sadece ilham. İstediğiniz zaman ayrılabilirsiniz.

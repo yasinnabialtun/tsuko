@@ -4,7 +4,16 @@ import { motion } from 'framer-motion';
 import { Plus, ShieldCheck, Truck, CreditCard, RotateCcw, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 
-const faqs = [
+interface FAQItem {
+    question: string;
+    answer: string;
+}
+
+interface FAQProps {
+    faqs?: FAQItem[];
+}
+
+const defaultFaqs = [
     {
         question: "Ürünler nasıl ve nereden kargoya veriliyor?",
         answer: "Tüm ürünlerimiz İstanbul'daki atölyemizden özenle paketlenip, Türkiye genelinde ücretsiz kargo ile gönderilmektedir. Siparişleriniz 1-3 iş günü içinde kargoya verilir ve ortalama 2-4 iş gününde elinize ulaşır."
@@ -31,8 +40,9 @@ const faqs = [
     }
 ];
 
-export default function FAQ() {
+export default function FAQ({ faqs: customFaqs }: FAQProps) {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
+    const faqs = customFaqs && customFaqs.length > 0 ? customFaqs : defaultFaqs;
 
     return (
         <section className="py-24 px-6 bg-white">

@@ -18,6 +18,7 @@ export async function GET(request: Request) {
                 paymentStatus: true,
                 createdAt: true,
                 trackingNumber: true,
+                carrier: true,
                 customerName: true,
                 items: {
                     select: {
@@ -27,7 +28,7 @@ export async function GET(request: Request) {
                         quantity: true
                     }
                 }
-            }
+            } as any
         });
 
         if (!order) {
@@ -41,7 +42,7 @@ export async function GET(request: Request) {
 
         return NextResponse.json({
             ...order,
-            customerName: maskName(order.customerName)
+            customerName: maskName((order as any).customerName)
         });
     } catch (error) {
         console.error('Tracking API error:', error);

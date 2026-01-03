@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LayoutDashboard, ShoppingBag, FileText, Settings, Users, Package, ExternalLink, User, Tag, Mail, MessageCircle, Bell, LogOut, Activity } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, FileText, Settings, Users, Package, ExternalLink, User, Tag, Mail, MessageCircle, Bell, LogOut, Activity, HelpCircle } from 'lucide-react';
 import { Syne } from 'next/font/google';
 import { motion } from 'framer-motion';
 
@@ -18,6 +18,7 @@ const MENU_ITEMS = [
     { icon: Users, label: 'Affiliate', href: '/admin/affiliates' },
     { icon: FileText, label: 'Blog', href: '/admin/blog' },
     { icon: MessageCircle, label: 'Yorumlar', href: '/admin/reviews' },
+    { icon: HelpCircle, label: 'SSS', href: '/admin/faq' },
     { icon: Bell, label: 'Bildirimler', href: '/admin/notifications' },
     { icon: Users, label: 'Müşteriler', href: '/admin/customers' },
     { icon: Mail, label: 'Aboneler', href: '/admin/subscribers' },

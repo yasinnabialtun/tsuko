@@ -60,9 +60,42 @@ async function getSettings() {
   }
 }
 
+async function getFaqs() {
+  try {
+    const faqs = await (prisma as any).fAQ.findMany({
+      where: { isActive: true },
+      orderBy: { order: 'asc' }
+    });
+    return faqs;
+  } catch (e) {
+    return [];
+  }
+}
+
+async function getLooks() {
+  try {
+    const looks = await (prisma as any).shopTheLook.findMany({
+      where: { isActive: true },
+      orderBy: { order: 'asc' },
+      include: {
+        pins: {
+          include: {
+            product: true
+          }
+        }
+      }
+    });
+    return looks;
+  } catch (e) {
+    return [];
+  }
+}
+
 export default async function Home() {
   const products = await getProducts();
   const settings = await getSettings();
+  const faqs = await getFaqs();
+  const looks = await getLooks();
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -145,8 +178,8 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-background text-foreground selection:bg-mauve selection:text-charcoal">
-      <NewsletterPopup />
-      <ExitIntentPopup />
+      <NewsletterPopup settings={settings} />
+      <ExitIntentPopup settings={settings} />
       <LiveSales />
       <script
         type="application/ld+json"
@@ -166,8 +199,8 @@ export default async function Home() {
       <Philosophy settings={settings} />
 
       <Collection products={products} />
-      <ShopTheLook />
-      <FAQ />
+      <ShopTheLook looks={looks} />
+      <FAQ faqs={faqs} />
       <Newsletter />
       <InstagramFeed />
       <Footer />

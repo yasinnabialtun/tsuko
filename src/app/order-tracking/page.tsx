@@ -127,11 +127,27 @@ export default function OrderTrackingPage() {
                                             <Truck size={20} />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-black text-charcoal/20 uppercase tracking-widest">Kargo Takip No</p>
+                                            <p className="text-[10px] font-black text-charcoal/20 uppercase tracking-widest">{result.carrier || 'Kargo Takip No'}</p>
                                             <p className="font-mono font-bold">{result.trackingNumber}</p>
                                         </div>
                                     </div>
-                                    <button className="text-xs font-black text-clay uppercase tracking-widest hover:underline">Sorgula</button>
+                                    {result.carrier && (
+                                        <a
+                                            href={
+                                                result.carrier.includes('Yurtiçi') ? `https://www.yurticikargo.com/tr/online-servisler/gonderi-sorgula?code=${result.trackingNumber}` :
+                                                    result.carrier.includes('Aras') ? `https://www.araskargo.com.tr/kargo-takip/${result.trackingNumber}` :
+                                                        result.carrier.includes('MNG') ? `https://www.mngkargo.com.tr/gonderitakibi?gonderino=${result.trackingNumber}` :
+                                                            result.carrier.includes('Sürat') ? `https://www.suratkargo.com.tr/kargotakip/?takipno=${result.trackingNumber}` :
+                                                                result.carrier.includes('PTT') ? `https://gonderitakip.ptt.gov.tr/Track/Verify?id=${result.trackingNumber}` :
+                                                                    '#'
+                                            }
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="px-6 py-3 bg-charcoal text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all"
+                                        >
+                                            SORGULA
+                                        </a>
+                                    )}
                                 </div>
                             )}
 

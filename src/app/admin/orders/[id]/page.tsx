@@ -46,6 +46,7 @@ interface Order {
     shippingAddress: string;
     city: string;
     trackingNumber: string | null;
+    carrier: string | null;
     totalAmount: string;
     createdAt: string;
     items: OrderItem[];
@@ -63,7 +64,8 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
     const [formData, setFormData] = useState({
         status: '',
         paymentStatus: '',
-        trackingNumber: ''
+        trackingNumber: '',
+        carrier: ''
     });
 
     useEffect(() => {
@@ -83,7 +85,8 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                     setFormData({
                         status: data.order.status,
                         paymentStatus: data.order.paymentStatus,
-                        trackingNumber: data.order.trackingNumber || ''
+                        trackingNumber: data.order.trackingNumber || '',
+                        carrier: data.order.carrier || ''
                     });
                 } else {
                     setError('Sipariş bulunamadı.');
@@ -156,7 +159,8 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         const newData = {
             status: 'SHIPPED',
             paymentStatus: formData.paymentStatus, // Keep existing
-            trackingNumber: mockTracking
+            trackingNumber: mockTracking,
+            carrier: 'Yurtiçi Kargo' // Default for mock
         };
 
         setFormData(newData);
@@ -385,6 +389,24 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay outline-none transition-all font-mono"
                                 />
                                 <p className="text-xs text-gray-400 mt-1">Kargoda durumuna geçince müşteriye email gönderilir.</p>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Kargo Firması</label>
+                                <select
+                                    value={formData.carrier}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, carrier: e.target.value }))}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-clay outline-none transition-all"
+                                >
+                                    <option value="">Seçiniz...</option>
+                                    <option value="Yurtiçi Kargo">Yurtiçi Kargo</option>
+                                    <option value="Aras Kargo">Aras Kargo</option>
+                                    <option value="MNG Kargo">MNG Kargo</option>
+                                    <option value="Sürat Kargo">Sürat Kargo</option>
+                                    <option value="PTT Kargo">PTT Kargo</option>
+                                    <option value="Hepsijet">Hepsijet</option>
+                                    <option value="Trendyol Express">Trendyol Express</option>
+                                </select>
                             </div>
 
                             <button
