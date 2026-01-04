@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Eye, Heart } from 'lucide-react';
+import { Eye, Heart, ShoppingBag } from 'lucide-react';
 import QuickViewModal from './quick-view-modal';
 import { useWishlist } from '@/context/wishlist-context';
 import { getCategoryTheme, cn } from '@/lib/utils';
 
 import { Product } from '@/types';
+import { useCart } from '@/context/cart-context';
 
 interface ProductCardProps {
     product: Product;
@@ -18,17 +19,24 @@ export default function ProductCard({ product }: ProductCardProps) {
     const [isHovered, setIsHovered] = useState(false);
     const [quickViewOpen, setQuickViewOpen] = useState(false);
     const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
+    const { addToCart, openCart } = useCart();
     const isWishlisted = isInWishlist(product.id);
 
     const categoryName = typeof product.category === 'object' ? product.category?.name : (typeof product.category === 'string' ? product.category : undefined);
-    const themeClass = getCategoryTheme(categoryName);
 
     // Ensure price is string
     const displayPrice = String(product.price || '0');
     const formattedPrice = displayPrice.includes('₺') ? displayPrice : `${displayPrice} ₺`;
 
+    const handleAddToCart = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        addToCart(product, 1);
+        openCart();
+    };
+
     return (
-        <section className={cn("group transition-all duration-700", themeClass)}>
+        <section className="group h-full">
             <QuickViewModal
                 isOpen={quickViewOpen}
                 onClose={() => setQuickViewOpen(false)}
@@ -36,93 +44,100 @@ export default function ProductCard({ product }: ProductCardProps) {
             />
 
             <div
-                className="relative"
+                className="relative flex flex-col h-full"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
-                {/* Image Container (Tactile & Unbreakable) */}
-                <div className="relative aspect-[3/4] premium-card overflow-hidden mb-3 md:mb-6 cursor-pointer group-hover:scale-[1.02]">
-                    <Link href={`/product/${product.slug || product.id}`}>
+                {/* Image Container - POP ART FRAME */}
+                <div className="relative aspect-[3/4] bg-white border-2 border-black rounded-2xl overflow-hidden mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:translate-x-1 group-hover:translate-y-1 group-hover:shadow-none transition-all duration-200">
+                    <Link href={`/product/${product.slug || product.id}`} className="block w-full h-full">
                         <Image
                             src={isHovered && product.images[1] ? product.images[1] : (product.images[0] || product.image)}
                             alt={product.name}
                             fill
-                            className="object-cover transition-transform duration-[1.2s] group-hover:scale-110"
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
                             sizes="(max-width: 768px) 100vw, 33vw"
                         />
-                        {/* Overlay Gradient for mood-text readability */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     </Link>
 
+                    {/* Fun Badges */}
+                    <div className="absolute top-3 left-3 flex flex-col gap-2 z-10 pointer-events-none">
+                        {product.stock === 0 ? (
+                            <span className="bg-charcoal text-white border border-black px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider rotate-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]">
+                                Tükendi
+                            </span>
+                        ) : (
+                            <>
+                                {product.createdAt && new Date(product.createdAt) > new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) && (
+                                    <span className="bg-[var(--color-yellow)] text-black border border-black px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider -rotate-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                                        YENİ! ✨
+                                    </span>
+                                )}
+                                {product.isFeatured && (
+                                    <span className="bg-[var(--color-pink)] text-white border border-black px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider rotate-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                                        Favori 💖
+                                    </span>
+                                )}
+                            </>
+                        )}
+                    </div>
 
-                    {/* Quick Interaction Layer */}
-                    <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-10 pointer-events-none">
-                        <div className="flex flex-col gap-2 pointer-events-auto">
-                            {product.stock === 0 ? (
-                                <span className="bg-charcoal/90 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest w-fit">
-                                    Tükendi
-                                </span>
-                            ) : (
-                                <>
-                                    {/* New Badge (Logic: Created within 14 days) */}
-                                    {product.createdAt && new Date(product.createdAt) > new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) && (
-                                        <span className="bg-[var(--mood-accent)] text-white px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg shadow-[var(--mood-accent)]/20 w-fit">
-                                            YENİ
-                                        </span>
-                                    )}
-
-                                    {/* Featured Badge (Simulated logic or from prop) */}
-                                    {product.isFeatured && (
-                                        <span className="bg-white/90 backdrop-blur text-charcoal px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border border-black/5 w-fit">
-                                            ÖZEL
-                                        </span>
-                                    )}
-                                </>
-                            )}
-                        </div>
-
+                    {/* Quick Action Buttons */}
+                    <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         <button
                             onClick={(e) => {
                                 e.preventDefault();
                                 isWishlisted ? removeFromWishlist(product.id) : addToWishlist(product.id);
                             }}
                             className={cn(
-                                "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 pointer-events-auto",
-                                isWishlisted ? "bg-clay text-white shadow-lg" : "bg-white/80 backdrop-blur-md text-charcoal md:opacity-0 group-hover:opacity-100 hover:bg-white shadow-sm"
+                                "w-9 h-9 border-2 border-black rounded-full flex items-center justify-center transition-transform hover:scale-110 active:scale-95 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
+                                isWishlisted ? "bg-[var(--color-red)] text-white" : "bg-white text-black hover:bg-[var(--color-red)] hover:text-white"
                             )}
                         >
-                            <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} />
+                            <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} strokeWidth={2.5} />
                         </button>
                     </div>
 
-                    {/* View Details Hint - Only desktop, mobile goes straight to details on tap */}
-                    <div className="absolute inset-x-0 bottom-6 px-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 hidden md:block">
+                    {/* Mobile Cart/Quick View Trigger */}
+                    <Link
+                        href={`/product/${product.slug || product.id}`}
+                        className="absolute bottom-3 right-3 md:hidden w-10 h-10 bg-white border-2 border-black rounded-full flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+                    >
+                        <Eye size={18} strokeWidth={2.5} />
+                    </Link>
+
+                    {/* Desktop Add to Cart Overlay */}
+                    <div className="absolute inset-x-3 bottom-3 hidden md:block translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
                         <button
-                            onClick={() => setQuickViewOpen(true)}
-                            className="w-full h-12 bg-white/90 backdrop-blur-xl text-charcoal rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl hover:bg-white transition-colors flex items-center justify-center gap-2"
+                            onClick={handleAddToCart}
+                            disabled={product.stock === 0}
+                            className="w-full py-3 bg-white border-2 border-black rounded-xl font-black text-xs uppercase tracking-widest hover:bg-[var(--color-blue)] hover:text-white transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-black"
                         >
-                            <Eye size={14} /> Hızlı Bakış
+                            <ShoppingBag size={14} strokeWidth={3} />
+                            Sepete Ekle
                         </button>
                     </div>
                 </div>
 
-                {/* Information Layer (The Soul) */}
-                <div className="text-center space-y-1 md:space-y-2">
-                    <div className="flex items-center justify-center gap-2 mb-0.5 md:mb-1">
-                        <span className="text-[8px] md:text-[10px] font-black tracking-[0.2em] text-[var(--mood-accent)] uppercase opacity-80">
-                            {categoryName || 'TSUKO DESIGN'}
+                {/* Info Section */}
+                <div className="px-1 flex flex-col gap-1">
+                    {categoryName && (
+                        <span className="text-[10px] font-black uppercase tracking-widest text-black/40">
+                            {categoryName}
                         </span>
-                    </div>
+                    )}
 
-                    <h3 className="text-sm md:text-xl font-bold tracking-tighter leading-tight transition-colors line-clamp-2 min-h-[2.5rem] flex items-center justify-center px-1" style={{ color: 'var(--mood-text)' }}>
-                        <Link href={`/product/${product.slug || product.id}`}>
+                    <Link href={`/product/${product.slug || product.id}`} className="group-hover:underline decoration-2 underline-offset-2 decoration-[var(--color-blue)]">
+                        <h3 className="text-lg font-bold leading-tight text-black line-clamp-2">
                             {product.name}
-                        </Link>
-                    </h3>
+                        </h3>
+                    </Link>
 
-                    <p className="text-base md:text-lg font-black" style={{ color: 'var(--mood-text)' }}>
-                        {formattedPrice}
-                    </p>
+                    <div className="flex items-center justify-start gap-2 mt-1">
+                        <div className="px-3 py-1 bg-[var(--color-purple)] text-white text-sm font-black -rotate-1 border border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                            {formattedPrice}
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

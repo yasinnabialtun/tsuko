@@ -116,7 +116,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         stock: p.stock
     }));
 
-    const themeClass = getCategoryTheme(categoryName);
+    // Removed legacy theme class
+    const themeClass = "";
 
     // Schema.org Structured Data
     const breadcrumbJsonLd = {
@@ -139,7 +140,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     };
 
     return (
-        <main className={cn("min-h-screen transition-colors duration-1000", themeClass)} style={{ backgroundColor: 'var(--mood-bg)', color: 'var(--mood-text)' }}>
+        <main className="min-h-screen bg-[var(--color-sand)] text-black">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
@@ -155,36 +156,36 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                         { label: categoryName, href: `/category/${slug}` }
                     ]} />
 
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-24 gap-12 border-b border-current/10 pb-12">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-24 gap-12 border-b-4 border-black pb-12">
                         <div className="space-y-4">
-                            <span className="text-[var(--mood-accent)] text-xs tracking-[0.2em] font-black uppercase opacity-80 block">
+                            <span className="inline-block px-3 py-1 bg-[var(--color-purple)] text-white text-xs tracking-[0.2em] font-black uppercase border border-black rotate-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                                 {products.length} Eser Listeleniyor
                             </span>
-                            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none capitalize">
+                            <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-none capitalize text-black">
                                 {categoryName}
                             </h1>
-                            <p className="opacity-60 text-lg max-w-2xl font-light leading-relaxed">
+                            <p className="text-black/70 text-lg max-w-2xl font-bold leading-relaxed border-l-4 border-[var(--color-yellow)] pl-4">
                                 {categoryDescription}
                             </p>
                         </div>
 
                         {/* Sort Actions */}
-                        <div className="flex gap-2 bg-current/5 p-1.5 rounded-2xl backdrop-blur-sm border border-current/5">
+                        <div className="flex gap-2 bg-white p-2 rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                             <a href={`?sort=newest`} className={cn(
-                                "px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                                sort === 'newest' ? "bg-white text-charcoal shadow-xl" : "opacity-40 hover:opacity-100"
+                                "px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-transparent",
+                                sort === 'newest' ? "bg-[var(--color-blue)] text-white border-black" : "text-black/50 hover:text-black hover:bg-gray-100"
                             )}>
                                 Yeniler
                             </a>
                             <a href={`?sort=price-asc`} className={cn(
-                                "px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                                sort === 'price-asc' ? "bg-white text-charcoal shadow-xl" : "opacity-40 hover:opacity-100"
+                                "px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-transparent",
+                                sort === 'price-asc' ? "bg-[var(--color-blue)] text-white border-black" : "text-black/50 hover:text-black hover:bg-gray-100"
                             )}>
                                 Artan
                             </a>
                             <a href={`?sort=price-desc`} className={cn(
-                                "px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                                sort === 'price-desc' ? "bg-white text-charcoal shadow-xl" : "opacity-40 hover:opacity-100"
+                                "px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-transparent",
+                                sort === 'price-desc' ? "bg-[var(--color-blue)] text-white border-black" : "text-black/50 hover:text-black hover:bg-gray-100"
                             )}>
                                 Azalan
                             </a>
@@ -194,7 +195,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                     {/* Product Grid - Using our Premium Architecture */}
                     <div className="w-full">
                         {formattedProducts.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-20">
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16">
                                 {formattedProducts.map((product, index) => (
                                     <div key={product.id} className={cn("transition-all duration-700", index % 2 === 1 && "lg:translate-y-16")}>
                                         <ProductCard product={product} />
@@ -202,7 +203,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                                 ))}
                             </div>
                         ) : (
-                            <div className="bg-current/5 rounded-[3rem] p-24 text-center border border-current/5">
+                            <div className="bg-white rounded-[3rem] p-24 text-center border-2 border-dashed border-black/20">
                                 <SlidersHorizontal className="mx-auto mb-6 opacity-20" size={64} />
                                 <h3 className="font-bold text-2xl mb-4 tracking-tight">Koleksiyon Hazırlanıyor</h3>
                                 <p className="opacity-50 max-w-md mx-auto">Yeni tasarımlarımız atölyede şekilleniyor. Lütfen daha sonra tekrar kontrol edin.</p>

@@ -27,7 +27,7 @@ const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfa
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   const siteName = settings?.siteName || 'Tsuko Design';
-  const siteDescription = settings?.siteDescription || 'Minimalist 3D Baskı Ev Dekorasyonu';
+  const siteDescription = settings?.siteDescription || 'Evinizi Canlandıran Renkli Dekorasyon';
   const siteUrl = settings?.siteUrl || process.env.NEXT_PUBLIC_SITE_URL || 'https://tsukodesign.com';
   let metadataBase: URL;
   try {
@@ -39,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: {
       template: `%s | ${siteName}`,
-      default: `${siteName} | Minimalist 3D Baskı`,
+      default: `${siteName} | Renkli & Mutlu Ev Dekoru`,
     },
     description: siteDescription,
     metadataBase,

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ShoppingBag, Search, Heart, User, LayoutDashboard, ArrowRight } from 'lucide-react';
+import { Menu, X, ShoppingBag, Search, Heart, User, ArrowRight, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import SearchModal from './search-modal';
 import { useWishlist } from '@/context/wishlist-context';
@@ -34,175 +34,157 @@ export default function Navbar() {
             <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
 
             <nav className={cn(
-                "fixed top-0 left-0 w-full z-50 transition-all duration-700 border-b",
-                isScrolled ? "shadow-[0_4px_30px_rgba(0,0,0,0.05)] py-4 backdrop-blur-md" : "bg-transparent py-6 border-transparent"
-            )} style={{
-                backgroundColor: isScrolled ? 'var(--mood-bg)' : 'transparent',
-                borderColor: isScrolled ? 'rgba(0,0,0,0.05)' : 'transparent',
-                color: 'var(--mood-text)'
-            }}>
+                "fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b-2",
+                isScrolled
+                    ? "bg-[var(--color-sand)] border-black py-3 shadow-[0_4px_0_rgba(0,0,0,1)]"
+                    : "bg-transparent border-transparent py-6"
+            )}>
                 <div className="container mx-auto px-6 flex justify-between items-center">
                     {/* Logo */}
                     <Link href="/" className="relative z-50 group">
-                        <div className="relative w-36 h-10 transition-transform duration-300 group-hover:scale-105">
+                        <div className="relative w-32 h-10 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-2">
                             <Image
                                 src="/logo.png"
                                 alt="Tsuko Logo"
                                 fill
                                 className="object-contain object-left md:object-center"
                                 priority
-                                style={{ filter: isScrolled ? 'none' : 'invert(0)' }}
                             />
                         </div>
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center gap-10 text-sm font-semibold tracking-wide" style={{ color: 'var(--mood-text)' }}>
-                        <div className="flex items-center gap-8">
-                            <Link href="/collection" className="opacity-70 hover:opacity-100 transition-opacity">Koleksiyon</Link>
-                            <Link href="/blog" className="opacity-70 hover:opacity-100 transition-opacity">Journal</Link>
-                            <Link href="/about" className="opacity-70 hover:opacity-100 transition-opacity">Atölye</Link>
+                    <div className="hidden md:flex items-center gap-8 font-bold tracking-tight text-charcoal">
+                        <div className="flex items-center gap-6">
+                            <Link href="/collection" className="hover:text-[var(--color-blue)] hover:-translate-y-0.5 transition-all">Koleksiyon</Link>
+                            <Link href="/blog" className="hover:text-[var(--color-purple)] hover:-translate-y-0.5 transition-all">Journal</Link>
+                            <Link href="/about" className="hover:text-[var(--color-pink)] hover:-translate-y-0.5 transition-all">Atölye</Link>
                         </div>
 
-                        <div className="h-4 w-px bg-current opacity-10 mx-2"></div>
+                        <div className="h-6 w-0.5 bg-black/10 mx-2"></div>
 
-                        <div className="flex items-center gap-6">
-                            <button onClick={() => setSearchOpen(true)} className="opacity-70 hover:opacity-100">
-                                <Search size={20} strokeWidth={1.5} />
+                        <div className="flex items-center gap-4">
+                            <button onClick={() => setSearchOpen(true)} className="p-2 hover:bg-white hover:text-black rounded-full border-2 border-transparent hover:border-black transition-all">
+                                <Search size={20} strokeWidth={2.5} />
                             </button>
 
-                            <Link href="/wishlist" className="relative group opacity-70 hover:opacity-100">
-                                <Heart size={20} strokeWidth={1.5} className={cn(mounted && wishlistItems.length > 0 && "fill-current")} />
-                                {mounted && wishlistItems.length > 0 && (
-                                    <span className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-[var(--mood-accent)] rounded-full animate-pulse" />
-                                )}
+                            <Link href="/wishlist" className="relative group p-2 hover:bg-white hover:text-[var(--color-red)] rounded-full border-2 border-transparent hover:border-black transition-all">
+                                <Heart size={20} strokeWidth={2.5} className={cn(mounted && wishlistItems.length > 0 && "fill-[var(--color-red)] text-[var(--color-red)]")} />
                             </Link>
 
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center">
                                 <SignedOut>
-                                    <Link href="/profile" className="opacity-70 hover:opacity-100">
-                                        <User size={20} strokeWidth={1.5} />
+                                    <Link href="/profile" className="p-2 hover:bg-white hover:text-black rounded-full border-2 border-transparent hover:border-black transition-all">
+                                        <User size={20} strokeWidth={2.5} />
                                     </Link>
                                 </SignedOut>
                                 <SignedIn>
                                     <UserButton afterSignOutUrl="/" />
                                 </SignedIn>
-
-
                             </div>
 
                             <button
                                 onClick={toggleCart}
-                                className="group flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 relative ml-2 shadow-lg"
-                                style={{ backgroundColor: 'var(--mood-accent)', color: 'var(--mood-bg)' }}
+                                className="group flex items-center gap-2 px-5 py-2.5 bg-[var(--color-yellow)] text-black border-2 border-black rounded-full shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all ml-2"
                             >
-                                <span className="font-bold tracking-tight">Sepet</span>
-                                <div className="border-l border-current/20 pl-2 ml-1 flex items-center gap-1">
-                                    <ShoppingBag size={16} />
-                                    <span className="text-xs font-black">{mounted ? cartCount : 0}</span>
+                                <span className="font-extrabold text-sm">Sepet</span>
+                                <div className="flex items-center justify-center w-6 h-6 bg-white border-2 border-black rounded-full text-xs font-black">
+                                    {mounted ? cartCount : 0}
                                 </div>
                             </button>
                         </div>
                     </div>
 
                     {/* Mobile Menu Button */}
-                    <div className="flex items-center gap-4 md:hidden" style={{ color: 'var(--mood-text)' }}>
-                        <button onClick={() => setSearchOpen(true)} className="p-2">
-                            <Search size={22} strokeWidth={1.5} />
-                        </button>
-                        <button onClick={toggleCart} className="relative p-2">
-                            <ShoppingBag size={22} strokeWidth={1.5} />
+                    <div className="flex items-center gap-3 md:hidden">
+                        <button
+                            onClick={toggleCart}
+                            className="relative p-2 bg-[var(--color-yellow)] border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
+                        >
+                            <ShoppingBag size={20} strokeWidth={2.5} />
                             {mounted && cartCount > 0 && (
-                                <span className="absolute top-1 right-1 w-4 h-4 text-[10px] flex items-center justify-center rounded-full font-bold" style={{ backgroundColor: 'var(--mood-accent)', color: 'var(--mood-bg)' }}>
+                                <span className="absolute -top-2 -right-2 w-5 h-5 text-[10px] flex items-center justify-center rounded-full font-black bg-[var(--color-red)] text-white border-2 border-black">
                                     {cartCount}
                                 </span>
                             )}
                         </button>
-                        <button onClick={() => setMobileMenuOpen(true)} className="p-2">
-                            <Menu size={26} strokeWidth={1.5} />
+
+                        <button
+                            onClick={() => setMobileMenuOpen(true)}
+                            className="p-2 bg-white border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
+                        >
+                            <Menu size={24} strokeWidth={2.5} />
                         </button>
                     </div>
                 </div>
 
-                {/* Mobile Menu Overlay */}
+                {/* Mobile Menu Overlay - Full Fun Mode */}
                 <AnimatePresence>
                     {mobileMenuOpen && (
                         <motion.div
-                            initial={{ opacity: 0, x: '100%' }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: '100%' }}
-                            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                            className="fixed inset-0 z-[60] flex flex-col"
-                            style={{ backgroundColor: 'var(--mood-bg)', color: 'var(--mood-text)' }}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                            className="fixed inset-0 z-[60] flex flex-col bg-[var(--color-sand)]"
                         >
-                            <div className="p-6 flex justify-between items-center border-b border-current/10">
+                            <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+
+                            <div className="relative p-6 flex justify-between items-center border-b-2 border-black bg-white/50 backdrop-blur-sm">
                                 <Link href="/" onClick={() => setMobileMenuOpen(false)}>
-                                    <div className="relative w-32 h-10">
+                                    <div className="relative w-28 h-8">
                                         <Image src="/logo.png" alt="Tsuko" fill className="object-contain object-left" />
                                     </div>
                                 </Link>
-                                <button className="p-2 rounded-full hover:bg-current/10 transition-colors" onClick={() => setMobileMenuOpen(false)}>
-                                    <X size={28} />
+                                <button
+                                    className="p-2 bg-[var(--color-red)] text-white border-2 border-black rounded-full shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    <X size={24} strokeWidth={3} />
                                 </button>
                             </div>
 
-                            <div className="flex-1 flex flex-col p-8 overflow-y-auto">
-                                <nav className="flex flex-col gap-6 text-4xl font-bold tracking-tighter uppercase mb-12">
-                                    <Link href="/collection" onClick={() => setMobileMenuOpen(false)} className="hover:text-clay transition-colors flex items-center justify-between group">
-                                        Koleksiyon
-                                        <ArrowRight className="opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all" size={24} />
-                                    </Link>
-                                    <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="hover:text-clay transition-colors flex items-center justify-between group">
-                                        Journal
-                                        <ArrowRight className="opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all" size={24} />
-                                    </Link>
-                                    <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-clay transition-colors flex items-center justify-between group">
-                                        Atölye
-                                        <ArrowRight className="opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all" size={24} />
-                                    </Link>
-                                    <Link href="/wishlist" onClick={() => setMobileMenuOpen(false)} className="hover:text-clay transition-colors flex items-center justify-between group">
-                                        Favorilerim
-                                        <Heart size={24} className={cn(mounted && wishlistItems.length > 0 && "fill-clay text-clay")} />
-                                    </Link>
+                            <div className="flex-1 flex flex-col p-8 overflow-y-auto relative z-10">
+                                <nav className="flex flex-col gap-4">
+                                    {[
+                                        { href: '/collection', label: 'Koleksiyon', color: 'bg-[var(--color-blue)]' },
+                                        { href: '/blog', label: 'Journal', color: 'bg-[var(--color-purple)]' },
+                                        { href: '/about', label: 'Atölye', color: 'bg-[var(--color-yellow)]' },
+                                        { href: '/wishlist', label: 'Favorilerim', color: 'bg-[var(--color-pink)]' }
+                                    ].map((item, idx) => (
+                                        <Link
+                                            key={idx}
+                                            href={item.href}
+                                            onClick={() => setMobileMenuOpen(false)}
+                                            className={`group flex items-center justify-between p-6 ${item.color} border-2 border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all`}
+                                        >
+                                            <span className="text-xl font-black text-white uppercase tracking-wider mix-blend-hard-light">{item.label}</span>
+                                            <div className="w-10 h-10 bg-white border-2 border-black rounded-full flex items-center justify-center group-hover:rotate-45 transition-transform">
+                                                <ArrowRight size={20} className="text-black" strokeWidth={3} />
+                                            </div>
+                                        </Link>
+                                    ))}
                                 </nav>
 
-                                <div className="space-y-6 mt-auto">
-                                    <SignedIn>
-                                        <div className="flex items-center gap-4 p-4 bg-current/5 rounded-2xl">
-                                            <UserButton afterSignOutUrl="/" />
-                                            <div>
-                                                <p className="font-bold text-sm">Hesabım</p>
-                                                <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="text-xs opacity-50 underline">Profilini Düzenle</Link>
-                                            </div>
-                                        </div>
-                                    </SignedIn>
-                                    <SignedOut>
-                                        <Link
-                                            href="/profile"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                            className="w-full py-4 border border-current/10 rounded-2xl flex items-center justify-center gap-2 font-bold"
-                                        >
-                                            <User size={18} />
-                                            Giriş Yap
-                                        </Link>
-                                    </SignedOut>
-                                </div>
-                            </div>
+                                <SignedIn>
+                                    <UserButton afterSignOutUrl="/" showName />
+                                </SignedIn>
 
-                            <div className="p-8 border-t border-current/10" style={{ backgroundColor: 'var(--mood-card-bg)' }}>
-                                <button
-                                    onClick={() => { setMobileMenuOpen(false); toggleCart(); }}
-                                    className="w-full flex items-center justify-center gap-3 py-5 rounded-2xl text-lg font-black shadow-2xl active:scale-95 transition-transform"
-                                    style={{ backgroundColor: 'var(--mood-accent)', color: 'var(--mood-bg)' }}
-                                >
-                                    <ShoppingBag size={20} />
-                                    Sepetim ({mounted ? cartCount : 0})
-                                </button>
+                                <SignedOut>
+                                    <Link
+                                        href="/profile"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="w-full py-4 bg-black text-white border-2 border-black rounded-xl flex items-center justify-center gap-2 font-bold shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
+                                    >
+                                        <User size={20} />
+                                        Giriş Yap
+                                    </Link>
+                                </SignedOut>
                             </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </nav>
+            </nav >
         </>
     );
 }

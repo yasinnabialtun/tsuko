@@ -99,7 +99,7 @@ export default function ProductGallery({ images, name, modelUrl }: { images: str
                             onClick={() => setSelected(index)}
                             className={cn(
                                 "relative w-24 h-28 rounded-2xl overflow-hidden border-2 transition-all flex-shrink-0 active:scale-95",
-                                selected === index ? 'border-[var(--mood-accent)] shadow-xl' : 'border-transparent opacity-40 hover:opacity-100'
+                                selected === index ? 'border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] opacity-100 scale-105' : 'border-transparent opacity-60 hover:opacity-100'
                             )}
                         >
                             <Image src={img} alt="" fill className="object-cover" />
@@ -115,8 +115,8 @@ export default function ProductGallery({ images, name, modelUrl }: { images: str
                         <button
                             onClick={() => setSelected(modelIndex)}
                             className={cn(
-                                "relative w-24 h-28 rounded-2xl overflow-hidden border-2 transition-all flex-shrink-0 flex flex-col items-center justify-center bg-current/5",
-                                selected === modelIndex ? 'border-[var(--mood-accent)] shadow-xl' : 'border-transparent opacity-40 hover:opacity-100 text-current/50'
+                                "relative w-24 h-28 rounded-2xl overflow-hidden border-2 transition-all flex-shrink-0 flex flex-col items-center justify-center bg-white",
+                                selected === modelIndex ? 'border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] opacity-100 scale-105 text-[var(--color-purple)]' : 'border-transparent opacity-60 hover:opacity-100 text-gray-400'
                             )}
                         >
                             <Box size={24} />

@@ -4,70 +4,51 @@
 
 @layer base {
   :root {
-    /* --- CORE SYSTEM TOKENS (The Logic) --- */
-    --background: #FFFFFF;
-    --foreground: #101010;
+    /* --- MUTLU PALET (Dopamine Decor) --- */
+    --background: #EBDAC2;
+    /* Sand Beige - Sıcak Zemin */
+    --foreground: #2D2D2D;
+    /* Daha yumuşak bir siyah */
 
-    /* Global Palette */
-    --color-charcoal: #101010;
-    --color-alabaster: #FAFAFA;
-    --color-clay: #DAA590;
-    --color-sage: #B4C5B9;
-    --color-mauve: #E0CFCF;
+    /* Yeni Renk Paleti */
+    --color-blue: #4FB6FF;
+    --color-sand: #EBDAC2;
+    --color-red: #EF3118;
+    --color-yellow: #FFB726;
+    --color-purple: #9358C7;
+    --color-pink: #FF86A7;
+    --color-cyan: #81F7F8;
 
-    /* Spacing & Rhythm (Unbreakable) */
+    /* Semantik Renkler */
+    --color-charcoal: #2D2D2D;
+    --color-alabaster: #FDFBF7;
+    /* İkincil açık renk */
+
+    /* Rhythm & Layout */
     --grid-gutter: 2rem;
     --container-max: 1400px;
-    --section-spacing: 8rem;
+    --section-spacing: 6rem;
+    /* Mobilde daha sıkı */
 
-    /* Interaction & Tactile */
-    --ease-premium: cubic-bezier(0.23, 1, 0.32, 1);
-    --transition-slow: 0.6s var(--ease-premium);
-    --transition-fast: 0.3s var(--ease-premium);
+    /* Interaction */
+    --ease-bouncy: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    /* Daha oyuncu bir animasyon */
+    --transition-base: 0.3s var(--ease-bouncy);
+
     --radius-pill: 9999px;
-    --radius-card: 2.5rem;
+    --radius-card: 1.5rem;
     --radius-ui: 1rem;
 
-    /* --- CATEGORY MOOD VARIABLES (The Feeling) --- */
-    --mood-bg: var(--background);
-    --mood-text: var(--foreground);
-    --mood-accent: var(--color-clay);
-    --mood-card-bg: var(--color-alabaster);
-    --mood-glow: 0px 0px 0px transparent;
-    --mood-blur: 0px;
+    /* --- MOOD VARIABLES REMOVED --- */
   }
 
-  /* --- CATEGORY THEMES (Emotional Layers) --- */
-
-  /* [Lighting] - The Glow & Atmosphere */
-  .theme-lighting {
-    --mood-bg: #0A0A0A;
-    --mood-text: #F5F5F5;
-    --mood-card-bg: #151515;
-    --mood-accent: #FFD2A0;
-    /* Warm Amber */
-    --mood-glow: 0px 0px 40px rgba(255, 210, 160, 0.1);
-  }
-
-  /* [Everforms / Still Bloom] - The Life & Softness */
-  .theme-flowers {
-    --mood-bg: #FCF9F7;
-    --mood-accent: var(--color-sage);
-    --mood-card-bg: #FFFFFF;
-  }
-
-  /* [Sculptural Objects] - The Focus & Contrast */
-  .theme-objects {
-    --mood-bg: #F2F2F2;
-    --mood-accent: var(--color-clay);
-    --mood-card-bg: #FFFFFF;
-  }
+  /* --- MOOD THEMES REMOVED --- */
 
   body {
-    @apply antialiased selection:bg-mauve selection:text-charcoal;
-    background-color: var(--mood-bg);
-    color: var(--mood-text);
-    transition: background-color var(--transition-slow), color var(--transition-slow);
+    @apply antialiased selection:bg-[var(--color-pink)] selection:text-black;
+    background-color: var(--color-sand);
+    color: black;
+    transition: background-color 0.3s ease, color 0.3s ease;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
@@ -91,12 +72,7 @@
     @apply mx-auto px-5 md:px-6 max-w-[var(--container-max)];
   }
 
-  .premium-card {
-    background-color: var(--mood-card-bg);
-    border-radius: var(--radius-card);
-    transition: all var(--transition-slow);
-    box-shadow: var(--mood-glow);
-  }
+  /* .premium-card removed */
 
   /* Mobile Adjustments */
   @media (max-width: 768px) {
@@ -104,14 +80,19 @@
       --radius-card: 1.5rem;
       --section-spacing: 4rem;
     }
-    
+
     body {
       font-size: 15px;
     }
 
-    h1 { font-size: 3rem !important; }
-    h2 { font-size: 2.25rem !important; }
-    
+    h1 {
+      font-size: 3rem !important;
+    }
+
+    h2 {
+      font-size: 2.25rem !important;
+    }
+
     .container-custom {
       @apply px-4;
     }

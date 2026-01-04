@@ -10,7 +10,7 @@ export async function getSiteSettings() {
         if (!settings) {
             return {
                 siteName: 'Tsuko Design',
-                siteDescription: 'Mimari Estetik, Evinize Taşındı',
+                siteDescription: 'Evinize Neşe Katan Renkli Tasarımlar',
                 siteUrl: 'https://tsukodesign.com',
                 email: 'info@tsukodesign.com',
                 phone: '',
