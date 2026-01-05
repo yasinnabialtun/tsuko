@@ -201,7 +201,7 @@ export default function ProductPageClient({ product }: { product: ProductData })
 
                     {/* Content Section - FRAMED & FUN */}
                     <div className="lg:col-span-5 relative">
-                        <div className="sticky top-32 space-y-8 bg-white p-6 md:p-8 rounded-[2rem] border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all">
+                        <div className="sticky top-32 space-y-8 bg-white p-6 md:p-8 rounded-[2rem] border-4 border-[var(--color-charcoal)] shadow-[12px_12px_0px_0px_rgba(45,45,45,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[8px_8px_0px_0px_rgba(45,45,45,1)] transition-all">
                             {/* Header */}
                             <div>
                                 <div className="flex items-center gap-3 mb-4">
@@ -227,9 +227,9 @@ export default function ProductPageClient({ product }: { product: ProductData })
 
                                 <div className="flex items-end justify-between border-b-4 border-black border-dashed pb-6 mb-6">
                                     <div className="space-y-1">
-                                        <p className="text-4xl md:text-5xl font-black text-[var(--color-blue)] tracking-tighter" style={{ WebkitTextStroke: '1px black' }}>{currentPrice.toFixed(2)} ₺</p>
+                                        <p className="text-4xl md:text-5xl font-extrabold text-[var(--color-blue)] tracking-tighter" style={{ WebkitTextStroke: '1px var(--color-charcoal)' }}>{currentPrice.toFixed(2)} ₺</p>
                                         {!isOutOfStock && (
-                                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.1em] text-[var(--color-green)] bg-[var(--color-green)]/10 px-2 py-1 rounded w-fit">
+                                            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--color-green)] bg-[var(--color-green)]/10 px-2 py-1 rounded w-fit">
                                                 <Sparkles size={12} fill="currentColor" />
                                                 <span>Stokta Var - Hızlı Gönderim</span>
                                             </div>
@@ -281,7 +281,7 @@ export default function ProductPageClient({ product }: { product: ProductData })
                                 {!isOutOfStock ? (
                                     <button
                                         onClick={handleAddToCart}
-                                        className="w-full flex items-center justify-center gap-3 py-5 rounded-2xl text-xl font-black transition-all relative overflow-hidden group bg-black text-white hover:bg-[var(--color-yellow)] hover:text-black hover:border-black border-4 border-transparent shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 active:translate-y-0 active:shadow-none"
+                                        className="w-full flex items-center justify-center gap-3 py-5 rounded-2xl text-xl font-bold transition-all relative overflow-hidden group bg-[var(--color-charcoal)] text-white hover:bg-[var(--color-yellow)] hover:text-[var(--color-charcoal)] hover:border-[var(--color-charcoal)] border-4 border-transparent shadow-[4px_4px_0px_0px_rgba(45,45,45,0.2)] hover:shadow-[8px_8px_0px_0px_rgba(45,45,45,1)] hover:-translate-y-1 active:translate-y-0 active:shadow-none"
                                     >
                                         <span className="relative z-10 flex items-center gap-3 uppercase tracking-widest font-black transform group-hover:scale-105 transition-transform">
                                             <ShoppingBag size={24} strokeWidth={3} className="mb-1" />
