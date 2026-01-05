@@ -10,7 +10,7 @@ export default async function Footer() {
     const instagram = settings?.instagram || 'tsukodesign';
 
     return (
-        <footer className="bg-black text-white pt-20 border-t-2 border-black">
+        <footer className="bg-[var(--color-charcoal)] text-white pt-20 border-t-2 border-[var(--color-charcoal)]">
             {/* Trust Bar - POP ART STICKERS */}
             <div className="container mx-auto px-6 mb-20">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -21,7 +21,7 @@ export default async function Footer() {
                         { icon: null, emoji: "✨", title: "Özgün Tasarım", desc: "Modern ev dekoru", color: "bg-[var(--color-yellow)]" }
                     ].map((item, i) => (
                         <div key={i} className={`flex items-start gap-4 p-6 rounded-2xl border-2 border-white/20 hover:border-white hover:-translate-y-1 transition-all group ${item.color} bg-opacity-10`}>
-                            <div className={`p-3 rounded-lg ${item.color} text-black border border-black shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] group-hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] group-hover:-translate-y-0.5 transition-all`}>
+                            <div className={`p-3 rounded-lg ${item.color} text-[var(--color-charcoal)] border border-[var(--color-charcoal)] shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] group-hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] group-hover:-translate-y-0.5 transition-all`}>
                                 {item.icon ? <item.icon size={20} className="stroke-[2.5]" /> : <span className="text-lg">{item.emoji}</span>}
                             </div>
                             <div>
@@ -92,17 +92,6 @@ export default async function Footer() {
                 </div>
             </div>
 
-            {/* Bottom Bar */}
-            <div className="border-t border-white/10 bg-black">
-                <div className="container mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-xs text-white/30 font-bold uppercase tracking-widest">© 2025 {siteName}. All rights reserved.</p>
-                    <div className="flex items-center gap-6 text-xs text-white/30 font-bold uppercase tracking-widest">
-                        <span className="flex items-center gap-2"><MapPin size={12} /> {settings?.address || 'İstanbul'}</span>
-                        <span className="hidden md:inline">|</span>
-                        <span>Designed with 💖 by Tsuko Studio</span>
-                    </div>
-                </div>
-            </div>
         </footer>
     );
 }
