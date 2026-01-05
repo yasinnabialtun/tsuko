@@ -162,18 +162,18 @@ export default function CheckoutPage() {
         <div className="min-h-screen bg-[var(--color-sand)] text-black">
             <Navbar />
 
-            <div className="container-custom pt-32 md:pt-40 pb-20 md:pb-32">
-                <div className="flex items-center gap-4 mb-12">
+            <div className="container-custom pt-24 md:pt-40 pb-20 md:pb-32">
+                <div className="flex items-center gap-4 mb-8 md:mb-12">
                     <button onClick={() => router.back()} className="w-12 h-12 bg-white rounded-xl border-2 border-black flex items-center justify-center hover:bg-black hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none">
                         <ArrowLeft size={24} strokeWidth={3} />
                     </button>
                     <div>
-                        <h1 className="text-4xl md:text-5xl font-black text-black tracking-tighter uppercase">Güvenli Ödeme</h1>
-                        <p className="text-black/60 text-sm font-bold">Siparişinizi tamamlamak için bilgilerinizi girin.</p>
+                        <h1 className="text-3xl md:text-5xl font-black text-black tracking-tighter uppercase">Güvenli Ödeme</h1>
+                        <p className="text-black/60 text-xs md:text-sm font-bold">Siparişinizi tamamlamak için bilgilerinizi girin.</p>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-16">
                     {/* Left Side: Forms */}
                     <div className="lg:col-span-7">
                         <form id="checkout-form" onSubmit={handleSubmit} className="space-y-12">

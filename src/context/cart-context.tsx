@@ -1,14 +1,14 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { Product } from '@/types';
 
 export interface CartItem {
-    id: string; // Product ID
-    variantId?: string; // Variant ID if applicable
+    id: string;
+    variantId?: string;
     name: string;
-    variantName?: string; // Display name for variant (e.g. "Red / Large")
+    variantName?: string;
     slug: string;
     price: number;
     image: string;
@@ -31,6 +31,7 @@ interface CartContextType {
     removeCoupon: () => void;
     cartSubtotal: number;
     discountAmount: number;
+    setIsCartOpen: (open: boolean) => void;
 }
 
 export interface ProductVariantInfo {
@@ -55,38 +56,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const [activeCoupon, setActiveCoupon] = useState<AppliedCoupon | null>(null);
     const [isClient, setIsClient] = useState(false);
 
-    // Initialize from LocalStorage
-    useEffect(() => {
-        setIsClient(true);
-        const storedItems = localStorage.getItem('tsuko_cart');
-        const storedCoupon = localStorage.getItem('tsuko_coupon');
-        if (storedItems) {
-            try {
-                setItems(JSON.parse(storedItems));
-            } catch (e) {
-                console.error('Failed to parse cart items');
-            }
-        }
-        if (storedCoupon) {
-            try {
-                setActiveCoupon(JSON.parse(storedCoupon));
-            } catch (e) { }
-        }
-    }, []);
+    // Derived state
+    const cartSubtotal = items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const discountAmount = activeCoupon ? activeCoupon.discountAmount : 0;
+    const cartTotal = Math.max(0, cartSubtotal - discountAmount);
+    const cartCount = items.reduce((count, item) => count + item.quantity, 0);
 
-    // Persist to LocalStorage
-    useEffect(() => {
-        if (isClient) {
-            localStorage.setItem('tsuko_cart', JSON.stringify(items));
-            localStorage.setItem('tsuko_coupon', JSON.stringify(activeCoupon));
-        }
-    }, [items, activeCoupon, isClient]);
+    const toggleCart = () => setIsCartOpen(!isCartOpen);
 
     const addToCart = (product: Product, quantity = 1, variant?: ProductVariantInfo) => {
         setItems(prev => {
-            // Check if item exists (match product ID AND variant ID)
             const existing = prev.find(item => item.id === product.id && item.variantId === variant?.id);
-
             const stockLimit = variant ? variant.stock : product.stock;
 
             if (existing) {
@@ -99,7 +79,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 );
             }
 
-            // New Item
             toast.success('Sepete eklendi');
             return [...prev, {
                 id: product.id,
@@ -107,23 +86,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 name: product.name,
                 variantName: variant?.name,
                 slug: product.slug,
-                price: variant ? variant.price : Number(product.price),
+                price: variant ? variant.price : Number(String(product.price).replace(/[^0-9.-]+/g, "")),
                 image: variant?.image || product.images?.[0] || product.image || '',
                 quantity: Math.min(quantity, stockLimit),
                 maxStock: stockLimit
             }];
         });
-
-        // Track Activity for Live View
-        fetch('/api/track/activity', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                type: 'CART_ADD',
-                productName: product.name,
-                city: 'Ziyaretçi' // We could get real city from session but this is a good start
-            })
-        }).catch(() => { });
 
         setIsCartOpen(true);
     };
@@ -148,11 +116,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setActiveCoupon(null);
     };
 
-    const toggleCart = () => setIsCartOpen(!isCartOpen);
-
-    const cartSubtotal = items.reduce((total, item) => total + (item.price * item.quantity), 0);
-
-    // Apply Coupon Logic
     const applyCoupon = async (code: string) => {
         try {
             const response = await fetch('/api/coupons/validate', {
@@ -161,13 +124,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 body: JSON.stringify({ code, cartTotal: cartSubtotal })
             });
             const data = await response.json();
-
             if (data.valid) {
-                setActiveCoupon({
-                    code: code,
-                    discountAmount: data.discountAmount,
-                    message: data.message
-                });
+                setActiveCoupon({ code, discountAmount: data.discountAmount, message: data.message });
                 toast.success('Kupon uygulandı! 🎉');
                 return { success: true, message: data.message || 'Kupon uygulandı!' };
             } else {
@@ -186,10 +144,55 @@ export function CartProvider({ children }: { children: ReactNode }) {
         toast('Kupon kaldırıldı');
     };
 
-    // Calculate total with active coupon
-    const discountAmount = activeCoupon ? activeCoupon.discountAmount : 0;
-    const cartTotal = Math.max(0, cartSubtotal - discountAmount);
-    const cartCount = items.reduce((count, item) => count + item.quantity, 0);
+    // Initialize from LocalStorage
+    useEffect(() => {
+        setIsClient(true);
+        const storedItems = localStorage.getItem('tsuko_cart');
+        const storedCoupon = localStorage.getItem('tsuko_coupon');
+        if (storedItems) {
+            try {
+                setItems(JSON.parse(storedItems));
+            } catch (e) { }
+        }
+        if (storedCoupon) {
+            try {
+                setActiveCoupon(JSON.parse(storedCoupon));
+            } catch (e) { }
+        }
+
+        // Expose to window immediately on mount
+        if (typeof window !== 'undefined') {
+            (window as any).cart = {
+                items: [],
+                addToCart,
+                toggleCart,
+                setIsCartOpen
+            };
+        }
+    }, []);
+
+    // Keep window.cart synced
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            (window as any).cart = {
+                items,
+                addToCart,
+                toggleCart,
+                setIsCartOpen,
+                isCartOpen,
+                cartCount,
+                cartTotal
+            };
+        }
+    }, [items, isCartOpen, cartCount, cartTotal]);
+
+    // Persist to LocalStorage
+    useEffect(() => {
+        if (isClient) {
+            localStorage.setItem('tsuko_cart', JSON.stringify(items));
+            localStorage.setItem('tsuko_coupon', JSON.stringify(activeCoupon));
+        }
+    }, [items, activeCoupon, isClient]);
 
     return (
         <CartContext.Provider value={{
@@ -206,8 +209,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
             toggleCart,
             activeCoupon,
             applyCoupon,
-            removeCoupon
+            removeCoupon,
+            setIsCartOpen
         }}>
+            <Toaster position="top-right" />
             {children}
         </CartContext.Provider>
     );

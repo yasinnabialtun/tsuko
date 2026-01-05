@@ -31,10 +31,66 @@ const DEFAULT_POSTS = [
             </ul>
 
             <h2>Ev Dekorasyonunda Nasıl Kullanılır?</h2>
-            <p>Evinizde parametrik bir objeye yer vermek, mekana anında modern ve sofistike bir hava katar. Karmaşık bir vazo, sade bir masanın üzerinde tek başına bir sanat eseri gibi durabilir.</p>
+            <p>Evinizde parametrik bir objeye yer vermek, mekana anında modern ve sofistike bir hava katar. Karmaşık bir vazo, sade bir masanın üzerinde tek başına bir sanat eseri gibi durabilir. Tsuko'nun origami serisi, bu yaklaşımın en erişilebilir örneklerinden biridir.</p>
         `
     },
-    // ... add other posts similarly if needed, or redirect logic
+    {
+        id: '2',
+        title: 'Sürdürülebilir Dekorasyon: PLA ve Biyo-Polimer Devrimi',
+        seoTitle: 'PLA Nedir? Sürdürülebilir Ev Dekorasyonu | Tsuko Design',
+        slug: 'pla-nedir-surdurulebilir-dekorasyon',
+        excerpt: 'Petrol türevi plastiklere veda edin. Mısır nişastasından üretilen, doğaya saygılı ve estetik PLA materyali, geleceğin evlerini nasıl şekillendiriyor?',
+        seoDesc: 'Doğa dostu PLA materyali ile ev dekorasyonunda sürdürülebilirlik. Mısır nişastası bazlı biyo-polimerlerin avantajları ve estetik potansiyeli.',
+        coverImage: '/images/hero.png',
+        category: 'Sürdürülebilirlik',
+        date: '25 ARALIK 2025',
+        author: 'Ece Yılmaz',
+        content: `
+            <p>Dünyamız değişiyor ve tasarım anlayışımız da buna ayak uyduruyor. Artık "güzel" olmak yetmiyor; aynı zamanda "iyi" olmak zorunda. İşte bu noktada <strong>PLA (Polilaktik Asit)</strong> devreye giriyor.</p>
+            
+            <h2>PLA Nedir?</h2>
+            <p>PLA, petrol yerine yenilenebilir kaynaklardan (genellikle mısır nişastası veya şeker kamışı) üretilen biyo-bozunur bir termoplastiktir. Yani Tsuko Design ürünlerini elinize aldığınızda, fosil yakıt değil, doğanın kendisini tutuyorsunuz.</p>
+            
+            <h2>Neden PLA Tercih Ediyoruz?</h2>
+            <ul>
+                <li><strong>Karbon Ayak İzi:</strong> Geleneksel plastiklere göre üretiminde çok daha az karbon salınımı gerçekleşir.</li>
+                <li><strong>Toksik Değildir:</strong> Gıda temasına uygun güvenli bir materyaldir.</li>
+                <li><strong>Estetik Doku:</strong> Mat, ipeksi ve sıcak bir dokunuş hissi verir. Seramik gibi soğuk, plastik gibi yapay değildir.</li>
+            </ul>
+
+            <p>Tsuko Design olarak, teknolojiyi ve doğayı birleştiriyoruz. 3D baskı teknolojimiz sayesinde atık üretmeden, sadece ihtiyacımız olan materyali kullanarak, doğaya saygılı sanat eserleri üretiyoruz.</p>
+        `
+    },
+    {
+        id: '3',
+        title: 'Minimalist Evler İçin 5 Aydınlatma Önerisi',
+        seoTitle: 'Minimalist Aydınlatma Önerileri ve İpuçları | Tsuko Design',
+        slug: 'minimalist-aydinlatma-onerileri',
+        excerpt: 'Işık sadece aydınlatmak için değildir; odaya ruh katmak içindir. Minimalist dekorasyonda doğru ışık kullanımı ve gölge oyunları hakkında ipuçları.',
+        seoDesc: 'Minimalist ev dekorasyonunda aydınlatma seçimi nasıl olmalı? Gölge oyunları, sıcak ışık ve parametrik avizeler ile atmosfer yaratma rehberi.',
+        coverImage: '/images/hero.png',
+        category: 'Dekorasyon',
+        date: '20 ARALIK 2025',
+        author: 'Tsuko Editör',
+        content: `
+            <p>Minimalizm, az eşya ile yaşamak değil; eşyaların anlamlı olmasıdır. Ve hiçbir şey, bir mekanın anlamını ışık kadar değiştiremez. İşte minimalist evinizde atmosferi değiştirecek 5 aydınlatma kuralı:</p>
+            
+            <h2>1. Işık Kaynağını Gizleyin</h2>
+            <p>Gözü yoran ampuller yerine, ışığın kendisini değil, etkisini göreceğiniz tasarımlar seçin. Difüzörlü veya katmanlı abajurlar ışığı yumuşatır.</p>
+            
+            <h2>2. Gölgelerle Oynayın</h2>
+            <p>Düz bir aydınlatma duvarları boş gösterir. Ancak <strong>parametrik bir abajur</strong>, duvarlarınıza desenler çizerek mekanı yaşayan bir tabloya dönüştürür. Tsuko aydınlatma koleksiyonu tam olarak bu gölge oyunları üzerine kuruludur.</p>
+
+            <h2>3. Sıcaklık Dengesi (Kelvin)</h2>
+            <p>Minimalist mekanlarda genellikle beyaz ve gri tonlar hakimdir. Bu soğukluğu kırmak için 2700K-3000K arası sıcak sarı ışıklar tercih edin.</p>
+
+            <h2>4. Katmanlı Aydınlatma</h2>
+            <p>Tek bir tavan lambası yerine; lambader, masa lambası ve vurgu ışıklarını kombinleyin.</p>
+
+            <h2>5. Heykelsi Formlar</h2>
+            <p>Lamba kapalıyken bile bir heykel gibi görünmeli. Fonksiyon ve estetik bir arada olmalı.</p>
+        `
+    }
 ];
 
 import { Metadata } from 'next';

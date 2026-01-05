@@ -61,7 +61,7 @@ export default function ProductPageClient({ product }: { product: ProductData })
     const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
     const [activeTab, setActiveTab] = useState('details');
 
-    const { addToCart } = useCart();
+    const { addToCart, toggleCart } = useCart();
     const { addProduct } = useRecentProducts();
 
     useEffect(() => {

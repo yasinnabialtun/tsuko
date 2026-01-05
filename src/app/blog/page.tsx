@@ -46,7 +46,7 @@ const DEFAULT_POSTS = [
         title: 'Sürdürülebilir Dekorasyon: PLA ve Biyo-Polimer Devrimi',
         slug: 'pla-nedir-surdurulebilir-dekorasyon',
         excerpt: 'Petrol türevi plastiklere veda edin. Mısır nişastasından üretilen, doğaya saygılı ve estetik PLA materyali, geleceğin evlerini nasıl şekillendiriyor?',
-        coverImage: '/images/hero.png', // Fallback
+        coverImage: '/images/hero.png',
         category: 'Sürdürülebilirlik',
         date: '25 ARALIK 2025',
         author: 'Ece Yılmaz'
@@ -56,7 +56,7 @@ const DEFAULT_POSTS = [
         title: 'Minimalist Evler İçin 5 Aydınlatma Önerisi',
         slug: 'minimalist-aydinlatma-onerileri',
         excerpt: 'Işık sadece aydınlatmak için değildir; odaya ruh katmak içindir. Minimalist dekorasyonda doğru ışık kullanımı ve gölge oyunları hakkında ipuçları.',
-        coverImage: '/images/hero.png', // Fallback
+        coverImage: '/images/hero.png',
         category: 'Dekorasyon',
         date: '20 ARALIK 2025',
         author: 'Tsuko Editör'

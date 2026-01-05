@@ -17,6 +17,7 @@ import CursorOrnament from '@/components/cursor-ornament';
 import SessionTracker from '@/components/session-tracker';
 import SafeHydrate from '@/components/safe-hydrate';
 import GlobalErrorBoundary from '@/components/error-boundary';
+import CartDrawer from '@/components/cart-drawer';
 
 import { ClerkProvider } from '@clerk/nextjs';
 import { trTR } from '@clerk/localizations';
@@ -110,7 +111,7 @@ export default async function RootLayout({
         </head>
         <body className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-white scroll-smooth`}>
           <GlobalErrorBoundary>
-            {!isAdmin && (
+            {(pathname !== '/admin' && !isAdmin) && (
               <SafeHydrate>
                 <ScrollProgress />
                 <CursorOrnament />
@@ -140,6 +141,7 @@ export default async function RootLayout({
                   }}
                 />
                 {!isAdmin && <TopBanner />}
+                <CartDrawer />
                 {children}
                 <SessionTracker />
               </WishlistProvider>

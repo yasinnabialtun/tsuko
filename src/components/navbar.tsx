@@ -55,7 +55,7 @@ export default function Navbar() {
             opacity: 1,
             rotate: 0,
             transition: {
-                type: "spring",
+                type: "spring" as const,
                 stiffness: 100,
                 damping: 20
             }
@@ -199,7 +199,7 @@ export default function Navbar() {
                                             onClick={() => setMobileMenuOpen(false)}
                                             className="block w-full text-center"
                                         >
-                                            <span className="block text-5xl sm:text-7xl font-black text-white uppercase tracking-tighter hover:text-[var(--color-yellow)] hover:scale-105 hover:-rotate-2 transition-all duration-300 drop-shadow-[4px_4px_0px_rgba(0,0,0,1)]" style={{ WebkitTextStroke: '2px black' }}>
+                                            <span className="block text-4xl sm:text-7xl font-black text-white uppercase tracking-tighter hover:text-[var(--color-yellow)] hover:scale-105 hover:-rotate-2 transition-all duration-300 drop-shadow-[4px_4px_0px_rgba(0,0,0,1)]" style={{ WebkitTextStroke: '2px black' }}>
                                                 {item.label}
                                             </span>
                                         </Link>

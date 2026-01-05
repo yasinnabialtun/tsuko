@@ -19,7 +19,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     const [isHovered, setIsHovered] = useState(false);
     const [quickViewOpen, setQuickViewOpen] = useState(false);
     const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
-    const { addToCart, openCart } = useCart();
+    const { addToCart, toggleCart } = useCart();
     const isWishlisted = isInWishlist(product.id);
 
     const categoryName = typeof product.category === 'object' ? product.category?.name : (typeof product.category === 'string' ? product.category : undefined);
@@ -31,8 +31,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        addToCart(product, 1);
-        openCart();
+        addToCart(product);
     };
 
     return (

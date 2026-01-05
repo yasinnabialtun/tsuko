@@ -15,7 +15,7 @@ import { prisma } from "@/lib/prisma";
 import { Product } from '@/types';
 
 // Revalidate data every hour
-export const revalidate = 3600;
+export const revalidate = 0;
 
 async function getProducts() {
   try {
