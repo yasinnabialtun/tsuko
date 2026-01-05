@@ -76,9 +76,9 @@ export default function Navbar() {
                 <div className="container mx-auto px-6 flex justify-between items-center">
                     {/* Logo - Pop effect on hover */}
                     <Link href="/" className="relative z-50 group">
-                        <div className="relative w-32 h-10 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3 drop-shadow-[2px_2px_0px_rgba(255,255,255,1)]">
+                        <div className="relative w-40 h-10 transition-transform duration-300 group-hover:scale-105 group-hover:-rotate-2 drop-shadow-[2px_2px_0px_rgba(255,255,255,1)]">
                             <Image
-                                src="/logo.png"
+                                src="/images/logo-full.png"
                                 alt="Tsuko Logo"
                                 fill
                                 className="object-contain object-left md:object-center"

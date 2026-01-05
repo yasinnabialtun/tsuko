@@ -40,7 +40,7 @@ export default async function Footer() {
                         {/* Brand Column */}
                         <div className="md:col-span-5 space-y-8">
                             <div className="relative w-40 h-12">
-                                <Image src="/logo.png" alt="Tsuko Design Logo" fill className="object-contain object-left brightness-0 invert" />
+                                <Image src="/images/logo-full.png" alt="Tsuko Design Logo" fill className="object-contain object-left brightness-0 invert" />
                             </div>
                             <p className="text-white/70 max-w-sm leading-relaxed font-medium">
                                 Sıkıcı evlere savaş açtık! 🎨<br />
