@@ -22,7 +22,7 @@ export default function VariantSelector({ variants, onSelect }: VariantSelectorP
     const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
 
     if (!variants || variants.length === 0) {
-        return null; // No variants, show base product
+        return null;
     }
 
     const handleSelect = (variant: Variant) => {
@@ -32,11 +32,11 @@ export default function VariantSelector({ variants, onSelect }: VariantSelectorP
 
     return (
         <div className="space-y-4">
-            <h3 className="text-sm font-bold text-charcoal uppercase tracking-wider">
+            <h3 className="text-xs font-black text-black uppercase tracking-widest bg-[var(--color-yellow)] w-fit px-2 py-1 border border-black rounded shadow-[2px_2px_0px_black]">
                 Seçenekler
             </h3>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
                 {variants.map((variant) => {
                     const isSelected = selectedVariant?.id === variant.id;
                     const isOutOfStock = variant.stock === 0;
@@ -47,63 +47,45 @@ export default function VariantSelector({ variants, onSelect }: VariantSelectorP
                             onClick={() => !isOutOfStock && handleSelect(variant)}
                             disabled={isOutOfStock}
                             className={`
-                                relative p-4 rounded-xl border-2 transition-all text-left
+                                relative p-4 rounded-xl border-2 transition-all text-left flex flex-col gap-1 overflow-hidden group
                                 ${isSelected
-                                    ? 'border-clay bg-clay/5'
-                                    : 'border-gray-200 hover:border-gray-300'
+                                    ? 'border-black bg-black text-white shadow-[4px_4px_0px_var(--color-purple)] -translate-y-1'
+                                    : 'border-black bg-white hover:bg-[var(--color-sand)] hover:shadow-[4px_4px_0px_black] hover:-translate-y-1'
                                 }
                                 ${isOutOfStock
-                                    ? 'opacity-40 cursor-not-allowed'
+                                    ? 'opacity-50 grayscale cursor-not-allowed border-dashed'
                                     : 'cursor-pointer'
                                 }
                             `}
                         >
-                            {isSelected && (
-                                <div className="absolute top-2 right-2 w-5 h-5 bg-clay rounded-full flex items-center justify-center">
-                                    <Check size={14} className="text-white" />
-                                </div>
-                            )}
-
-                            <div className="font-heading text-sm font-medium text-charcoal mb-1">
-                                {variant.title}
+                            <div className="flex justify-between items-start w-full">
+                                <span className={`font-black uppercase tracking-tight text-sm ${isSelected ? 'text-[var(--color-yellow)]' : 'text-black'}`}>
+                                    {variant.title}
+                                </span>
+                                {isSelected && (
+                                    <div className="bg-[var(--color-green)] text-black rounded-full p-0.5 border border-black">
+                                        <Check size={12} strokeWidth={3} />
+                                    </div>
+                                )}
                             </div>
 
-                            <div className="text-xs text-charcoal/60">
+                            <div className={`text-xs font-bold ${isSelected ? 'text-white/80' : 'text-black/60'}`}>
                                 {variant.price.toFixed(2)} ₺
                             </div>
 
-                            {isOutOfStock && (
-                                <div className="text-xs text-red-500 mt-1 font-medium">
-                                    Stokta Yok
+                            {isOutOfStock ? (
+                                <div className="text-[10px] font-black uppercase text-red-500 bg-red-100 px-2 py-0.5 rounded w-fit mt-1">
+                                    Tükendi
                                 </div>
-                            )}
-
-                            {!isOutOfStock && variant.stock < 5 && (
-                                <div className="text-xs text-orange-500 mt-1">
-                                    Son {variant.stock} adet
+                            ) : variant.stock < 5 && (
+                                <div className="text-[10px] font-black uppercase text-orange-600 bg-orange-100 px-2 py-0.5 rounded w-fit mt-1 animate-pulse">
+                                    Son {variant.stock}!
                                 </div>
                             )}
                         </button>
                     );
                 })}
             </div>
-
-            {selectedVariant && (
-                <div className="p-4 bg-sage/10 rounded-xl border border-sage/20">
-                    <p className="text-sm text-charcoal/80">
-                        <span className="font-bold">Seçilen:</span> {selectedVariant.title}
-                    </p>
-                    {selectedVariant.attributes && Object.keys(selectedVariant.attributes).length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-2">
-                            {Object.entries(selectedVariant.attributes).map(([key, value]) => (
-                                <span key={key} className="text-xs px-2 py-1 bg-white rounded-full border border-sage/30">
-                                    {key}: {value}
-                                </span>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            )}
         </div>
     );
 }

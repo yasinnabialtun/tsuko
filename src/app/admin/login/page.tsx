@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -68,7 +67,7 @@ export default function AdminLogin() {
                     </div>
 
                     {error && (
-                        <p className="text-rose text-xs font-bold text-center px-2">{error}</p>
+                        <p className="text-red-500 text-xs font-bold text-center px-2">{error}</p>
                     )}
 
                     <button

@@ -11,9 +11,15 @@ export default function LightingSection() {
     const [productLight, setProductLight] = useState(false);
 
     return (
-        <section id="lighting-demo" className="py-24 px-6 overflow-hidden transition-colors duration-1000"
-            style={{ backgroundColor: roomLight ? 'var(--color-alabaster)' : '#111' }}>
-            <div className="max-w-7xl mx-auto">
+        <section id="lighting-demo" className="py-24 px-6 overflow-hidden transition-colors duration-1000 border-b-4 border-black"
+            style={{ backgroundColor: roomLight ? 'var(--color-sand)' : '#1a1a1a' }}>
+
+            {/* Background Pattern for Light Mode */}
+            {roomLight && (
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 pointer-events-none" />
+            )}
+
+            <div className="max-w-7xl mx-auto relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <motion.div
                         initial={{ opacity: 0, x: -50 }}
@@ -21,56 +27,71 @@ export default function LightingSection() {
                         transition={{ duration: 0.8 }}
                         className="space-y-8"
                     >
-                        <h2 className={cn(
-                            "text-4xl md:text-6xl font-bold transition-colors duration-1000",
-                            roomLight ? "text-charcoal" : "text-white"
+                        <div className={cn(
+                            "inline-block px-4 py-1.5 text-xs font-black tracking-[0.2em] uppercase border-2 border-black rotate-[-2deg] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-colors duration-500",
+                            roomLight ? "bg-[var(--color-purple)] text-white" : "bg-white text-black"
                         )}>
-                            Işığın <br /> Mimari Hali
+                            <span>Atmosfer Yaratıcı</span>
+                        </div>
+
+                        <h2 className={cn(
+                            "text-4xl md:text-7xl font-black transition-colors duration-1000 uppercase leading-[0.9] tracking-tighter",
+                            roomLight ? "text-black" : "text-white"
+                        )}>
+                            IŞIĞIN <br />
+                            <span className={cn(
+                                "transition-colors duration-500",
+                                roomLight ? "text-[var(--color-yellow)] stroke-black" : "text-[var(--color-purple)]"
+                            )} style={{ WebkitTextStroke: roomLight ? "2px black" : "0" }}>
+                                OYUNCAKLI
+                            </span> HALİ
                         </h2>
                         <p className={cn(
-                            "text-lg max-w-md transition-colors duration-1000",
-                            roomLight ? "text-charcoal/70" : "text-white/70"
+                            "text-xl font-bold max-w-md transition-colors duration-1000 border-l-4 pl-6",
+                            roomLight ? "text-black/70 border-black" : "text-white/70 border-white"
                         )}>
-                            Aura serisi aydınlatmalarımız, 3D baskı teknolojisinin sağladığı katmanlı dokuyu bir ışık şölenine dönüştürür.
-                            Oda ışıklarını kapatın ve ruhunu keşfedin.
+                            Aura serisi aydınlatmalarımız sadece bir lamba değil, odanızın modunu değiştiren bir sanat objesi. Işıkları kapatın ve renklerin dansını izleyin!
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 pt-4">
                             <button
                                 onClick={() => setRoomLight(!roomLight)}
                                 className={cn(
-                                    "flex items-center justify-center gap-2 px-6 py-4 rounded-xl border transition-all duration-300 w-full sm:w-auto font-bold",
+                                    "flex items-center justify-center gap-3 px-8 py-4 rounded-xl border-2 transition-all duration-200 w-full sm:w-auto font-black text-sm uppercase tracking-wider shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]",
                                     roomLight
-                                        ? "bg-charcoal text-white border-charcoal hover:bg-black"
-                                        : "bg-white text-charcoal border-white hover:bg-alabaster"
+                                        ? "bg-black text-white border-black"
+                                        : "bg-white text-black border-white"
                                 )}
                             >
-                                {roomLight ? <Moon size={20} /> : <Sun size={20} />}
-                                {roomLight ? "Oda Işığını Kapat" : "Oda Işığını Aç"}
+                                {roomLight ? <Moon size={20} fill="#fff" /> : <Sun size={20} fill="#000" />}
+                                {roomLight ? "Mod: Gece 🌚" : "Mod: Gündüz ☀️"}
                             </button>
 
                             <button
                                 onClick={() => setProductLight(!productLight)}
                                 className={cn(
-                                    "flex items-center justify-center gap-2 px-6 py-4 rounded-xl border transition-all duration-300 w-full sm:w-auto font-bold",
+                                    "flex items-center justify-center gap-3 px-8 py-4 rounded-xl border-2 transition-all duration-200 w-full sm:w-auto font-black text-sm uppercase tracking-wider shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]",
                                     productLight
-                                        ? (roomLight ? "bg-clay text-white border-clay" : "bg-clay text-white border-clay shadow-[0_0_20px_rgba(214,140,120,0.5)]")
-                                        : (roomLight ? "bg-transparent text-charcoal border-charcoal hover:bg-charcoal/5" : "bg-transparent text-white border-white hover:bg-white/10")
+                                        ? "bg-[var(--color-yellow)] text-black border-black"
+                                        : (roomLight ? "bg-white text-black border-black" : "bg-transparent text-white border-white")
                                 )}
                             >
-                                {productLight ? <Lightbulb size={20} /> : <LightbulbOff size={20} />}
-                                {productLight ? "Aydınlatmayı Kapat" : "Aydınlatmayı Aç"}
+                                {productLight ? <Lightbulb size={20} fill="black" /> : <LightbulbOff size={20} />}
+                                {productLight ? "Işığı Söndür" : "Işığı Yak"}
                             </button>
                         </div>
                     </motion.div>
 
                     <div className="relative aspect-square max-w-lg mx-auto lg:ml-auto w-full group">
                         <motion.div
-                            className="absolute inset-0 bg-clay/20 blur-[100px] rounded-full transition-opacity duration-1000"
-                            animate={{ opacity: productLight ? (roomLight ? 0.3 : 1) : 0 }}
+                            className="absolute inset-0 blur-[100px] rounded-full transition-opacity duration-1000 bg-[var(--color-yellow)]"
+                            animate={{ opacity: productLight ? (roomLight ? 0.4 : 0.8) : 0 }}
                         />
 
-                        <div className="relative z-10 w-full h-full rounded-2xl overflow-hidden bg-black/5 flex items-center justify-center">
+                        <div className={cn(
+                            "relative z-10 w-full h-full rounded-[3rem] overflow-hidden flex items-center justify-center border-4 transition-colors duration-1000",
+                            roomLight ? "bg-white border-black shadow-[12px_12px_0px_0px_var(--color-green)]" : "bg-white/5 border-white/20"
+                        )}>
                             {/* This represents the lamp image */}
                             <div className="relative w-full h-full p-12">
                                 <Image
@@ -79,9 +100,9 @@ export default function LightingSection() {
                                     fill
                                     className={cn(
                                         "object-contain transition-all duration-1000",
-                                        !productLight && "brightness-[0.2] saturate-[0.1]",
-                                        productLight && !roomLight && "brightness-125 saturate-110 shadow-[0_0_50px_rgba(214,140,120,0.3)]",
-                                        productLight && roomLight && "brightness-100"
+                                        !productLight && "brightness-[0.4] saturate-[0.1]",
+                                        productLight && !roomLight && "brightness-125 saturate-150 drop-shadow-[0_0_30px_rgba(255,183,38,0.6)]",
+                                        productLight && roomLight && "brightness-110 saturate-110"
                                     )}
                                 />
                             </div>

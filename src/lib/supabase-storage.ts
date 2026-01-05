@@ -7,9 +7,15 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 // Check if Supabase is configured
 export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
 
+// Use Service Role Key on server side for bypass RLS (Row Level Security)
+// This is critical for backend uploads to work without rigid RLS policies on storage buckets
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const isServer = typeof window === 'undefined';
+const activeKey = (isServer && supabaseServiceKey) ? supabaseServiceKey : supabaseAnonKey;
+
 // Create client only if configured
 export const supabase = isSupabaseConfigured
-    ? createClient(supabaseUrl!, supabaseAnonKey!)
+    ? createClient(supabaseUrl!, activeKey!)
     : null;
 
 // Storage bucket names

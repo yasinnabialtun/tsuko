@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -15,28 +14,28 @@ interface BreadcrumbsProps {
 
 export default function Breadcrumbs({ items }: BreadcrumbsProps) {
     return (
-        <nav className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-charcoal/40 mb-8 overflow-x-auto whitespace-nowrap pb-2 md:pb-0 no-scrollbar">
+        <nav className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-black/40 mb-8 overflow-x-auto whitespace-nowrap pb-2 md:pb-0 no-scrollbar">
             <Link
                 href="/"
-                className="flex items-center gap-1 hover:text-clay transition-colors"
+                className="flex items-center gap-1 hover:text-[var(--color-purple)] transition-colors"
                 title="Ana Sayfa"
             >
-                <Home size={14} />
+                <Home size={14} strokeWidth={2.5} />
                 <span>TSUKO</span>
             </Link>
 
             {items.map((item, index) => (
                 <div key={index} className="flex items-center gap-2">
-                    <ChevronRight size={12} className="text-charcoal/20" />
+                    <ChevronRight size={12} strokeWidth={3} className="text-black/20" />
                     {item.href ? (
                         <Link
                             href={item.href}
-                            className="hover:text-clay transition-colors"
+                            className="hover:text-[var(--color-purple)] transition-colors"
                         >
                             {item.label}
                         </Link>
                     ) : (
-                        <span className="text-charcoal/80">{item.label}</span>
+                        <span className="text-black">{item.label}</span>
                     )}
                 </div>
             ))}

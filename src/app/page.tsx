@@ -177,7 +177,7 @@ export default async function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-background text-foreground selection:bg-mauve selection:text-charcoal">
+    <main className="min-h-screen bg-[var(--color-sand)] text-black selection:bg-[var(--color-pink)] selection:text-black">
       <NewsletterPopup settings={settings} />
       <ExitIntentPopup settings={settings} />
       <LiveSales />

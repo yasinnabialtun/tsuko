@@ -37,34 +37,37 @@ export default function Hero({ settings }: { settings?: any }) {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8 }}
                         >
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border-2 border-black mb-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-default">
-                                <span className="w-2 h-2 rounded-full bg-[var(--color-red)] animate-pulse" />
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border-2 border-black mb-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-default w-fit">
+                                <span className="relative flex h-3 w-3">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-red)] opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-[var(--color-red)]"></span>
+                                </span>
                                 <span className="text-xs font-black tracking-wider text-black uppercase">Yeni Koleksiyon Yayında!</span>
                             </div>
 
-                            <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-black text-black leading-[0.9] tracking-tight mb-8 drop-shadow-sm">
+                            <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-black text-black leading-[0.9] tracking-tight mb-8 drop-shadow-[2px_2px_0px_rgba(255,255,255,0.5)] uppercase">
                                 {content.title}
                             </h1>
 
-                            <p className="text-lg md:text-xl text-black/70 font-medium max-w-lg leading-relaxed mb-10">
+                            <p className="text-lg md:text-xl text-black/80 font-medium max-w-lg leading-relaxed mb-10">
                                 {content.subtitle}
                             </p>
 
                             <div className="flex flex-col sm:flex-row items-center gap-4">
                                 <Link
                                     href={content.buttonLink}
-                                    className="group relative px-8 py-4 bg-[var(--color-blue)] border-2 border-black text-white rounded-xl font-bold text-sm tracking-wider shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all w-full sm:w-auto text-center"
+                                    className="group relative px-8 py-5 bg-[var(--color-blue)] border-4 border-black text-white rounded-2xl font-black text-sm tracking-wider shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[6px] active:translate-y-[6px] active:shadow-none transition-all w-full sm:w-auto text-center"
                                 >
-                                    <span className="relative z-10 flex items-center justify-center gap-3">
+                                    <span className="relative z-10 flex items-center justify-center gap-3 uppercase">
                                         {content.buttonText}
-                                        <MoveRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                                        <MoveRight size={20} strokeWidth={3} className="group-hover:translate-x-1 transition-transform" />
                                     </span>
                                 </Link>
                                 <Link
                                     href="/about"
-                                    className="px-8 py-4 bg-white border-2 border-black text-black rounded-xl font-bold text-sm tracking-wider shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all w-full sm:w-auto text-center"
+                                    className="px-8 py-5 bg-white border-4 border-black text-black rounded-2xl font-black text-sm tracking-wider shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[6px] active:translate-y-[6px] active:shadow-none transition-all w-full sm:w-auto text-center uppercase"
                                 >
-                                    ATÖLYE HİKAYESİ
+                                    Atölye Hikayesi
                                 </Link>
                             </div>
                         </motion.div>
@@ -78,9 +81,11 @@ export default function Hero({ settings }: { settings?: any }) {
                             transition={{ duration: 0.8 }}
                             className="relative aspect-square w-full max-w-lg mx-auto"
                         >
-                            <div className="absolute inset-0 bg-[var(--color-yellow)] rounded-[2rem] transform rotate-3 border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]" />
+                            {/* Decorative Background Shape */}
+                            <div className="absolute inset-0 bg-[var(--color-yellow)] rounded-[2.5rem] transform rotate-6 border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]" />
 
-                            <div className="absolute inset-0 bg-white rounded-[2rem] overflow-hidden border-2 border-black transform -rotate-2 hover:rotate-0 transition-transform duration-500">
+                            {/* Main Image Container */}
+                            <div className="absolute inset-0 bg-white rounded-[2.5rem] overflow-hidden border-4 border-black transform -rotate-3 hover:rotate-0 transition-transform duration-500 shadow-sm">
                                 <Image
                                     src={content.image}
                                     alt="Tsuko Design"
@@ -88,17 +93,32 @@ export default function Hero({ settings }: { settings?: any }) {
                                     className="object-cover"
                                     priority
                                 />
+
+                                {/* Sticker Badge */}
+                                <div className="absolute top-6 right-6 bg-[var(--color-purple)] text-white w-24 h-24 rounded-full flex items-center justify-center border-4 border-white shadow-lg animate-spin-slow hidden md:flex">
+                                    <svg viewBox="0 0 100 100" width="100" height="100" className="animate-spin-slow">
+                                        <defs>
+                                            <path id="circle" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" />
+                                        </defs>
+                                        <text fontSize="11" fontWeight="bold" fill="white">
+                                            <textPath xlinkHref="#circle">
+                                                YENİ SEZON • YENİ SEZON •
+                                            </textPath>
+                                        </text>
+                                    </svg>
+                                    <Sparkles size={24} className="absolute text-[var(--color-yellow)]" strokeWidth={3} />
+                                </div>
                             </div>
 
                             {/* Floating Badge */}
                             <motion.div
                                 animate={{ y: [0, -10, 0] }}
                                 transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                                className="absolute -bottom-6 -left-4 bg-[var(--color-pink)] text-white p-6 rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hidden md:block rotate-[-6deg]"
+                                className="absolute -bottom-8 -left-8 bg-[var(--color-pink)] text-white p-6 rounded-[2rem] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hidden md:block rotate-[-6deg] hover:rotate-0 transition-transform"
                             >
                                 <div className="text-center">
-                                    <span className="text-3xl">✨</span>
-                                    <p className="text-sm font-black mt-1 uppercase">El Yapımı<br />Mutluluk</p>
+                                    <span className="text-4xl block mb-2 filter drop-shadow-md">✨</span>
+                                    <p className="text-sm font-black uppercase tracking-tight leading-tight">El Yapımı<br />Mutluluk</p>
                                 </div>
                             </motion.div>
                         </motion.div>
@@ -106,16 +126,22 @@ export default function Hero({ settings }: { settings?: any }) {
                 </div>
             </div>
 
-            {/* Scroll Indicator */}
+            {/* Scroll Indicator - Playful */}
             <motion.a
                 href="#collection"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 2 }}
-                className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 opacity-20 hover:opacity-100 transition-opacity cursor-pointer group"
+                className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 opacity-60 hover:opacity-100 transition-opacity cursor-pointer group"
             >
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] rotate-180 [writing-mode:vertical-lr]">Scroll</span>
-                <div className="w-px h-12 bg-charcoal group-hover:h-16 transition-all duration-500" />
+                <div className="w-6 h-10 border-4 border-black rounded-full flex justify-center p-1 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                    <motion.div
+                        animate={{ y: [0, 12, 0] }}
+                        transition={{ repeat: Infinity, duration: 1.5 }}
+                        className="w-2 h-2 bg-black rounded-full"
+                    />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest bg-white px-2 py-0.5 border-2 border-black rounded">Kaydır</span>
             </motion.a>
         </section>
     );

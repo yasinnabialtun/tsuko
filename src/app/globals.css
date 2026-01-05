@@ -4,51 +4,52 @@
 
 @layer base {
   :root {
-    /* --- MUTLU PALET (Dopamine Decor) --- */
-    --background: #EBDAC2;
-    /* Sand Beige - Sıcak Zemin */
-    --foreground: #2D2D2D;
-    /* Daha yumuşak bir siyah */
-
-    /* Yeni Renk Paleti */
-    --color-blue: #4FB6FF;
+    /* --- MUTLU PALET (TSUKO DESIGN SYSTEM) --- */
+    /* Zemin */
     --color-sand: #EBDAC2;
-    --color-red: #EF3118;
-    --color-yellow: #FFB726;
+    --background: var(--color-sand);
+
+    /* Metin & Yapı */
+    --color-charcoal: #2D2D2D;
+    --foreground: var(--color-charcoal);
+
+    /* Vurgu Renkleri */
     --color-purple: #9358C7;
+    --color-yellow: #FFB726;
     --color-pink: #FF86A7;
+    --color-blue: #4FB6FF;
+    --color-green: #4ADE80;
+    --color-red: #EF3118;
     --color-cyan: #81F7F8;
 
-    /* Semantik Renkler */
-    --color-charcoal: #2D2D2D;
+    /* Semantik/Legacy Mapping (Sistemin kırılmaması için) */
     --color-alabaster: #FDFBF7;
-    /* İkincil açık renk */
+    /* Kartların iç beyazı */
+    --color-clay: #9358C7;
+    /* Primary Brand rengi (Mor'a maplendi) */
+    --color-porcelain: #FDFBF7;
+    --color-stone: #A8A29E;
+    --color-sage: #4ADE80;
+    --color-mauve: #9358C7;
 
-    /* Rhythm & Layout */
-    --grid-gutter: 2rem;
+    /* Layout */
     --container-max: 1400px;
     --section-spacing: 6rem;
-    /* Mobilde daha sıkı */
 
-    /* Interaction */
+    /* Animation */
     --ease-bouncy: cubic-bezier(0.68, -0.55, 0.27, 1.55);
-    /* Daha oyuncu bir animasyon */
     --transition-base: 0.3s var(--ease-bouncy);
 
+    /* Border Radius */
     --radius-pill: 9999px;
     --radius-card: 1.5rem;
     --radius-ui: 1rem;
-
-    /* --- MOOD VARIABLES REMOVED --- */
   }
-
-  /* --- MOOD THEMES REMOVED --- */
 
   body {
     @apply antialiased selection:bg-[var(--color-pink)] selection:text-black;
     background-color: var(--color-sand);
-    color: black;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    color: var(--color-charcoal);
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
@@ -71,8 +72,6 @@
   .container-custom {
     @apply mx-auto px-5 md:px-6 max-w-[var(--container-max)];
   }
-
-  /* .premium-card removed */
 
   /* Mobile Adjustments */
   @media (max-width: 768px) {

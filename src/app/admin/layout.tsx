@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LayoutDashboard, ShoppingBag, FileText, Settings, Users, Package, ExternalLink, User, Tag, Mail, MessageCircle, Bell, LogOut, Activity, HelpCircle } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, FileText, Settings, Users, Package, ExternalLink, User, Tag, Mail, MessageCircle, Bell, LogOut, Activity, HelpCircle, Loader2 } from 'lucide-react';
 import { Syne } from 'next/font/google';
 import { motion } from 'framer-motion';
 
@@ -32,17 +32,41 @@ export default function AdminLayout({
     children: React.ReactNode
 }) {
     const pathname = usePathname();
+    const router = useRouter();
     const isLoginPage = pathname === '/admin/login';
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Check for admin session cookie
-        const hasSession = document.cookie.includes('admin_session=');
-        setIsAuthenticated(hasSession);
-    }, [pathname]);
+        // Simple client-side check to prevent flashing protected content
+        // The real protection is largely middleware + API, but this UI check is crucial
+        // for avoiding the "broken layout" state.
+        const checkAuth = () => {
+            const hasSession = document.cookie.includes('admin_session=');
+            setIsAuthenticated(hasSession);
+            setIsLoading(false);
 
-    if (isLoginPage || !isAuthenticated) {
+            if (!hasSession && !isLoginPage) {
+                router.replace('/admin/login');
+            }
+        };
+
+        checkAuth();
+    }, [pathname, isLoginPage, router]);
+
+    if (isLoginPage) {
         return <div className={`min-h-screen bg-[#FDFBF7] font-sans ${syne.variable}`}>{children}</div>;
+    }
+
+    if (isLoading || !isAuthenticated) {
+        return (
+            <div className={`min-h-screen bg-[#FDFBF7] font-sans ${syne.variable} flex items-center justify-center`}>
+                <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="animate-spin text-charcoal" size={32} />
+                    <p className="text-sm font-bold text-charcoal/50">Yükleniyor...</p>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -121,7 +145,7 @@ export default function AdminLayout({
 
             {/* Main Content Area */}
             {/* Main Content Area - Responsive Margin */}
-            <main className="flex-1 lg:ml-72 p-4 md:p-8 lg:p-12">
+            <main className="flex-1 lg:ml-72 p-4 md:p-8 lg:p-12 w-full">
                 <div className="max-w-6xl mx-auto animate-fade-in-up">
                     {children}
                 </div>

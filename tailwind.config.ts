@@ -18,6 +18,7 @@ const config: Config = {
                 clay: "var(--color-clay)",
                 sage: "var(--color-sage)",
                 charcoal: "var(--color-charcoal)",
+                alabaster: "var(--color-alabaster)",
 
                 // Aliases
                 mauve: "var(--color-sage)",

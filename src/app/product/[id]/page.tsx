@@ -193,10 +193,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         }
     };
 
-    const themeClass = getCategoryTheme(product.category?.name);
+    // Use a fixed sand color for all products now to maintain consistency with Dopamine theme
+    // Individual sections inside ProductPageClient will handle colorful accents
 
     return (
-        <main className={cn("min-h-screen transition-colors duration-1000", themeClass)}>
+        <main className="min-h-screen bg-[var(--color-sand)] transition-colors duration-1000 selection:bg-[var(--color-purple)] selection:text-white">
             {/* JSON-LD Structured Data */}
             <script
                 type="application/ld+json"
