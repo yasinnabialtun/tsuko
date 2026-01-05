@@ -168,8 +168,8 @@ export default function CheckoutPage() {
                         <ArrowLeft size={24} strokeWidth={3} />
                     </button>
                     <div>
-                        <h1 className="text-3xl md:text-5xl font-black text-black tracking-tighter uppercase">Güvenli Ödeme</h1>
-                        <p className="text-black/60 text-xs md:text-sm font-bold">Siparişinizi tamamlamak için bilgilerinizi girin.</p>
+                        <h1 className="text-3xl md:text-5xl font-bold text-[var(--color-charcoal)] tracking-tighter uppercase">Güvenli Ödeme</h1>
+                        <p className="text-[var(--color-charcoal)]/60 text-xs md:text-sm font-bold">Siparişinizi tamamlamak için bilgilerinizi girin.</p>
                     </div>
                 </div>
 
@@ -235,7 +235,7 @@ export default function CheckoutPage() {
                             </section>
 
                             {/* Terms */}
-                            <section className="bg-white p-8 rounded-3xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] space-y-4">
+                            <section className="bg-white p-8 rounded-3xl border-4 border-[var(--color-charcoal)] shadow-[8px_8px_0px_0px_rgba(45,45,45,1)] space-y-4">
                                 <label className="flex items-start gap-4 cursor-pointer group">
                                     <input required type="checkbox" className="mt-1 w-6 h-6 rounded-lg border-2 border-black text-black focus:ring-0 transition-all cursor-pointer accent-black" />
                                     <span className="text-xs text-black/80 leading-relaxed font-bold">
@@ -256,7 +256,7 @@ export default function CheckoutPage() {
                     <div className="lg:col-span-5">
                         <div className="sticky top-32 space-y-8">
 
-                            <div className="p-8 bg-white rounded-[2rem] border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] space-y-8 relative overflow-hidden">
+                            <div className="p-8 bg-white rounded-[2rem] border-4 border-[var(--color-charcoal)] shadow-[12px_12px_0px_0px_rgba(45,45,45,1)] space-y-8 relative overflow-hidden">
                                 <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
                                     <ShieldCheck size={120} />
                                 </div>
