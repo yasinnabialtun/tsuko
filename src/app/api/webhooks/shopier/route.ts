@@ -80,7 +80,7 @@ export async function POST(req: Request) {
 
         // 1.5 Update Affiliate Earnings if applicable
         const orderAny = updatedOrder as any;
-        if (orderAny.affiliateId) {
+        if (orderAny.affiliateId && (prisma as any).affiliate) {
             try {
                 const affiliate = await (prisma as any).affiliate.findUnique({
                     where: { id: orderAny.affiliateId }

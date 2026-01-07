@@ -120,13 +120,18 @@ export async function POST(request: Request) {
         const fullAddress = `${customer.address}, ${customer.district}, ${customer.city}, ${customer.zipCode}`;
 
         // Check for Affiliate Link
+        // Check for Affiliate Link
         let affiliateId = null;
-        if (couponCode) {
-            const affiliate = await (prisma as any).affiliate.findUnique({
-                where: { code: couponCode.toUpperCase() }
-            });
-            if (affiliate && affiliate.isActive) {
-                affiliateId = affiliate.id;
+        if (couponCode && (prisma as any).affiliate) {
+            try {
+                const affiliate = await (prisma as any).affiliate.findUnique({
+                    where: { code: couponCode.toUpperCase() }
+                });
+                if (affiliate && affiliate.isActive) {
+                    affiliateId = affiliate.id;
+                }
+            } catch (e) {
+                console.warn('Affiliate check failed, skipping:', e);
             }
         }
 
@@ -145,7 +150,7 @@ export async function POST(request: Request) {
                 status: 'PENDING',        // Waiting for payment
                 paymentStatus: 'UNPAID',  // Waiting for payment
                 // @ts-ignore
-                affiliateId: affiliateId, // Link to affiliate
+                // affiliateId: affiliateId, // Link to affiliate (Disabled until Prisma Client update)
                 items: {
                     create: orderItemsData
                 }

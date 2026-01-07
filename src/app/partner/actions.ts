@@ -7,6 +7,11 @@ export async function getAffiliateStats(code: string) {
 
     try {
         // Cast prisma to any to bypass type errors for now
+        if (!(prisma as any).affiliate) {
+            console.error('Affiliate model missing in Prisma Client');
+            return { error: 'Sistem şu an bakımda. Lütfen daha sonra tekrar deneyin.' };
+        }
+
         const affiliate = await (prisma as any).affiliate.findUnique({
             where: { code: code.toUpperCase() }
         });

@@ -176,7 +176,7 @@ export default function CheckoutPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-16">
                     {/* Left Side: Forms */}
                     <div className="lg:col-span-7">
-                        <form id="checkout-form" onSubmit={handleSubmit} className="space-y-12">
+                        <form id="checkout-form" onSubmit={handleSubmit} onKeyDown={(e) => { if (e.key === 'Enter') e.preventDefault(); }} className="space-y-12">
 
                             {/* Contact Section */}
                             <section>

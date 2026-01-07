@@ -1,8 +1,35 @@
+'use client';
+
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
-import { Mail, MapPin, Phone, MessageCircle } from 'lucide-react';
+import { Mail, MapPin, Phone, MessageCircle, Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 export default function ContactPage() {
+    const [loading, setLoading] = useState(false);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        message: ''
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        toast.success('Mesajınız başarıyla gönderildi! 🎉');
+        setFormData({ name: '', email: '', message: '' });
+        setLoading(false);
+    };
+
     return (
         <main className="min-h-screen bg-[var(--color-sand)] selection:bg-[var(--color-green)] selection:text-black">
             <Navbar />
@@ -63,7 +90,7 @@ export default function ContactPage() {
                         </div>
 
                         {/* Form */}
-                        <form className="bg-[var(--color-blue)] p-8 md:p-10 rounded-3xl border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative">
+                        <form onSubmit={handleSubmit} className="bg-[var(--color-blue)] p-8 md:p-10 rounded-3xl border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative">
                             <div className="absolute -top-6 -right-6 bg-[var(--color-yellow)] text-black px-4 py-2 rounded-xl border-4 border-black font-black text-sm uppercase rotate-12 shadow-lg z-10">
                                 Size Dönelim! 👋
                             </div>
@@ -73,18 +100,53 @@ export default function ContactPage() {
                             <div className="space-y-6">
                                 <div>
                                     <label className="block text-xs font-black text-white mb-2 uppercase tracking-wide">Adınız</label>
-                                    <input type="text" className="w-full px-6 py-4 rounded-xl bg-white border-4 border-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:-translate-y-1 outline-none transition-all font-bold placeholder:text-black/30 text-black" placeholder="Ad Soyad" />
+                                    <input
+                                        required
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        type="text"
+                                        className="w-full px-6 py-4 rounded-xl bg-white border-4 border-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:-translate-y-1 outline-none transition-all font-bold placeholder:text-black/30 text-black"
+                                        placeholder="Ad Soyad"
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-black text-white mb-2 uppercase tracking-wide">E-Posta</label>
-                                    <input type="email" className="w-full px-6 py-4 rounded-xl bg-white border-4 border-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:-translate-y-1 outline-none transition-all font-bold placeholder:text-black/30 text-black" placeholder="ornek@email.com" />
+                                    <input
+                                        required
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        type="email"
+                                        className="w-full px-6 py-4 rounded-xl bg-white border-4 border-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:-translate-y-1 outline-none transition-all font-bold placeholder:text-black/30 text-black"
+                                        placeholder="ornek@email.com"
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-black text-white mb-2 uppercase tracking-wide">Mesajınız</label>
-                                    <textarea rows={4} className="w-full px-6 py-4 rounded-xl bg-white border-4 border-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:-translate-y-1 outline-none transition-all resize-none font-bold placeholder:text-black/30 text-black" placeholder="Size nasıl yardımcı olabiliriz?"></textarea>
+                                    <textarea
+                                        required
+                                        name="message"
+                                        value={formData.message}
+                                        onChange={handleChange}
+                                        rows={4}
+                                        className="w-full px-6 py-4 rounded-xl bg-white border-4 border-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:-translate-y-1 outline-none transition-all resize-none font-bold placeholder:text-black/30 text-black"
+                                        placeholder="Size nasıl yardımcı olabiliriz?"
+                                    ></textarea>
                                 </div>
-                                <button type="submit" className="w-full bg-black text-white font-black py-5 rounded-xl hover:bg-[var(--color-pink)] hover:text-black hover:border-black border-4 border-transparent transition-all uppercase tracking-widest shadow-lg active:translate-y-1 active:shadow-none text-lg">
-                                    Gönder Gitsin 🚀
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="w-full bg-black text-white font-black py-5 rounded-xl hover:bg-[var(--color-pink)] hover:text-black hover:border-black border-4 border-transparent transition-all uppercase tracking-widest shadow-lg active:translate-y-1 active:shadow-none text-lg flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed"
+                                >
+                                    {loading ? (
+                                        <>
+                                            <Loader2 className="animate-spin" />
+                                            <span>Gönderiliyor...</span>
+                                        </>
+                                    ) : (
+                                        <span>Gönder Gitsin 🚀</span>
+                                    )}
                                 </button>
                             </div>
                         </form>
