@@ -105,10 +105,11 @@ export default function CartDrawer() {
                                             <span>1.000 ₺</span>
                                         </div>
                                         <div className="relative h-4 w-full bg-white border-2 border-[var(--color-charcoal)] rounded-full overflow-hidden shadow-inner">
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${Math.min((cartTotal / 1000) * 100, 100)}%` }}
-                                            transition={{ duration: 1, ease: "easeOut" }}
-                                            className="absolute top-0 left-0 h-full bg-[var(--color-blue)] border-r-2 border-[var(--color-charcoal)]"
+                                            <motion.div
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${Math.min((cartTotal / 1000) * 100, 100)}%` }}
+                                                transition={{ duration: 1, ease: "easeOut" }}
+                                                className="absolute top-0 left-0 h-full bg-[var(--color-blue)] border-r-2 border-[var(--color-charcoal)]"
                                             />
                                         </div>
                                         <p className="text-xs font-medium text-[var(--color-charcoal)]">
