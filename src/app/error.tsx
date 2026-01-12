@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import Navbar from '@/components/navbar';
-import Footer from '@/components/footer';
+// Footer removed to prevent server-side leakage in client component
 import Link from 'next/link';
 
 export default function Error({
@@ -41,7 +41,10 @@ export default function Error({
                     </Link>
                 </div>
             </div>
-            <Footer />
+            {/* Simple static footer fallback if needed, or nothing */}
+            <div className="py-8 text-center text-charcoal/40 text-xs font-bold uppercase tracking-widest border-t border-gray-100 mt-auto">
+                Tsuko Design Studio
+            </div>
         </main>
     );
 }

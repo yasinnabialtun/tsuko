@@ -121,7 +121,10 @@ export default function CartDrawer() {
                         )}
 
                         {/* Items */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide bg-[url('/images/grid-pattern.png')] bg-repeat">
+                        <div
+                            className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide bg-repeat"
+                            style={{ backgroundImage: 'radial-gradient(#000000 1px, transparent 1px)', backgroundSize: '20px 20px', backgroundColor: 'var(--color-sand)' }}
+                        >
                             <AnimatePresence mode="popLayout">
                                 {items.length === 0 ? (
                                     <motion.div

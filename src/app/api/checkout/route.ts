@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendOrderConfirmationEmail } from '@/lib/email';
 import { sendDiscordNotification, sendTelegramNotification } from '@/lib/notifications';
+import * as crypto from 'crypto';
 
 // Shopier Credentials
 const SHOPIER_API_KEY = process.env.SHOPIER_API_KEY;
@@ -232,26 +233,83 @@ export async function POST(request: Request) {
         }
 
         // Shopier Integration
-        const combinedProductName = productNames.join(', ');
+        const combinedProductName = productNames.join(', ').substring(0, 95); // Limit length
         const formattedAmount = finalAmount.toFixed(2);
+
+        // Generate Random Number and Signature
+        // Signature = Base64(SHA256(identity + random_nr + secret)) ?
+        // Standard Shopier Payload Signature Logic:
+        // 1. Generate random number
+        // 2. Concatenate values in SPECIFIC ORDER
+        // 3. Append Secret
+        // 4. SHA256 -> Base64
+
+        const random_nr = Math.floor(Math.random() * 999999 + 100000);
+
+        // These fields must match exactly the order Shopier expects for the hash
+        // It's usually: API_KEY + website_index + platform_order_id + amount + currency + product_name + product_type + buyer_name + buyer_surname + buyer_email + buyer_account_age + buyer_id_nr + buyer_phone + billing_address + billing_city + billing_country + billing_postcode + shipping_address + shipping_city + shipping_country + shipping_postcode + random_nr + SECRET
+
+        // We are using the Simplified integration or API integration? 
+        // With "api_pay4.php" usually we send parameters and Shopier handles it if we send key?
+        // Wait, if we use the API method, we MUST send 'signature'.
+        // If we use the 'Button' method, we don't.
+        // But preventing Error 500 (Installation error) often means bad data.
+        // Let's implement the signature.
+
+        const argsForSignature = [
+            SHOPIER_API_KEY,
+            SHOPIER_WEBSITE_INDEX,
+            order.orderNumber,
+            formattedAmount,
+            '0', // currency (0=TRY)
+            combinedProductName,
+            '1', // product_type (1=Real)
+            customer.firstName,
+            customer.lastName,
+            customer.email,
+            '0', // buyer_account_age
+            '11111111111', // buyer_id_nr (TCKN - optional usually, but required in order)
+            customer.phone,
+            customer.address, // billing address
+            customer.city,    // billing city
+            'Turkiye',        // billing country
+            customer.zipCode || '00000', // billing zip
+            customer.address, // shipping address
+            customer.city,    // shipping city
+            'Turkiye',        // shipping country
+            customer.zipCode || '00000', // shipping zip
+            random_nr,
+            SHOPIER_API_SECRET
+        ];
+
+        const signatureString = argsForSignature.map(val => String(val)).join('');
+        const signature = crypto.createHash('sha256').update(signatureString).digest('base64');
 
         const formData = {
             API_key: SHOPIER_API_KEY,
             website_index: SHOPIER_WEBSITE_INDEX,
             platform_order_id: order.orderNumber,
-            product_name: combinedProductName, // Aggregated names
-            product_type: 1, // Physical
+            product_name: combinedProductName,
+            product_type: 1,
             buyer_name: customer.firstName,
             buyer_surname: customer.lastName,
             buyer_email: customer.email,
+            buyer_account_age: 0,
+            buyer_id_nr: 11111111111,
             buyer_phone: customer.phone,
-            buyer_address_line1: customer.address,
-            buyer_city: customer.city,
-            buyer_country: 'Turkiye',
-            buyer_postcode: customer.zipCode || '00000',
-            product_count_of_packages: 1,
+            billing_address: customer.address,
+            billing_city: customer.city,
+            billing_country: 'Turkiye',
+            billing_postcode: customer.zipCode || '00000',
+            shipping_address: customer.address,
+            shipping_city: customer.city,
+            shipping_country: 'Turkiye',
+            shipping_postcode: customer.zipCode || '00000',
             amount: formattedAmount,
-            currency: 0, // TRY
+            currency: 0,
+            random_nr: random_nr,
+            signature: signature,
+            modul_version: '1.0.4', // Hint related to the error message "modülün güncel sürüm"
             callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/shopier`,
             back_url: `${process.env.NEXT_PUBLIC_SITE_URL}/payment/success?orderId=${order.orderNumber}`,
             cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/payment/cancel?orderId=${order.orderNumber}`
