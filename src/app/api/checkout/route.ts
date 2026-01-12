@@ -75,7 +75,7 @@ class ShopierPayment {
         const amount = this.order.total.toFixed(2);
         const currency = this.currency.toString();
 
-        // Modern HMAC SHA256 Signature Method
+        // Modern HMAC SHA256 Signature Method for Custom Integration
         // Data = random_nr + platform_order_id + total_order_value + currency
         const data = randomNr + this.order.id + amount + currency;
 
@@ -109,7 +109,10 @@ class ShopierPayment {
                 currency: this.currency,
                 random_nr: randomNr,
                 signature: signature,
-                modul_version: '1.0.4',
+                // modul_version REMOVED to force Generic API mode
+                platform: 0,
+                is_in_frame: 0,
+                current_language: 0,
                 callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/shopier`,
                 back_url: `${process.env.NEXT_PUBLIC_SITE_URL}/payment/success?orderId=${this.order.id}`,
                 cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/payment/cancel?orderId=${this.order.id}`
