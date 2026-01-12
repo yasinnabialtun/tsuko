@@ -265,13 +265,9 @@ export async function POST(request: Request) {
             SHOPIER_API_KEY,
             SHOPIER_WEBSITE_INDEX,
             order.orderNumber,
-            combinedProductName,
-            '1', // product_type (1=Real)
             customer.firstName,
             customer.lastName,
             customer.email,
-            '0', // buyer_account_age
-            '11111111111', // buyer_id_nr
             customer.phone,
             billingAddress,
             customer.city,
@@ -282,7 +278,9 @@ export async function POST(request: Request) {
             'Turkiye',
             customer.zipCode || '00000',
             formattedAmount,
-            '0', // currency (0=TRY)
+            '0', // currency
+            combinedProductName,
+            '1', // product_type
             random_nr,
             SHOPIER_API_SECRET
         ];

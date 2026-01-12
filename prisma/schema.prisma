@@ -1,7 +1,3 @@
-
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,168 +9,137 @@ datasource db {
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  description String
-  price       Decimal  @db.Decimal(10, 2) // Base Price or Default Variant Price
-  stock       Int      @default(0)        // Total stock or default variant stock
-  images      String[] // Array of image URLs
-  modelUrl    String?  // Optional 3D Model (.glb)
-  
-  categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id])
-  
-  // Platform Features
-  attributes  Json?    // Global attributes like { "material": "PLA", "designer": "Tsuko" }
-  variants    ProductVariant[]
-
-  // SEO Metadata
-  seoTitle       String?
+  id             String              @id @default(cuid())
+  name           String
+  description    String
+  price          Decimal             @db.Decimal(10, 2)
+  images         String[]
+  stock          Int                 @default(0)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  attributes     Json?
+  categoryId     String
+  isActive       Boolean             @default(true)
+  isFeatured     Boolean             @default(false)
+  modelUrl       String?
   seoDescription String?
   seoKeywords    String[]
-
-  // Status
-  isActive    Boolean  @default(true)
-  isFeatured  Boolean  @default(false)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  OrderItem   OrderItem[]
-  reviews     Review[]
-  notifications StockNotification[]
-  Wishlist    Wishlist[]
-  lookPins    ShopTheLookPin[]
+  seoTitle       String?
+  slug           String              @unique
+  OrderItem      OrderItem[]
+  category       Category            @relation(fields: [categoryId], references: [id])
+  variants       ProductVariant[]
+  reviews        Review[]
+  lookPins       ShopTheLookPin[]
+  notifications  StockNotification[]
+  Wishlist       Wishlist[]
 
   @@index([slug])
   @@index([categoryId])
 }
 
 model ProductVariant {
-  id          String   @id @default(cuid())
-  productId   String
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  sku         String   @unique // Stock Keeping Unit
-  title       String   // E.g. "Red / L"
-  
-  price       Decimal  @db.Decimal(10, 2)
-  stock       Int      @default(0)
-  weight      Float?   // In kg (for shipping calc)
-  
-  attributes  Json     // { "color": "Red", "size": "L" }
-  images      String[] // Variant specific images
-  
-  isActive    Boolean  @default(true)
-  
-  OrderItem   OrderItem[]
-  
+  id         String      @id @default(cuid())
+  productId  String
+  sku        String      @unique
+  title      String
+  price      Decimal     @db.Decimal(10, 2)
+  stock      Int         @default(0)
+  weight     Float?
+  attributes Json
+  images     String[]
+  isActive   Boolean     @default(true)
+  OrderItem  OrderItem[]
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+
   @@index([productId])
 }
 
 model Category {
-  id          String    @id @default(cuid())
+  id          String     @id @default(cuid())
   name        String
-  slug        String    @unique
+  slug        String     @unique
   description String?
-  
-  // Hierarchy
   parentId    String?
   parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
   children    Category[] @relation("CategoryHierarchy")
-
   products    Product[]
 }
 
 model StockNotification {
-  id        String   @id @default(cuid())
-  email     String
-  productId String
-  product   Product  @relation(fields: [productId], references: [id])
-  isNotified Boolean @default(false)
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  email      String
+  productId  String
+  isNotified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  product    Product  @relation(fields: [productId], references: [id])
 
   @@unique([email, productId])
 }
 
 model Review {
-  id        String   @id @default(cuid())
-  productId String
-  product   Product  @relation(fields: [productId], references: [id])
-  
-  rating    Int
-  comment   String?
-  userName  String
-  userId    String?  // Optional Clerk User ID
-  
-  isApproved Boolean @default(true) // Auto-approve for MVP
-  
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  productId  String
+  rating     Int
+  comment    String?
+  userName   String
+  userId     String?
+  isApproved Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  product    Product  @relation(fields: [productId], references: [id])
 }
 
 model Order {
-  id              String      @id @default(cuid())
-  orderNumber     String      @unique // #TS-1024 format
+  id              String        @id @default(cuid())
   customerName    String
   customerEmail   String
   customerPhone   String
-  shippingAddress String      @default("")
-  city            String      @default("")
+  city            String        @default("")
+  totalAmount     Decimal       @db.Decimal(10, 2)
+  status          OrderStatus   @default(PENDING)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  couponCode      String?
+  discountAmount  Decimal       @default(0) @db.Decimal(10, 2)
+  orderNumber     String        @unique
+  paymentStatus   PaymentStatus @default(UNPAID)
+  shippingAddress String        @default("")
   trackingNumber  String?
-  carrier         String?     // e.g. "Yurtiçi Kargo", "Aras Kargo"
-  
-  userId          String?     // Optional Clerk User ID
-  
-  items         OrderItem[]
-  totalAmount   Decimal     @db.Decimal(10, 2)
-  
-  couponCode    String?
-  discountAmount Decimal    @default(0) @db.Decimal(10, 2)
-  
-  status        OrderStatus @default(PENDING)
-  paymentStatus PaymentStatus @default(UNPAID)
-  
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  affiliateId   String?
-  affiliate     Affiliate?  @relation(fields: [affiliateId], references: [id])
+  userId          String?
+  affiliateId     String?
+  carrier         String?
+  affiliate       Affiliate?    @relation(fields: [affiliateId], references: [id])
+  items           OrderItem[]
 
   @@index([userId])
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
-  order     Order   @relation(fields: [orderId], references: [id])
+  id        String          @id @default(cuid())
   orderId   String
-  
-  product   Product @relation(fields: [productId], references: [id])
   productId String
-  
-  variantId String?
-  variant   ProductVariant? @relation(fields: [variantId], references: [id])
-
   quantity  Int
-  price     Decimal @db.Decimal(10, 2) // Price at the time of purchase (snapshot)
+  price     Decimal         @db.Decimal(10, 2)
+  variantId String?
+  order     Order           @relation(fields: [orderId], references: [id])
+  product   Product         @relation(fields: [productId], references: [id])
+  variant   ProductVariant? @relation(fields: [variantId], references: [id])
 }
 
 model UserAddress {
-  id          String   @id @default(cuid())
-  userId      String   // Clerk User ID
-  title       String   // e.g. "Home"
-  
+  id            String   @id @default(cuid())
+  userId        String
+  title         String
   recipientName String
   phone         String
   address       String
   city          String
   district      String
   zipCode       String
-  country       String @default("Türkiye")
-  
-  isDefault     Boolean @default(false)
+  country       String   @default("Türkiye")
+  isDefault     Boolean  @default(false)
   createdAt     DateTime @default(now())
-  
+
   @@index([userId])
 }
 
@@ -187,137 +152,100 @@ model Subscriber {
 }
 
 model BlogPost {
-  id          String   @id @default(cuid())
-  title       String
-  slug        String   @unique
-  excerpt     String
-  content     String   @db.Text
-  coverImage  String
-  category    String
-  author      String   @default("Tsuko Design")
-  date        String   // Display date
-  
-  // SEO
-  seoTitle    String?
-  seoDesc     String?
-  
-  published   Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(cuid())
+  title      String
+  slug       String   @unique
+  excerpt    String
+  content    String
+  coverImage String
+  category   String
+  author     String   @default("Tsuko Design")
+  published  Boolean  @default(true)
+  date       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  seoDesc    String?
+  seoTitle   String?
 
   @@index([slug])
 }
 
-enum OrderStatus {
-  PENDING
-  PREPARING
-  SHIPPED
-  DELIVERED
-  CANCELLED
-}
-
-enum PaymentStatus {
-  UNPAID
-  PAID
-  REFUNDED
-}
-
 model Coupon {
-  id            String   @id @default(cuid())
-  code          String   @unique
-  discountType  String   // PERCENTAGE, FIXED
-  discountValue Decimal  @db.Decimal(10, 2)
-  minAmount     Decimal? @db.Decimal(10, 2)
+  id            String    @id @default(cuid())
+  code          String    @unique
+  discountType  String
+  discountValue Decimal   @db.Decimal(10, 2)
+  minAmount     Decimal?  @db.Decimal(10, 2)
   startDate     DateTime?
   endDate       DateTime?
   usageLimit    Int?
-  usedCount     Int      @default(0)
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
+  usedCount     Int       @default(0)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
 }
 
 model Settings {
-  id                    String   @id @default("singleton")
-  siteName              String   @default("Tsuko Design")
-  siteDescription       String   @default("Mimari Estetik, Evinize Taşındı")
-  siteUrl              String   @default("https://tsukodesign.com")
-  
-  // SEO
-  seoKeywords          String[] @default([])
-  
-  // Contact
-  email                 String   @default("info@tsukodesign.com")
-  phone                 String   @default("")
-  whatsapp              String   @default("")
-  address               String   @default("")
-  
-  // Social
-  instagram             String   @default("tsukodesign")
-  pinterest             String   @default("")
-  
-  // Shopier
-  shopierUrl            String   @default("")
-  freeShippingThreshold Decimal  @default(500) @db.Decimal(10, 2)
-  
-  // Notifications
-  orderNotifications    Boolean  @default(true)
-  stockAlerts           Boolean  @default(true)
-  newsletterNotifications Boolean @default(true)
-  
-  // UI / Maintenance
-  maintenanceMode       Boolean  @default(false)
-  
-  // CMS (Dynamic Content)
-  heroTitle             String   @default("ZAMANIN ÖTESİNDE TASARIMLAR")
-  heroSubtitle          String   @default("Evinizin ruhunu yansıtan, sürdürülebilir ve estetik parçalar.")
-  heroButtonText        String   @default("KOLEKSİYONU KEŞFET")
-  heroButtonLink        String   @default("/collection")
-  heroImage             String   @default("/images/hero.png")
-  
-  philosophyTitle       String   @default("MİMARİ BAKIŞ")
-  philosophyContent     String   @default("Tsuko, Japonca'da 'yaratmak' anlamına gelir. Biz sadece obje değil, yaşam alanlarınıza karakter katan hikayeler tasarlıyoruz. Her bir parça, mimari disiplin ve sanatın buluşma noktasıdır.")
-  
-  announcementBar       String   @default("TÜM TÜRKİYE'YE ÜCRETSİZ KARGO")
-  announcementActive    Boolean  @default(true)
-
-  // Popups CMS
-  newsletterPopupTitle  String   @default("İLK SİPARİŞİNE ÖZEL %10 İNDİRİM")
-  newsletterPopupDesc   String   @default("Bültene abone ol, indirim kodunu hemen kap. Yeni koleksiyonlardan ilk senin haberin olsun.")
-  newsletterPopupImage  String   @default("/images/popup.jpg")
-  
-  exitIntentTitle       String   @default("GİTMEDEN ÖNCE...")
-  exitIntentDesc        String   @default("Sepetindeki ürünleri kaçırma! Şimdi tamamla, ücretsiz kargo fırsatını yakala.")
-
-  updatedAt             DateTime @updatedAt
+  id                      String   @id @default("singleton")
+  siteName                String   @default("Tsuko Design")
+  siteDescription         String   @default("Mimari Estetik, Evinize Taşındı")
+  siteUrl                 String   @default("https://tsukodesign.com")
+  seoKeywords             String[] @default([])
+  email                   String   @default("info@tsukodesign.com")
+  phone                   String   @default("")
+  whatsapp                String   @default("")
+  address                 String   @default("")
+  instagram               String   @default("tsukodesign")
+  pinterest               String   @default("")
+  shopierUrl              String   @default("")
+  freeShippingThreshold   Decimal  @default(500) @db.Decimal(10, 2)
+  orderNotifications      Boolean  @default(true)
+  stockAlerts             Boolean  @default(true)
+  newsletterNotifications Boolean  @default(true)
+  maintenanceMode         Boolean  @default(false)
+  updatedAt               DateTime @updatedAt
+  announcementActive      Boolean  @default(true)
+  announcementBar         String   @default("TÜM TÜRKİYE'YE ÜCRETSİZ KARGO")
+  heroButtonLink          String   @default("/collection")
+  heroButtonText          String   @default("KOLEKSİYONU KEŞFET")
+  heroImage               String   @default("/images/hero.png")
+  heroSubtitle            String   @default("Evinizin ruhunu yansıtan, sürdürülebilir ve estetik parçalar.")
+  heroTitle               String   @default("ZAMANIN ÖTESİNDE TASARIMLAR")
+  philosophyContent       String   @default("Tsuko, Japonca'da 'yaratmak' anlamına gelir. Biz sadece obje değil, yaşam alanlarınıza karakter katan hikayeler tasarlıyoruz. Her bir parça, mimari disiplin ve sanatın buluşma noktasıdır.")
+  philosophyTitle         String   @default("MİMARİ BAKIŞ")
+  exitIntentDesc          String   @default("Sepetindeki ürünleri kaçırma! Şimdi tamamla, ücretsiz kargo fırsatını yakala.")
+  exitIntentTitle         String   @default("GİTMEDEN ÖNCE...")
+  newsletterPopupDesc     String   @default("Bültene abone ol, indirim kodunu hemen kap. Yeni koleksiyonlardan ilk senin haberin olsun.")
+  newsletterPopupImage    String   @default("/images/popup.jpg")
+  newsletterPopupTitle    String   @default("İLK SİPARİŞİNE ÖZEL %10 İNDİRİM")
 }
 
 model ShopTheLook {
-  id          String   @id @default(cuid())
+  id          String           @id @default(cuid())
   title       String
   description String?
-  image       String   // Main look image
-  isActive    Boolean  @default(true)
+  image       String
+  isActive    Boolean          @default(true)
+  order       Int              @default(0)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
   pins        ShopTheLookPin[]
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 }
 
 model ShopTheLookPin {
-  id             String   @id @default(cuid())
-  lookId         String
-  look           ShopTheLook @relation(fields: [lookId], references: [id], onDelete: Cascade)
-  productId      String
-  product        Product  @relation(fields: [productId], references: [id])
-  x              Float    // Percentage 0-100
-  y              Float    // Percentage 0-100
-  createdAt      DateTime @default(now())
+  id        String      @id @default(cuid())
+  lookId    String
+  productId String
+  x         Float
+  y         Float
+  createdAt DateTime    @default(now())
+  look      ShopTheLook @relation(fields: [lookId], references: [id], onDelete: Cascade)
+  product   Product     @relation(fields: [productId], references: [id])
 }
 
 model FAQ {
   id        String   @id @default(cuid())
   question  String
-  answer    String   @db.Text
+  answer    String
   order     Int      @default(0)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -338,40 +266,50 @@ model VisitorSession {
 
 model Wishlist {
   id        String   @id @default(cuid())
-  userId    String   // Clerk User ID
+  userId    String
   productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, productId]) // Prevent duplicate likes
+  @@unique([userId, productId])
   @@index([userId])
 }
 
 model LiveActivity {
-  id        String   @id @default(cuid())
-  type      String   // "CART_ADD", "BROWSE", "ORDER"
-  city      String?
+  id          String   @id @default(cuid())
+  type        String
+  city        String?
   productName String?
-  createdAt DateTime @default(now())
+  createdAt   DateTime @default(now())
 
   @@index([createdAt])
 }
-
 
 model Affiliate {
   id             String   @id @default(cuid())
   name           String
   code           String   @unique
   commissionRate Decimal  @default(10) @db.Decimal(5, 2)
-  contact    String?
-  iban       String?
-  totalSales    Decimal @default(0) @db.Decimal(10, 2)
-  totalEarnings Decimal @default(0) @db.Decimal(10, 2)
-  // Fix: Order relation is already defined in Order model, so we need to add relation field here if explicit
-  orders     Order[]
-
-  isActive   Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  contact        String?
+  iban           String?
+  totalSales     Decimal  @default(0) @db.Decimal(10, 2)
+  totalEarnings  Decimal  @default(0) @db.Decimal(10, 2)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  orders         Order[]
 }
 
+enum OrderStatus {
+  PENDING
+  PREPARING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  REFUNDED
+}
