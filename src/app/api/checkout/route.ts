@@ -25,13 +25,24 @@ class ShopierPayment {
     private websiteIndex: string;
     private buyer: any = {};
     private order: any = {};
-    private products: any[] = [];
-    private currency: number = 0; // 0=TRY, 1=USD, 2=EUR
+    private currency: number = 0; // 0=TRY
 
     constructor(apiKey: string, apiSecret: string, websiteIndex: string) {
         this.apiKey = apiKey;
         this.apiSecret = apiSecret;
         this.websiteIndex = websiteIndex;
+    }
+
+    // Convert Turkish specific chars to Latin equivalents
+    private normalize(str: string) {
+        if (!str) return '';
+        const map: { [key: string]: string } = {
+            'ğ': 'g', 'Ğ': 'G', 'ü': 'u', 'Ü': 'U', 'ş': 's', 'Ş': 'S',
+            'ı': 'i', 'İ': 'I', 'ö': 'o', 'Ö': 'O', 'ç': 'c', 'Ç': 'C'
+        };
+        const result = str.replace(/[ğĞüÜşŞıİöÖçÇ]/g, (char) => map[char]);
+        // Remove line breaks and unusual chars
+        return result.replace(/[\r\n]+/g, ' ').trim();
     }
 
     setBuyer(fields: { id: string; name: string; surname: string; email: string; phone: string; }) {
@@ -52,29 +63,37 @@ class ShopierPayment {
 
     generatePaymentForm() {
         const randomNr = Math.floor(Math.random() * 999999) + 100000;
+
+        // Normalize all text fields to ensure Signature consistency
+        const buyerName = this.normalize(this.buyer.name);
+        const buyerSurname = this.normalize(this.buyer.surname);
+        const buyerAddress = this.normalize(this.buyer.billing_address);
+        const buyerCity = this.normalize(this.buyer.billing_city);
+        const shippingAddress = this.normalize(this.buyer.shipping_address);
+        const shippingCity = this.normalize(this.buyer.shipping_city);
+        const productName = 'Tsuko Design Siparis'; // Simple, Safe Name
+
         const args = [
             this.apiKey,
             this.websiteIndex,
             this.order.id,
             this.order.total.toFixed(2),
             this.currency.toString(),
-            // Ensure product logic is handled or send default if using total-based
-            // Shopier API often just needs one consolidated "product" for the whole cart
-            'Tsuko Design Siparis', // Combined Product Name
-            '1', // Product Type: Real Object
-            this.buyer.name,
-            this.buyer.surname,
+            productName,
+            '1', // Product Type
+            buyerName,
+            buyerSurname,
             this.buyer.email,
             '0', // Account Age
             '11111111111', // ID NR
             this.buyer.phone,
-            this.buyer.billing_address,
-            this.buyer.billing_city,
-            this.buyer.billing_country,
+            buyerAddress,
+            buyerCity,
+            'Turkiye',
             this.buyer.billing_postcode,
-            this.buyer.shipping_address,
-            this.buyer.shipping_city,
-            this.buyer.shipping_country,
+            shippingAddress,
+            shippingCity,
+            'Turkiye',
             this.buyer.shipping_postcode,
             randomNr,
             this.apiSecret
@@ -87,21 +106,21 @@ class ShopierPayment {
                 API_key: this.apiKey,
                 website_index: this.websiteIndex,
                 platform_order_id: this.order.id,
-                product_name: 'Tsuko Design Siparis',
-                product_type: 1, // 1: Real Object, 2: Digital
-                buyer_name: this.buyer.name,
-                buyer_surname: this.buyer.surname,
+                product_name: productName,
+                product_type: 1,
+                buyer_name: buyerName,
+                buyer_surname: buyerSurname,
                 buyer_email: this.buyer.email,
                 buyer_account_age: 0,
                 buyer_id_nr: 11111111111,
                 buyer_phone: this.buyer.phone,
-                billing_address: this.buyer.billing_address,
-                billing_city: this.buyer.billing_city,
-                billing_country: this.buyer.billing_country,
+                billing_address: buyerAddress,
+                billing_city: buyerCity,
+                billing_country: 'Turkiye',
                 billing_postcode: this.buyer.billing_postcode,
-                shipping_address: this.buyer.shipping_address,
-                shipping_city: this.buyer.shipping_city,
-                shipping_country: this.buyer.shipping_country,
+                shipping_address: shippingAddress,
+                shipping_city: shippingCity,
+                shipping_country: 'Turkiye',
                 shipping_postcode: this.buyer.shipping_postcode,
                 amount: this.order.total.toFixed(2),
                 currency: this.currency,
