@@ -73,30 +73,31 @@ class ShopierPayment {
         const shippingCity = this.normalize(this.buyer.shipping_city);
         const productName = 'Tsuko Design Siparis'; // Simple, Safe Name
 
+        // STANDARD Shopier API Signature Order
         const args = [
             this.apiKey,
             this.websiteIndex,
             this.order.id,
-            this.order.total.toFixed(2),
-            this.currency.toString(),
-            productName,
-            '1', // Product Type
-            buyerName,
-            buyerSurname,
-            this.buyer.email,
-            '0', // Account Age
-            '11111111111', // ID NR
-            this.buyer.phone,
-            buyerAddress,
-            buyerCity,
-            'Turkiye',
-            this.buyer.billing_postcode,
-            shippingAddress,
-            shippingCity,
-            'Turkiye',
-            this.buyer.shipping_postcode,
-            randomNr,
-            this.apiSecret
+            productName,       // 4. Product Name
+            '1',               // 5. Product Type
+            buyerName,         // 6. Name
+            buyerSurname,      // 7. Surname
+            this.buyer.email,  // 8. Email
+            '0',               // 9. Account Age
+            '11111111111',     // 10. ID
+            this.buyer.phone,  // 11. Phone
+            buyerAddress,      // 12. Billing Addr
+            buyerCity,         // 13. Billing City
+            'Turkiye',         // 14. Billing Country
+            this.buyer.billing_postcode, // 15. Billing Zip
+            shippingAddress,   // 16. Shipping Addr
+            shippingCity,      // 17. Shipping City
+            'Turkiye',         // 18. Shipping Country
+            this.buyer.shipping_postcode,// 19. Shipping Zip
+            this.order.total.toFixed(2), // 20. Amount (LATE)
+            this.currency.toString(),    // 21. Currency
+            randomNr,          // 22. Random
+            this.apiSecret     // 23. Secret
         ];
 
         const signature = crypto.createHash('sha256').update(args.map(String).join('')).digest('base64');
@@ -126,7 +127,7 @@ class ShopierPayment {
                 currency: this.currency,
                 random_nr: randomNr,
                 signature: signature,
-                modul_version: '1.0.4',
+                // modul_version removed
                 callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/shopier`,
                 back_url: `${process.env.NEXT_PUBLIC_SITE_URL}/payment/success?orderId=${this.order.id}`,
                 cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/payment/cancel?orderId=${this.order.id}`
