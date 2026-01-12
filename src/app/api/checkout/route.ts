@@ -127,7 +127,7 @@ class ShopierPayment {
                 currency: this.currency,
                 random_nr: randomNr,
                 signature: signature,
-                // modul_version removed
+                modul_version: '1.0.4',
                 callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/shopier`,
                 back_url: `${process.env.NEXT_PUBLIC_SITE_URL}/payment/success?orderId=${this.order.id}`,
                 cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/payment/cancel?orderId=${this.order.id}`
