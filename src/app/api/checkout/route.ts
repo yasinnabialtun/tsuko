@@ -62,45 +62,27 @@ class ShopierPayment {
     }
 
     generatePaymentForm() {
-        const randomNr = Math.floor(Math.random() * 999999) + 100000;
+        const randomNr = (Math.floor(Math.random() * 999999) + 100000).toString();
 
-        // Normalize all text fields to ensure Signature consistency
+        // Normalize text
         const buyerName = this.normalize(this.buyer.name);
         const buyerSurname = this.normalize(this.buyer.surname);
         const buyerAddress = this.normalize(this.buyer.billing_address);
         const buyerCity = this.normalize(this.buyer.billing_city);
         const shippingAddress = this.normalize(this.buyer.shipping_address);
         const shippingCity = this.normalize(this.buyer.shipping_city);
-        const productName = 'Tsuko Design Siparis'; // Simple, Safe Name
+        const productName = 'Tsuko Design Siparis';
+        const amount = this.order.total.toFixed(2);
+        const currency = this.currency.toString();
 
-        // STANDARD Shopier API Signature Order
-        const args = [
-            this.apiKey,
-            this.websiteIndex,
-            this.order.id,
-            productName,       // 4. Product Name
-            '1',               // 5. Product Type
-            buyerName,         // 6. Name
-            buyerSurname,      // 7. Surname
-            this.buyer.email,  // 8. Email
-            '0',               // 9. Account Age
-            '11111111111',     // 10. ID
-            this.buyer.phone,  // 11. Phone
-            buyerAddress,      // 12. Billing Addr
-            buyerCity,         // 13. Billing City
-            'Turkiye',         // 14. Billing Country
-            this.buyer.billing_postcode, // 15. Billing Zip
-            shippingAddress,   // 16. Shipping Addr
-            shippingCity,      // 17. Shipping City
-            'Turkiye',         // 18. Shipping Country
-            this.buyer.shipping_postcode,// 19. Shipping Zip
-            this.order.total.toFixed(2), // 20. Amount (LATE)
-            this.currency.toString(),    // 21. Currency
-            randomNr,          // 22. Random
-            this.apiSecret     // 23. Secret
-        ];
+        // Modern HMAC SHA256 Signature Method
+        // Data = random_nr + platform_order_id + total_order_value + currency
+        const data = randomNr + this.order.id + amount + currency;
 
-        const signature = crypto.createHash('sha256').update(args.map(String).join('')).digest('base64');
+        const signature = crypto
+            .createHmac('sha256', this.apiSecret)
+            .update(data)
+            .digest('base64');
 
         return {
             formData: {
@@ -108,7 +90,7 @@ class ShopierPayment {
                 website_index: this.websiteIndex,
                 platform_order_id: this.order.id,
                 product_name: productName,
-                product_type: 1,
+                product_type: 0, // 0: Physical Product
                 buyer_name: buyerName,
                 buyer_surname: buyerSurname,
                 buyer_email: this.buyer.email,
@@ -123,7 +105,7 @@ class ShopierPayment {
                 shipping_city: shippingCity,
                 shipping_country: 'Turkiye',
                 shipping_postcode: this.buyer.shipping_postcode,
-                amount: this.order.total.toFixed(2),
+                amount: amount,
                 currency: this.currency,
                 random_nr: randomNr,
                 signature: signature,
