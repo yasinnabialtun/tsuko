@@ -62,26 +62,64 @@ class ShopierPayment {
     }
 
     generatePaymentForm() {
-        const randomNr = (Math.floor(Math.random() * 999999) + 100000).toString();
+        // Generate random number
+        const randomNr = Math.floor(Math.random() * 999999) + 100000;
 
-        // Normalize text
+        // 1. Sanitize/Normalize ALL inputs that goes into signature
+        // We must use the EXACT same strings in Signature and Form Data
         const buyerName = this.normalize(this.buyer.name);
         const buyerSurname = this.normalize(this.buyer.surname);
+        const buyerEmail = this.buyer.email; // Emails usually safe, but maybe trim?
+        const buyerPhone = this.buyer.phone;
         const buyerAddress = this.normalize(this.buyer.billing_address);
         const buyerCity = this.normalize(this.buyer.billing_city);
+        const buyerCountry = 'Turkiye';
+        const buyerPostcode = this.buyer.billing_postcode;
+
         const shippingAddress = this.normalize(this.buyer.shipping_address);
         const shippingCity = this.normalize(this.buyer.shipping_city);
+        const shippingCountry = 'Turkiye';
+        const shippingPostcode = this.buyer.shipping_postcode;
+
         const productName = 'Tsuko Design Siparis';
+        const productType = '0'; // 0 for physical
+        const accountAge = '0';
+        const idNr = '11111111111';
+
         const amount = this.order.total.toFixed(2);
         const currency = this.currency.toString();
 
-        // Modern HMAC SHA256 Signature Method for Custom Integration
-        // Data = random_nr + platform_order_id + total_order_value + currency
-        const data = randomNr + this.order.id + amount + currency;
+        // 2. Legacy Signature Order (Required when sending modul_version)
+        const args = [
+            this.apiKey,
+            this.websiteIndex,
+            this.order.id,
+            productName,
+            productType,
+            buyerName,
+            buyerSurname,
+            buyerEmail,
+            accountAge,
+            idNr,
+            buyerPhone,
+            buyerAddress,
+            buyerCity,
+            buyerCountry,
+            buyerPostcode,
+            shippingAddress,
+            shippingCity,
+            shippingCountry,
+            shippingPostcode,
+            amount,
+            currency,
+            randomNr,
+            this.apiSecret
+        ];
 
+        // 3. Generate SHA256 Hash
         const signature = crypto
-            .createHmac('sha256', this.apiSecret)
-            .update(data)
+            .createHash('sha256')
+            .update(args.map(String).join(''))
             .digest('base64');
 
         return {
@@ -90,21 +128,21 @@ class ShopierPayment {
                 website_index: this.websiteIndex,
                 platform_order_id: this.order.id,
                 product_name: productName,
-                product_type: 0, // 0: Physical Product
+                product_type: parseInt(productType), // Form expects number or string? PHP handles loosely, generally safe.
                 buyer_name: buyerName,
                 buyer_surname: buyerSurname,
-                buyer_email: this.buyer.email,
-                buyer_account_age: 0,
-                buyer_id_nr: 11111111111,
-                buyer_phone: this.buyer.phone,
+                buyer_email: buyerEmail,
+                buyer_account_age: parseInt(accountAge),
+                buyer_id_nr: parseInt(idNr), // Shopier implementation might want number
+                buyer_phone: buyerPhone,
                 billing_address: buyerAddress,
                 billing_city: buyerCity,
-                billing_country: 'Turkiye',
-                billing_postcode: this.buyer.billing_postcode,
+                billing_country: buyerCountry,
+                billing_postcode: buyerPostcode,
                 shipping_address: shippingAddress,
                 shipping_city: shippingCity,
-                shipping_country: 'Turkiye',
-                shipping_postcode: this.buyer.shipping_postcode,
+                shipping_country: shippingCountry,
+                shipping_postcode: shippingPostcode,
                 amount: amount,
                 currency: this.currency,
                 random_nr: randomNr,
