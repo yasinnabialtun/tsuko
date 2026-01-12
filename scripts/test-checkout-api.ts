@@ -13,10 +13,10 @@ async function testCheckout() {
         }
     };
 
-    console.log('1. Getting Form Data from https://tsukodesign.com/api/checkout...');
+    console.log('1. Getting Form Data from http://localhost:3000/api/checkout...');
 
     try {
-        const response = await fetch('https://tsukodesign.com/api/checkout', {
+        const response = await fetch('http://localhost:3000/api/checkout', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)

@@ -65,24 +65,24 @@ class ShopierPayment {
         // Generate random number
         const randomNr = Math.floor(Math.random() * 999999) + 100000;
 
-        // 1. Sanitize/Normalize ALL inputs that goes into signature
-        // We must use the EXACT same strings in Signature and Form Data
-        const buyerName = this.normalize(this.buyer.name);
-        const buyerSurname = this.normalize(this.buyer.surname);
-        const buyerEmail = this.buyer.email; // Emails usually safe, but maybe trim?
-        const buyerPhone = this.buyer.phone;
-        const buyerAddress = this.normalize(this.buyer.billing_address);
-        const buyerCity = this.normalize(this.buyer.billing_city);
+        // DEBUG: HARDCODED SAFE VALUES TO TEST PRODUCTION ENVIRONMENT
+        // If this works, the issue is with the dynamic data (encoding/formatting)
+        const buyerName = 'Test';
+        const buyerSurname = 'Buyer';
+        const buyerEmail = 'test@tsukodesign.com';
+        const buyerPhone = '05555555555';
+        const buyerAddress = 'Test Address Istanbul';
+        const buyerCity = 'Istanbul';
         const buyerCountry = 'Turkiye';
-        const buyerPostcode = this.buyer.billing_postcode;
+        const buyerPostcode = '34000';
 
-        const shippingAddress = this.normalize(this.buyer.shipping_address);
-        const shippingCity = this.normalize(this.buyer.shipping_city);
+        const shippingAddress = 'Test Address Istanbul';
+        const shippingCity = 'Istanbul';
         const shippingCountry = 'Turkiye';
-        const shippingPostcode = this.buyer.shipping_postcode;
+        const shippingPostcode = '34000';
 
         const productName = 'Tsuko Design Siparis';
-        const productType = '0'; // 0 for physical
+        const productType = '0';
         const accountAge = '0';
         const idNr = '11111111111';
 
