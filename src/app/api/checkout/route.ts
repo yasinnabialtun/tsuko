@@ -256,6 +256,11 @@ export async function POST(request: Request) {
         // But preventing Error 500 (Installation error) often means bad data.
         // Let's implement the signature.
 
+        // Sanitize string fields to prevent signature mismatch
+        const sanitize = (str: string) => str.replace(/[\n\r]/g, ' ').trim();
+        const billingAddress = sanitize(customer.address);
+        const shippingAddress = sanitize(customer.address);
+
         const argsForSignature = [
             SHOPIER_API_KEY,
             SHOPIER_WEBSITE_INDEX,
@@ -268,16 +273,16 @@ export async function POST(request: Request) {
             customer.lastName,
             customer.email,
             '0', // buyer_account_age
-            '11111111111', // buyer_id_nr (TCKN - optional usually, but required in order)
+            '11111111111', // buyer_id_nr
             customer.phone,
-            customer.address, // billing address
-            customer.city,    // billing city
-            'Turkiye',        // billing country
-            customer.zipCode || '00000', // billing zip
-            customer.address, // shipping address
-            customer.city,    // shipping city
-            'Turkiye',        // shipping country
-            customer.zipCode || '00000', // shipping zip
+            billingAddress,
+            customer.city,
+            'Turkiye',
+            customer.zipCode || '00000',
+            shippingAddress,
+            customer.city,
+            'Turkiye',
+            customer.zipCode || '00000',
             random_nr,
             SHOPIER_API_SECRET
         ];
@@ -295,21 +300,21 @@ export async function POST(request: Request) {
             buyer_surname: customer.lastName,
             buyer_email: customer.email,
             buyer_account_age: 0,
-            buyer_id_nr: 11111111111,
+            buyer_id_nr: '11111111111',
             buyer_phone: customer.phone,
-            billing_address: customer.address,
+            billing_address: billingAddress,
             billing_city: customer.city,
             billing_country: 'Turkiye',
             billing_postcode: customer.zipCode || '00000',
-            shipping_address: customer.address,
+            shipping_address: shippingAddress,
             shipping_city: customer.city,
             shipping_country: 'Turkiye',
             shipping_postcode: customer.zipCode || '00000',
             amount: formattedAmount,
             currency: 0,
-            random_nr: random_nr,
+            random_nr: String(random_nr),
             signature: signature,
-            modul_version: '1.0.4', // Hint related to the error message "modülün güncel sürüm"
+            modul_version: '1.0.4',
             callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/shopier`,
             back_url: `${process.env.NEXT_PUBLIC_SITE_URL}/payment/success?orderId=${order.orderNumber}`,
             cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/payment/cancel?orderId=${order.orderNumber}`
